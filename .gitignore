@@ -22,4 +22,12 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Documentation and auxiliary files
+SKILLS.md
+SPECS.md
+PRD.md
+GUIDE.md
+.lovable
+
 .env
