@@ -1,73 +1,36 @@
-# Welcome to your Lovable project
+# MKT Prime - Competitive Intelligence Platform
 
-## Project info
+Uma plataforma avançada de Inteligência Competitiva projetada para equipes de Marketing e Executivos. O sistema permite o monitoramento de concorrentes, análise de mercado e tomada de decisões estratégicas baseadas em dados consolidados.
 
-**URL**: https://lovable.dev/projects/f9d8cf0a-7834-40f1-9f78-97fcae07d7f1
+## Tecnologias Utilizadas
 
-## How can I edit this code?
+- **Frontend**: React com TypeScript
+- **Build Tool**: Vite
+- **Estilização**: Tailwind CSS & shadcn/ui
+- **Backend/Banco de Dados**: Supabase (PostgreSQL, Auth, Edge Functions)
+- **IA**: Google Gemini API para análises inteligentes
 
-There are several ways of editing your application.
+## Como Rodar Localmente
 
-**Use Lovable**
+1. **Clonar o projeto**:
+   ```bash
+   git clone https://github.com/L-G-R-S/portal2026.git
+   cd portal2026
+   ```
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/f9d8cf0a-7834-40f1-9f78-97fcae07d7f1) and start prompting.
+2. **Instalar dependências**:
+   ```bash
+   npm install
+   ```
 
-Changes made via Lovable will be committed automatically to this repo.
+3. **Configurar variáveis de ambiente**:
+   Crie um arquivo `.env` na raiz do projeto com as chaves do Supabase e Google AI.
 
-**Use your preferred IDE**
+4. **Iniciar servidor de desenvolvimento**:
+   ```bash
+   npm run dev
+   ```
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## Deploy na Vercel
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/f9d8cf0a-7834-40f1-9f78-97fcae07d7f1) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+Este projeto está pronto para ser implantado na Vercel. Certifique-se de configurar as mesmas variáveis de ambiente do arquivo `.env` nas configurações do projeto na Vercel.
