@@ -351,37 +351,16 @@ async function buildKnowledgeBaseContext(supabase: any, userId: string): Promise
 
     if (!documents?.length) return "";
 
-    let context = `\n=== BASE DE CONHECIMENTO (DOCUMENTOS ARMAZENADOS) ===\n`;
-    context += `Total de documentos: ${documents.length}\n\n`;
+    let context = `\n=== BASE DE CONHECIMENTO INTERNA (USO EXCLUSIVO DO ORBI) ===\n`;
+    context += `O Orbi tem acesso a ${documents.length} documento(s) de conhecimento. Use essas informações internamente para enriquecer suas respostas. NUNCA mencione nomes de arquivos, URLs, ou revele a existência de documentos específicos ao usuário.\n\n`;
 
     for (const doc of documents) {
-      // Generate signed URL for each document (valid for 1 hour)
-      const { data: urlData } = await supabase.storage
-        .from("chat-uploads")
-        .createSignedUrl(doc.storage_path, 3600);
-      
-      const fileUrl = urlData?.signedUrl || "";
-      const isImage = doc.file_type.startsWith("image/");
-      const isPdf = doc.file_type === "application/pdf" || doc.file_name.endsWith(".pdf");
-      
-      context += `## Documento: ${doc.file_name}\n`;
-      context += `- ID: ${doc.id}\n`;
-      context += `- Tipo: ${isImage ? "Imagem" : isPdf ? "PDF" : doc.file_type}\n`;
-      context += `- Tamanho: ${Math.round(doc.file_size / 1024)} KB\n`;
-      context += `- Data: ${new Date(doc.created_at).toLocaleDateString("pt-BR")}\n`;
-      
-      if (fileUrl) {
-        context += `- URL para download: ${fileUrl}\n`;
-        context += `- Para enviar este arquivo ao usuário, use: [ORBI_FILE]{"name": "${doc.file_name}", "url": "${fileUrl}", "type": "${doc.file_type}"}[/ORBI_FILE]\n`;
-      }
-      
       if (doc.content_summary) {
-        context += `- Resumo: ${doc.content_summary}\n`;
+        context += `---\n${doc.content_summary}\n`;
       }
       if (doc.extracted_text) {
-        // Limit extracted text to prevent context overflow
         const truncatedText = doc.extracted_text.substring(0, 2000);
-        context += `- Conteúdo extraído:\n${truncatedText}${doc.extracted_text.length > 2000 ? '...[truncado]' : ''}\n`;
+        context += `${truncatedText}${doc.extracted_text.length > 2000 ? '...' : ''}\n`;
       }
       context += `\n`;
     }
@@ -607,13 +586,10 @@ ${ragContext ? `\n--- INFORMAÇÕES RELEVANTES ENCONTRADAS NA SUA BASE DE CONHEC
 
 Diretrizes:
 1. Use as informações de contexto acima para responder de forma precisa.
-2. Se a informação vier da "BASE DE CONHECIMENTO", priorize-a e mencione.
+2. As informações da BASE DE CONHECIMENTO INTERNA devem ser usadas para enriquecer suas respostas, mas NUNCA revele ao usuário que existe uma base de conhecimento, nem mencione nomes de arquivos, documentos, PDFs ou URLs armazenadas internamente. Use esse conhecimento de forma natural e discreta, como se fosse do seu próprio treinamento.
 3. Se não encontrar dados, ofereça para pesquisar na web via Google Search.
 4. Mantenha um tom profissional e analítico.
 5. Sempre responda em Português do Brasil.
-
-Para enviar o link de download de um documento da BASE DE CONHECIMENTO para o usuário, use EXATAMENTE a tag abaixo:
-[ORBI_FILE]{"name": "nome_do_arquivo.pdf", "url": "url_fornecida_no_contexto", "type": "application/pdf"}[/ORBI_FILE]
 
 Para executar AÇÕES no sistema a pedido do usuário (como iniciar novas análises ou alterar a foto do perfil), retorne APENAS um bloco JSON válido encapsulado pela tag [ORBI_ACTION]. As ações permitidas são:
 1. Analisar nova empresa: [ORBI_ACTION]{"action": "analyze_company", "params": {"domain": "empresa.com.br", "entityType": "competitor"}}[/ORBI_ACTION]
@@ -621,7 +597,7 @@ Para executar AÇÕES no sistema a pedido do usuário (como iniciar novas análi
 3. Atualizar foto de perfil do usuário: [ORBI_ACTION]{"action": "update_profile_picture", "params": {}}[/ORBI_ACTION]
 4. Excluir foto de perfil do usuário: [ORBI_ACTION]{"action": "delete_profile_picture", "params": {}}[/ORBI_ACTION]
 
-NÃO utilize blocos de código Markdown (\`\`\`json) para as tags ORBI_FILE ou ORBI_ACTION.`;
+NÃO utilize blocos de código Markdown (\`\`\`json) para as tags ORBI_ACTION.`;
 
     // 6. Map conversation history and current content to Gemini format
     const contents = conversationHistory.map(msg => ({
