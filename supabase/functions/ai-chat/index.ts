@@ -529,18 +529,18 @@ serve(async (req) => {
       );
     }
     
-    // Validate the JWT using getClaims
+    // Validate the JWT using getUser
     const token = authHeader.replace("Bearer ", "");
-    const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
+    const { data: userData, error: userError } = await supabase.auth.getUser(token);
     
-    if (claimsError || !claimsData?.claims) {
-      console.error("JWT validation failed:", claimsError?.message);
+    if (userError || !userData?.user) {
+      console.error("JWT validation failed:", userError?.message);
       return new Response(
         JSON.stringify({ error: "Unauthorized: Invalid token" }),
         { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
-    const userId: string | null = claimsData.claims.sub as string || null;
+    const userId: string | null = userData.user.id || null;
 
     // 4. Build contexts in parallel (Regular contexts + Semantic search)
     // We'll calculate the embedding and do the search as part of the context gathering
@@ -676,7 +676,7 @@ Para ações especiais (Tool Calling), use as tags [ORBI_ACTION] ou [ORBI_FILE] 
           temperature: 0.2,
           top_p: 0.8,
           top_k: 40,
-          max_output_tokens: 2048,
+          max_output_tokens: 4096,
         },
         tools: [{ google_search: {} }],
       }),
