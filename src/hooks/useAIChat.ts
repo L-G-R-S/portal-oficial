@@ -74,6 +74,19 @@ const detectAnalyzeIntent = (message: string): { domain: string; entityType: str
   return null;
 };
 
+// Keywords that detect PDF report requests
+const PDF_KEYWORDS = [
+  'me d\u00ea o pdf', 'me d\u00ea o relat\u00f3rio', 'gerar pdf', 'gere o pdf',
+  'baixar pdf', 'baixar relat\u00f3rio', 'gerar relat\u00f3rio', 'quero o pdf',
+  'me manda o pdf', 'me mande o pdf', 'pode gerar o pdf', 'pode gerar o relat\u00f3rio',
+  'preciso do pdf', 'exportar pdf', 'exporta o pdf',
+];
+
+const detectPdfIntent = (message: string): boolean => {
+  const lower = message.toLowerCase();
+  return PDF_KEYWORDS.some(kw => lower.includes(kw));
+};
+
 // Action type for Orbi tool calling
 interface OrbiAction {
   action: string;
@@ -522,6 +535,82 @@ export function useAIChat(options: UseAIChatOptions = {}) {
       } catch (e) {
         console.error('Error starting analysis (client-side):', e);
       }
+    }
+
+    // Client-side PDF generation: triggered when user is in entity context and requests a PDF
+    if (detectPdfIntent(trimmedContent) && options.entityId && options.entityType) {
+      const tableNames: Record<string, string> = {
+        competitor: 'companies',
+        prospect: 'prospects',
+        client: 'clients',
+        primary: 'primary_company'
+      };
+      const tableName = tableNames[options.entityType] || 'companies';
+      const assistantId = crypto.randomUUID();
+
+      // Add a 'generating...' placeholder message
+      const loadingMsg = '⏳ **Gerando o PDF...** Aguarde um momento, estou preparando o relatório completo da empresa.';
+      setMessages(prev => [...prev, { id: assistantId, role: 'assistant', content: loadingMsg, timestamp: new Date() }]);
+
+      try {
+        const { data: entityData, error: entityError } = await supabase
+          .from(tableName as any)
+          .select('*')
+          .eq('id', options.entityId)
+          .single();
+
+        if (entityError || !entityData) throw new Error('Entidade não encontrada');
+
+        const ed = entityData as any;
+        const companyData = {
+          name: ed.name || ed.domain,
+          domain: ed.domain,
+          industry: ed.industry || ed.linkedin_industry,
+          sector: ed.sector,
+          size: ed.size,
+          headquarters: ed.headquarters,
+          hq_location: ed.hq_location,
+          year_founded: ed.year_founded,
+          employees: ed.employee_count,
+          description: ed.description,
+          logo_url: ed.logo_url,
+          linkedin_tagline: ed.linkedin_tagline || ed.tagline,
+          linkedin_followers: ed.linkedin_followers,
+          instagram_followers: ed.instagram_followers,
+          youtube_subscribers: ed.youtube_subscribers,
+          youtube_total_views: ed.youtube_total_views,
+          products_services: ed.products_services,
+          differentiators: ed.differentiators,
+        };
+
+        await generateCompetitorReport({
+          competitor: companyData,
+          company: companyData,
+          glassdoor: null,
+          marketResearch: null,
+          marketNews: [],
+          leadership: [],
+          similarCompanies: [],
+          socialPosts: { linkedin: [], instagram: [], youtube: [] },
+        });
+
+        const fileName = `relatorio_${(ed.name || ed.domain).replace(/[^a-zA-Z0-9]/g, '_').toLowerCase()}.pdf`;
+        const successMsg = `📄 **Relatório PDF Pronto!**
+
+O download de **${fileName}** foi iniciado automaticamente.
+
+O arquivo contém todas as informações da empresa: visão geral, redes sociais, Glassdoor, notícias de mercado e muito mais.`;
+        setMessages(prev => prev.map(msg => msg.id === assistantId ? { ...msg, content: successMsg } : msg));
+        await saveMessage('assistant', successMsg);
+      } catch (e) {
+        console.error('Error generating PDF (client-side):', e);
+        const errMsg = '❌ **Erro ao gerar PDF**\n\nNão foi possível gerar o relatório. Tente novamente.';
+        setMessages(prev => prev.map(msg => msg.id === assistantId ? { ...msg, content: errMsg } : msg));
+        await saveMessage('assistant', errMsg);
+      }
+
+      setIsLoading(false);
+      return;
     }
     // --- END CLIENT-SIDE INTENT DETECTION ---
 
