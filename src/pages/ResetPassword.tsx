@@ -90,8 +90,8 @@ export default function ResetPassword() {
             <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6">
               <Lock className="w-8 h-8 text-primary" />
             </div>
-            <h2 className="text-3xl font-bold text-foreground">Nova Senha</h2>
-            <p className="mt-2 text-muted-foreground">
+            <h2 className="text-2xl font-semibold text-foreground">Nova Senha</h2>
+            <p className="mt-2 text-muted-foreground text-sm">
               Digite sua nova senha abaixo
             </p>
           </div>
@@ -153,7 +153,7 @@ export default function ResetPassword() {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full h-12 text-base bg-primary hover:bg-primary/90 text-primary-foreground"
+              className="w-full h-10 text-sm bg-primary hover:bg-primary/90 text-primary-foreground"
             >
               {loading ? 'Redefinindo...' : 'Redefinir Senha'}
             </Button>

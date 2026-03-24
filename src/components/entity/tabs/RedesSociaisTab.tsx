@@ -1,5 +1,5 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Linkedin, Instagram, Youtube } from "lucide-react";
+import { Linkedin, Instagram, Youtube, BookOpen } from "lucide-react";
 import SocialPostsGrid from "@/components/SocialPostsGrid";
 import { SocialMetricsCards } from "@/components/competitor/SocialMetricsCards";
 
@@ -9,6 +9,7 @@ interface RedesSociaisTabProps {
     linkedin: any[];
     instagram: any[];
     youtube: any[];
+    blog?: any[];
   };
 }
 
@@ -30,9 +31,9 @@ export function RedesSociaisTab({ entity, socialPosts }: RedesSociaisTabProps) {
       />
 
       {/* Social Posts */}
-      {(socialPosts.linkedin.length > 0 || socialPosts.instagram.length > 0 || socialPosts.youtube.length > 0) && (
-        <Tabs defaultValue={socialPosts.linkedin.length > 0 ? "linkedin" : socialPosts.instagram.length > 0 ? "instagram" : "youtube"} className="w-full">
-          <TabsList className="w-full grid grid-cols-3 h-12">
+      {(socialPosts.linkedin.length > 0 || socialPosts.instagram.length > 0 || socialPosts.youtube.length > 0 || (socialPosts.blog && socialPosts.blog.length > 0)) && (
+        <Tabs defaultValue={socialPosts.linkedin.length > 0 ? "linkedin" : socialPosts.instagram.length > 0 ? "instagram" : socialPosts.youtube.length > 0 ? "youtube" : "blog"} className="w-full">
+          <TabsList className="w-full grid grid-cols-4 h-12">
             <TabsTrigger 
               value="linkedin" 
               className="flex items-center justify-center gap-2 text-sm data-[state=active]:bg-background"
@@ -57,6 +58,14 @@ export function RedesSociaisTab({ entity, socialPosts }: RedesSociaisTabProps) {
               <Youtube className="h-4 w-4" />
               <span className="hidden sm:inline">YouTube</span>
             </TabsTrigger>
+            <TabsTrigger 
+              value="blog" 
+              className="flex items-center justify-center gap-2 text-sm data-[state=active]:bg-background"
+              disabled={!socialPosts.blog || socialPosts.blog.length === 0}
+            >
+              <BookOpen className="h-4 w-4" />
+              <span className="hidden sm:inline">Blog</span>
+            </TabsTrigger>
           </TabsList>
           
           {socialPosts.linkedin.length > 0 && (
@@ -72,6 +81,11 @@ export function RedesSociaisTab({ entity, socialPosts }: RedesSociaisTabProps) {
           {socialPosts.youtube.length > 0 && (
             <TabsContent value="youtube" className="mt-4">
               <SocialPostsGrid posts={socialPosts.youtube} type="youtube" />
+            </TabsContent>
+          )}
+          {socialPosts.blog && socialPosts.blog.length > 0 && (
+            <TabsContent value="blog" className="mt-4">
+              <SocialPostsGrid posts={socialPosts.blog} type="blog" />
             </TabsContent>
           )}
         </Tabs>

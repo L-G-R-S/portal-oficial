@@ -3,8 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Heart, MessageCircle, Repeat2, Eye, ExternalLink, Play, ImageOff, Linkedin, Instagram, Youtube, Download } from "lucide-react";
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import { Heart, MessageCircle, Repeat2, Eye, ExternalLink, Play, ImageOff, Linkedin, Instagram, Youtube, Download, BookOpen, Clock } from "lucide-react";
 import { formatDateBR } from "@/lib/formatters";
 import { toast } from "sonner";
 // Componente para fallback visual melhorado
@@ -13,7 +12,7 @@ const MediaFallback = ({
   postUrl, 
   compact = false 
 }: { 
-  type: "linkedin" | "instagram" | "youtube"; 
+  type: "linkedin" | "instagram" | "youtube" | "blog"; 
   postUrl: string | null;
   compact?: boolean;
 }) => {
@@ -24,18 +23,21 @@ const MediaFallback = ({
     linkedin: "from-[#0077B5]/10 to-[#0077B5]/5",
     instagram: "from-[#E4405F]/10 via-[#F77737]/10 to-[#FCAF45]/5",
     youtube: "from-[#FF0000]/10 to-[#FF0000]/5",
+    blog: "from-primary/10 to-primary/5",
   };
   
   const iconColors = {
     linkedin: "text-[#0077B5]/50",
     instagram: "text-[#E4405F]/50",
     youtube: "text-[#FF0000]/50",
+    blog: "text-primary/50",
   };
   
   const icons = {
     linkedin: Linkedin,
     instagram: Instagram,
     youtube: Youtube,
+    blog: BookOpen,
   };
   
   const Icon = icons[type];
@@ -140,11 +142,22 @@ interface YouTubeVideo {
   likes?: number;
 }
 
-type SocialPost = LinkedInPost | InstagramPost | YouTubeVideo;
+interface BlogPost {
+  id: string;
+  title: string;
+  url: string;
+  published_at?: string;
+  reading_time_minutes?: number;
+  categories?: string;
+  cover_image_url?: string;
+  author?: string;
+}
+
+type SocialPost = LinkedInPost | InstagramPost | YouTubeVideo | BlogPost;
 
 interface SocialPostsGridProps {
   posts: SocialPost[];
-  type: "linkedin" | "instagram" | "youtube";
+  type: "linkedin" | "instagram" | "youtube" | "blog";
 }
 
 export default function SocialPostsGrid({ posts, type }: SocialPostsGridProps) {
@@ -193,6 +206,11 @@ export default function SocialPostsGrid({ posts, type }: SocialPostsGridProps) {
       const url = p.thumbnail_url ?? p.thumbnailUrl ?? null;
       return useProxy && url ? getProxiedImageUrl(url) : url;
     }
+    if (type === "blog") {
+      const p = post as BlogPost;
+      const url = p.cover_image_url ?? null;
+      return useProxy && url ? getProxiedImageUrl(url) : url;
+    }
     return null;
   };
 
@@ -223,6 +241,7 @@ export default function SocialPostsGrid({ posts, type }: SocialPostsGridProps) {
     if (type === "linkedin") return (post as LinkedInPost).text;
     if (type === "instagram") return (post as InstagramPost).caption;
     if (type === "youtube") return (post as YouTubeVideo).title;
+    if (type === "blog") return (post as BlogPost).title;
     return "";
   };
 
@@ -233,6 +252,7 @@ export default function SocialPostsGrid({ posts, type }: SocialPostsGridProps) {
       const p = post as YouTubeVideo;
       return p.published_at ?? p.publishedAt ?? "";
     }
+    if (type === "blog") return (post as BlogPost).published_at ?? "";
     return "";
   };
 
@@ -268,6 +288,14 @@ export default function SocialPostsGrid({ posts, type }: SocialPostsGridProps) {
         { icon: MessageCircle, value: comments, label: "comentários" },
       ];
     }
+    if (type === "blog") {
+      const p = post as BlogPost;
+      const stats = [];
+      if (p.reading_time_minutes) {
+        stats.push({ icon: Clock, value: p.reading_time_minutes, label: "min. leitura" });
+      }
+      return stats;
+    }
     return [];
   };
 
@@ -281,6 +309,7 @@ export default function SocialPostsGrid({ posts, type }: SocialPostsGridProps) {
       return p.media_type ?? p.mediaType ?? null;
     }
     if (type === "youtube") return "video";
+    if (type === "blog") return "image";
     return null;
   };
 
@@ -292,6 +321,7 @@ export default function SocialPostsGrid({ posts, type }: SocialPostsGridProps) {
     }
     if (type === "instagram") return (post as InstagramPost).url;
     if (type === "youtube") return (post as YouTubeVideo).url;
+    if (type === "blog") return (post as BlogPost).url;
     return null;
   };
 
@@ -422,10 +452,10 @@ export default function SocialPostsGrid({ posts, type }: SocialPostsGridProps) {
 
       <Dialog open={!!selectedPost} onOpenChange={() => setSelectedPost(null)}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-          <VisuallyHidden>
+          <span className="sr-only">
             <DialogTitle>Detalhes do post</DialogTitle>
             <DialogDescription>Visualização detalhada do post de rede social</DialogDescription>
-          </VisuallyHidden>
+          </span>
           {selectedPost && (
             <div className="space-y-4">
               <div className="relative aspect-video bg-muted rounded-lg overflow-hidden">

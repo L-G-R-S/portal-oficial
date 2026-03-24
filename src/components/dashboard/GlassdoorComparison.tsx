@@ -171,23 +171,23 @@ export function GlassdoorComparison({
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="competitors" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-4">
-            <TabsTrigger value="competitors">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 mb-4 h-auto gap-1">
+            <TabsTrigger value="competitors" className="whitespace-normal h-auto min-h-10 text-[11px] sm:text-sm">
               Concorrentes {competitors.filter(c => c.glassdoor_rating).length > 0 && `(${competitors.filter(c => c.glassdoor_rating).length})`}
             </TabsTrigger>
-            <TabsTrigger value="prospects">
+            <TabsTrigger value="prospects" className="whitespace-normal h-auto min-h-10 text-[11px] sm:text-sm">
               Prospects {prospects.filter(p => p.glassdoor_rating).length > 0 && `(${prospects.filter(p => p.glassdoor_rating).length})`}
             </TabsTrigger>
-            <TabsTrigger value="clients">
+            <TabsTrigger value="clients" className="whitespace-normal h-auto min-h-10 text-[11px] sm:text-sm">
               Clientes {clients.filter(c => c.glassdoor_rating).length > 0 && `(${clients.filter(c => c.glassdoor_rating).length})`}
             </TabsTrigger>
-            <TabsTrigger value="all">Geral</TabsTrigger>
+            <TabsTrigger value="all" className="whitespace-normal h-auto min-h-10 text-[11px] sm:text-sm">Geral</TabsTrigger>
           </TabsList>
 
           <TabsContent value="competitors">
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
               <StatsPanel data={competitorData} primaryCompany={primaryCompany} label="concorrentes" />
-              <div className="lg:col-span-3">
+              <div className="lg:col-span-3 min-w-0">
                 <GlassdoorChart data={competitorData} primaryId={primaryCompany?.id || null} />
               </div>
             </div>
@@ -196,7 +196,7 @@ export function GlassdoorComparison({
           <TabsContent value="prospects">
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
               <StatsPanel data={prospectData} primaryCompany={primaryCompany} label="prospects" />
-              <div className="lg:col-span-3">
+              <div className="lg:col-span-3 min-w-0">
                 <GlassdoorChart data={prospectData} primaryId={primaryCompany?.id || null} />
               </div>
             </div>
@@ -205,7 +205,7 @@ export function GlassdoorComparison({
           <TabsContent value="clients">
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
               <StatsPanel data={clientData} primaryCompany={primaryCompany} label="clientes" />
-              <div className="lg:col-span-3">
+              <div className="lg:col-span-3 min-w-0">
                 <GlassdoorChart data={clientData} primaryId={primaryCompany?.id || null} />
               </div>
             </div>
@@ -214,7 +214,7 @@ export function GlassdoorComparison({
           <TabsContent value="all">
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
               <StatsPanel data={allData} primaryCompany={primaryCompany} label="geral" />
-              <div className="lg:col-span-3">
+              <div className="lg:col-span-3 min-w-0">
                 <GlassdoorChart data={allData} primaryId={primaryCompany?.id || null} />
               </div>
             </div>

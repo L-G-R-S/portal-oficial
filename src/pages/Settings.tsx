@@ -12,6 +12,7 @@ import { z } from "zod";
 import { useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useProfileAvatar, getInitials } from "@/hooks/useProfile";
+import { useUserAction } from "@/hooks/useUserAction";
 import { profileSchema, ProfileFormData } from "@/utils/validation";
 import { AutoUpdateCard } from "@/components/settings/AutoUpdateCard";
 import { PrimaryCompanySettings } from "@/components/settings/PrimaryCompanySettings";
@@ -20,6 +21,8 @@ import { KnowledgeBaseSettings } from "@/components/settings/KnowledgeBaseSettin
 import { UserManagementCard } from "@/components/settings/UserManagementCard";
 import { EmailAlertsCard } from "@/components/settings/EmailAlertsCard";
 import { LogsCard } from "@/components/settings/LogsCard";
+import { ApiSettingsCard } from "@/components/settings/ApiSettingsCard";
+import { UsageDashboardCard } from "@/components/settings/UsageDashboardCard";
 import { SuperAdminOnly } from "@/components/SuperAdminOnly";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
@@ -33,6 +36,7 @@ export default function Settings() {
   const { avatarUrl, isLoading: avatarLoading } = useProfileAvatar(profile?.user_id);
   const [uploading, setUploading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const { trackAction } = useUserAction();
 
   useEffect(() => {
     if (profile) {
@@ -91,6 +95,7 @@ export default function Settings() {
       }
 
       window.dispatchEvent(new CustomEvent('avatar-updated', { detail: publicUrl }));
+      trackAction('upload_foto', 'Atualizou foto de perfil');
       toast({
         title: "Foto atualizada",
         description: "Sua foto de perfil foi atualizada com sucesso.",
@@ -153,6 +158,8 @@ export default function Settings() {
 
       if (error) throw error;
 
+      trackAction('atualizacao_perfil', 'Atualizou dados do perfil');
+
       toast({
         title: "Perfil atualizado",
         description: "Suas informações foram atualizadas com sucesso.",
@@ -192,7 +199,7 @@ export default function Settings() {
           Voltar
         </Button>
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold">Configurações</h1>
+          <h1 className="text-2xl font-semibold">Configurações</h1>
           <p className="text-sm text-muted-foreground">Gerencie suas informações pessoais e preferências</p>
         </div>
       </div>
@@ -297,7 +304,14 @@ export default function Settings() {
 
           {/* Gerenciamento de Usuários - Apenas Super Admin */}
           <SuperAdminOnly>
+            <UsageDashboardCard />
+            <div className="mt-6" />
             <UserManagementCard />
+          </SuperAdminOnly>
+
+          {/* Configuração de API (IA / Gemini) - Apenas Super Admin */}
+          <SuperAdminOnly>
+            <ApiSettingsCard />
           </SuperAdminOnly>
         </div>
 
@@ -339,6 +353,12 @@ export default function Settings() {
                     <SelectItem value="marketing">Marketing</SelectItem>
                     <SelectItem value="comercial">Comercial</SelectItem>
                     <SelectItem value="executivo">Executivo</SelectItem>
+                    <SelectItem value="delivery">Delivery</SelectItem>
+                    <SelectItem value="coe_sap">COE SAP</SelectItem>
+                    <SelectItem value="coe_qa">COE QA</SelectItem>
+                    <SelectItem value="people">People</SelectItem>
+                    <SelectItem value="financeiro">Financeiro</SelectItem>
+                    <SelectItem value="inovacao">Inovação</SelectItem>
                   </SelectContent>
                 </Select>
                 {errors.role && (

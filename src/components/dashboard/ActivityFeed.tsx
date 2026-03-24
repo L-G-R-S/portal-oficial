@@ -80,8 +80,8 @@ export function ActivityFeed({ activities }: ActivityFeedProps) {
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="text-lg font-semibold flex items-center gap-2">
+      <CardHeader className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-0">
+        <CardTitle className="text-lg font-semibold flex items-center justify-center sm:justify-start gap-2 w-full text-center sm:text-left">
           <Activity className="h-5 w-5 text-primary" />
           Atividade Recente
         </CardTitle>
@@ -89,14 +89,14 @@ export function ActivityFeed({ activities }: ActivityFeedProps) {
           variant="ghost" 
           size="sm" 
           onClick={() => navigate('/logs')}
-          className="text-xs"
+          className="text-xs w-full sm:w-auto mt-2 sm:mt-0"
           aria-label="Ver todos os logs de atividade"
         >
           Ver todos
           <ArrowRight className="h-3 w-3 ml-1" />
         </Button>
       </CardHeader>
-      <CardContent className="space-y-3">
+      <CardContent className="space-y-3 pt-0 sm:pt-6">
         {activities.map((activity) => (
           <div 
             key={activity.id} 

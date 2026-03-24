@@ -50,6 +50,12 @@ const roleLabels: Record<string, string> = {
   marketing: "Marketing",
   comercial: "Comercial",
   executivo: "Executivo",
+  delivery: "Delivery",
+  coe_sap: "COE SAP",
+  coe_qa: "COE QA",
+  people: "People",
+  financeiro: "Financeiro",
+  inovacao: "Inovação",
   administrador: "Administrador",
 };
 

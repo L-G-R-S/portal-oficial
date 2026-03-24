@@ -59,6 +59,12 @@ export function getInitials(fullName: string | undefined): string {
 export function getRoleLabel(role: string): string {
   const roles = {
     executivo: 'Executivo',
+    delivery: 'Delivery',
+    coe_sap: 'COE SAP',
+    coe_qa: 'COE QA',
+    people: 'People',
+    financeiro: 'Financeiro',
+    inovacao: 'Inovação',
     marketing: 'Marketing',
     comercial: 'Comercial',
   };

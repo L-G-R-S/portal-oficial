@@ -1,0 +1,984 @@
+[
+  {
+    "company": {
+      "nome": "Lab2dev",
+      "dominio": "lab2dev.com",
+      "descricao_institucional": "Empresa especialista em implementação do SAP Business Technology Platform (BTP), se posicionando como a maior referência no Brasil em soluções baseadas em BTP, Clean Core, e utilizando inovações em IA e dados.",
+      "setor": "Serviços de TI / Consultoria SAP",
+      "produtos_servicos": [
+        "Implementação e consultoria SAP BTP",
+        "Soluções SAP (FIORI, Hana, S/4HANA Cloud)",
+        "FUE Monitoring (monitoramento de licenciamento SAP)",
+        "DataOps (ETL/ELT, Data Pipes)",
+        "Soluções de Sustentabilidade (SAP Sustainability Control Tower, Green Token)",
+        "Analytics (SAP Analytics Cloud, SAP Datasphere)"
+      ],
+      "diferenciais": [
+        "Maior referência em SAP BTP no Brasil",
+        "SAP Gold Partner",
+        "Forte integração com Data & Analytics e Sustentabilidade via M&A"
+      ],
+      "tagline": "Somos a MAIOR REFERÊNCIA em SAP BTP do Brasil!\n🥇 SAP Gold Partner",
+      "website": "https://lab2dev.com/",
+      "linkedin_url": null,
+      "followers": 14970,
+      "company_size": "201-500 employees",
+      "employee_count": 132,
+      "company_type": "Privately Held",
+      "headquarters": "Osasco, SP",
+      "founded": "2018",
+      "country_code": "BR",
+      "specialties": [
+        "SAP BTP",
+        "Clean Core",
+        "Data & Analytics",
+        "Sustentabilidade (ESG)",
+        "DataOps",
+        "SAP",
+        "SAP Cloud Platform",
+        "SAP Business Technology Platform",
+        "FIORI",
+        "Hana",
+        "S/4HANA Cloud Public Edition",
+        "S/4HANA PUBLIC",
+        "and cleancore"
+      ]
+    },
+    "linkedin_logo": "https://media.licdn.com/dms/image/v2/D4D0BAQF0vYG_e5ydbA/company-logo_200_200/company-logo_200_200/0/1729537292102/lab2dev_logo",
+    "linkedin_posts": [
+      {
+        "id": "7440443947342049280",
+        "text": "Hoje é dia de TBT… e nada melhor do que relembrar o SAP BTP Experience 💜\n\nForam 3 dias intensos de muito aprendizado, conexões e troca de conhecimento.Um evento que mostrou, na prática, como inovação e tecnologia caminham juntas.\n\nE você que é novo por aqui e não acompanhou, fica um breve resuminho do que rolou 👇\n\nMuito conteúdo sobre SAP BTP, insights valiosos, networking de alto nível e, claro, aquela energia que só a Lab2dev tem, com direito às camisetas no clima de Copa, porque aqui a gente joga junto dentro e fora de campo ⚽\n\nJá estamos com saudade!\n\n#TBT #SAPBTP #Inovação #Tecnologia #SAPBTPEXperience",
+        "post_type": "regular",
+        "posted_at": "2026-03-19 18:07:53",
+        "stats": {
+          "total_reactions": 26,
+          "like": 17,
+          "love": 7,
+          "celebrate": 2,
+          "reposts": 2,
+          "comments": 0
+        },
+        "media": {
+          "type": "video",
+          "url": "https://dms.licdn.com/playlist/vid/v2/D4D05AQHTYGCtAbCFag/mp4-720p-30fp-crf28/B4DZ0HESOIIcCI-/0/1773940064929",
+          "thumbnail": "https://media.licdn.com/dms/image/v2/D4D05AQHTYGCtAbCFag/videocover-high/B4DZ0HESOIIcBY-/0/1773940061243",
+          "duration": 52200
+        }
+      },
+      {
+        "id": "7440394967363002369",
+        "text": "A base da inovação em SAP nem sempre aparece, mas faz toda a diferença.\n\nDescubra como a infraestrutura no BTP sustenta estratégias de Clean Core e IA com segurança e escalabilidade.\n\n👉 Leia o artigo completo:\n https://lnkd.in/dd4QYt8W\n\n#SAP #SAPBTP #CleanCore #InteligenciaArtificial #Inovacao #ArquiteturaSAP #Cloud #Dados",
+        "post_type": "regular",
+        "posted_at": "2026-03-19 14:53:16",
+        "stats": {
+          "total_reactions": 13,
+          "like": 12,
+          "love": 0,
+          "celebrate": 1,
+          "reposts": 1,
+          "comments": 0
+        },
+        "media": {
+          "type": "image",
+          "url": "https://media.licdn.com/dms/image/v2/D4D22AQF2i1XKTRiCbw/feedshare-shrink_2048_1536/B4DZ0GXzGvH4Ag-/0/1773928395444",
+          "thumbnail": null,
+          "duration": null
+        }
+      },
+      {
+        "id": "7439834043942326272",
+        "text": "Segundo dia do SAP Partner Summit for Americas 2026 e um ponto ficou ainda mais claro nas conversas e apresentações de hoje: o papel cada vez mais estratégico do SAP BDC/BTP trabalhando em conjunto com SAP Business AI para acelerar a transformação dos clientes.\n\nA SAP reforçou muito como essa combinação cria uma base sólida para inovação — conectando processos, dados e inteligência de forma mais ágil dentro do ecossistema.\n\nE, ouvindo isso hoje aqui no evento, fica evidente como estamos no caminho certo. É exatamente essa visão que temos colocado em prática com Lab2dev e Kinesis, levando SAP BDC/BTP + AI para resolver problemas reais e gerar valor para nossos clientes.\n\n——🇺🇸\n\nSecond day of the SAP Partner Summit for Americas 2026, and one message became even clearer in today’s conversations and presentations: the increasingly strategic role of SAP BDC/BTP working together with SAP Business AI to accelerate customer transformation.\n\nSAP strongly emphasized how this combination creates a solid foundation for innovation — connecting processes, data, and intelligence in a more agile way across the ecosystem.\n\nAnd being here at the event today makes it clear that we’re on the right track. This is exactly the vision we’ve been putting into practice with Lab2dev and Kinesis, bringing SAP BDC/BTP + AI to our customers to solve real problems and deliver real business value.\n\nLab2dev \nKinesis IT \nLab2learn | SAP BTP  \n\nDuncan Scott \nDennis Schilling  \n\n#SAP #SAPPartnerSummitforAmericas2026 #SAP #SAPBTP #BusinessAI #Innovation #SAPBDC",
+        "post_type": "repost",
+        "posted_at": "2026-03-18 01:44:21",
+        "stats": {
+          "total_reactions": 110,
+          "like": 86,
+          "love": 0,
+          "celebrate": 23,
+          "reposts": 6,
+          "comments": 0
+        },
+        "media": {
+          "type": "image",
+          "url": "https://media.licdn.com/dms/image/v2/D4D22AQFNsyWqe7CVZw/feedshare-shrink_2048_1536/B4DZz92eFFG0Ag-/0/1773785451767",
+          "thumbnail": null,
+          "duration": null
+        }
+      },
+      {
+        "id": "7439493545817694208",
+        "text": "Participando hoje do SAP Partner Summit for Americas, aqui em Las Vegas, um momento importante para acompanhar de perto as estratégias, inovações e direcionamentos da SAP para o ecossistema de parceiros.\n\nEventos como este reforçam o quanto colaboração, tecnologia e visão de futuro são fundamentais para transformar negócios e gerar valor real para os clientes.\n\nMuito bom também reencontrar colegas, trocar experiências e discutir como podemos continuar acelerando a adoção de soluções SAP, especialmente em um cenário cada vez mais orientado por dados, nuvem e inteligência artificial.\n\nLab2dev \nKinesis IT \nLab2learn | SAP BTP  \n\n#SAP #SAPPPartnerSummitforamericas #Lab2dev #kinesisit #Innovation #Cloud #AI #BDC #BTP",
+        "post_type": "repost",
+        "posted_at": "2026-03-17 03:11:20",
+        "stats": {
+          "total_reactions": 77,
+          "like": 59,
+          "love": 1,
+          "celebrate": 17,
+          "reposts": 3,
+          "comments": 2
+        },
+        "media": {
+          "type": "image",
+          "url": "https://media.licdn.com/dms/image/v2/D4D22AQGec4lvwusGNQ/feedshare-shrink_1280/B4DZz44IXuGsAM-/0/1773701992833",
+          "thumbnail": null,
+          "duration": null
+        }
+      },
+      {
+        "id": "7439355025912393728",
+        "text": "🚀 Segunda-feira começando com oportunidades!\n\nEstamos com novas vagas abertas para quem quer trabalhar com tecnologia, inovação e o ecossistema SAP.\n\nSe você busca atuar em projetos de transformação digital com tecnologias modernas e em um ambiente que respira inovação, pode ser a sua chance de fazer parte do time! \n\nEntre as oportunidades abertas estão posições como:\n• Consultor SAP MM (Pleno e Sênior)\n• Consultor SAP SD Sênior\n• Consultor SAP EWM Sênior\n• Desenvolvedor ABAP\n• Arquiteto de Integração SAP\n• Analista de Recrutamento & Seleção Júnior\n• e outras oportunidades!\n\n📍 Vagas em São Paulo e Osasco, com modelos híbridos.\n👉 Confira todas as vagas https://lnkd.in/dpQeR6qS ou envie seu currículo para talent.aquisition@lab2dev.com\n\nSe você conhece alguém que pode se interessar, marque nos comentários ou compartilhe!",
+        "post_type": "regular",
+        "posted_at": "2026-03-16 18:00:54",
+        "stats": {
+          "total_reactions": 72,
+          "like": 61,
+          "love": 2,
+          "celebrate": 6,
+          "reposts": 19,
+          "comments": 3
+        },
+        "media": {
+          "type": "image",
+          "url": "https://media.licdn.com/dms/image/v2/D4D22AQHhxnKR418SqQ/feedshare-shrink_2048_1536/B4DZz3l.iWGcAg-/0/1773680454107",
+          "thumbnail": null,
+          "duration": null
+        }
+      }
+    ],
+    "instagram_info": {
+      "username": "lab2dev",
+      "profileUrl": "https://www.instagram.com/lab2dev",
+      "profile": {
+        "followersCount": 4459,
+        "followsCount": 237,
+        "postsCount": 773
+      }
+    },
+    "instagram_posts": [
+      {
+        "id": "3856406780155050904",
+        "caption": "Hoje é dia de TBT… e nada melhor do que relembrar o SAP BTP Experience 💜\n\nE você que é novo por aqui e não acompanhou, fica um breve resuminho do que rolou 👇\n\nMuito conteúdo sobre SAP BTP, insights valiosos, networking de alto nível e, claro, aquela energia que só a Lab2dev tem, e com direito às camisetas no clima de Copa, porque aqui a gente joga junto dentro e fora de campo ⚽🚀\n\nJá estamos com saudade!\n\n#TBT #SAPBTP #Inovação #Tecnologia #SAPBTPEXperience",
+        "url": "https://www.instagram.com/p/DWEtYjQjLuY/",
+        "mediaType": "video",
+        "mediaUrl": "https://instagram.fosu2-1.fna.fbcdn.net/o1/v/t16/f2/m69/AQM8DJLLiJEzY9jBTZJqC6Ue_QahF84bDEsQU42BM3jku9hllqsx_UeV4kporhKMW9S5dwy2kZCrZtsa8yVfShMc.mp4",
+        "thumbnailUrl": "https://instagram.fosu2-2.fna.fbcdn.net/v/t51.71878-15/654181844_3089532368102900_3451844747085855436_n.jpg",
+        "likesCount": 20,
+        "commentsCount": 0,
+        "sharesCount": null,
+        "mentions": [],
+        "hashtags": [
+          "TBT",
+          "SAPBTP",
+          "Inovação",
+          "Tecnologia",
+          "SAPBTPEXperience"
+        ],
+        "timestamp": "2026-03-19T17:00:03.000Z"
+      },
+      {
+        "id": "3855606333559904326",
+        "caption": "Se você quer trabalhar com tecnologia, inovação e crescer dentro do ecossistema SAP, esse pode ser o seu momento 👇\n\nEstamos com novas vagas abertas para quem busca atuar em projetos de transformação digital, com tecnologias modernas e em um ambiente que realmente respira inovação.\n\n👉 Arraste para o lado e confira todas as posições disponíveis no carrossel!\n\nVagas em São Paulo e Osasco, com modelo híbrido.\n\n💼 Você pode se candidatar diretamente pelo LinkedIn ou enviar seu currículo para talent.aquisition@lab2dev.com\n\n🔁 Conhece alguém com esse perfil? Marca aqui nos comentários ou compartilha esse post!\n\n#Vagas #SAP #Tecnologia #Oportunidade #Carreira",
+        "url": "https://www.instagram.com/p/DWB3YhRlZhG/",
+        "mediaType": "carousel",
+        "mediaUrl": "https://instagram.fosu2-1.fna.fbcdn.net/v/t51.82787-15/652580352_18267030919295949_4986253779684637405_n.jpg",
+        "thumbnailUrl": null,
+        "likesCount": 56,
+        "commentsCount": 0,
+        "sharesCount": null,
+        "mentions": [
+          "lab2dev.com"
+        ],
+        "hashtags": [
+          "Vagas",
+          "SAP",
+          "Tecnologia",
+          "Oportunidade",
+          "Carreira"
+        ],
+        "timestamp": "2026-03-18T14:28:33.000Z"
+      },
+      {
+        "id": "3851332933231072781",
+        "caption": "🌎✈️ SAP Partner Summit for Americas 2026\n\nDe 16 a 18 de março, estaremos no The Cosmopolitan of Las Vegas acompanhando de perto um dos principais encontros do ecossistema SAP nas Américas, mergulhando em insights, tendências e inovações que estão moldando o futuro do mercado.\n\nRepresentando a gente por lá estarão Igor de Oliveira, Co-CEO da Lab2Dev, e Rafael Fassoli, COO da Kinesis IT.\n\nO evento reunirá líderes do ecossistema SAP, incluindo executivos, especialistas em produto e profissionais das áreas de vendas, marketing e tecnologia, para três dias de trilhas de conteúdo dedicadas a diferentes áreas do ecossistema. Entre os principais temas estão estratégias de go-to-market, roadmaps de produtos, inovação em soluções SAP e o fortalecimento do ecossistema de parceiros.\n\nFiquem ligados: vem muita novidade por aí!\n\n#SAP #lasvegas #summitforamerican",
+        "url": "https://www.instagram.com/p/DVyruXFAFYN/",
+        "mediaType": "image",
+        "mediaUrl": "https://instagram.fosu2-1.fna.fbcdn.net/v/t51.82787-15/649376908_18266063764295949_3540307889217042036_n.jpg",
+        "thumbnailUrl": null,
+        "likesCount": 24,
+        "commentsCount": 1,
+        "sharesCount": null,
+        "mentions": [],
+        "hashtags": [
+          "SAP",
+          "lasvegas",
+          "summitforamerican"
+        ],
+        "timestamp": "2026-03-12T16:59:50.000Z"
+      },
+      {
+        "id": "3846484807560003116",
+        "caption": "3/3 Terceiro dia de #SAPBTPEXP2026\n\nForam 3dias de partida no SAP BTP EXP.\nMuito jogo, networking e golaços de inovação.\n\nPlacar final: missão cumprida! ⚽",
+        "url": "https://www.instagram.com/p/DVhdY2MjP4s/",
+        "mediaType": "carousel",
+        "mediaUrl": "https://instagram.fosu2-1.fna.fbcdn.net/v/t51.82787-15/645938052_18265176769295949_1100580829936482772_n.jpg",
+        "thumbnailUrl": null,
+        "likesCount": 97,
+        "commentsCount": 1,
+        "sharesCount": null,
+        "mentions": [],
+        "hashtags": [
+          "SAPBTPEXP2026"
+        ],
+        "timestamp": "2026-03-06T00:25:42.000Z"
+      },
+      {
+        "id": "3846312889364379251",
+        "caption": "⚽️ No SAP BTP Experience 2026, nosso time entrou em campo com um propósito claro: compartilhar conhecimento, gerar conexões e mostrar, na prática, como a inovação acontece no ecossistema SAP.\n\nInspirados pelo clima de Copa, trouxemos para o evento um tema que representa muito da nossa forma de trabalhar: espírito de equipe, estratégia e colaboração. Assim como no futebol, acreditamos que grandes resultados são construídos com preparo, confiança no time e a capacidade de jogar junto em busca do mesmo objetivo.\n\nVamos para cima, time lab2dev!! \n\n#golab2dev #sapbtpexp2026 #saplabs #lab2learn #sap",
+        "url": "https://www.instagram.com/p/DVg2TG5kfZz/",
+        "mediaType": "video",
+        "mediaUrl": "https://instagram.fosu2-1.fna.fbcdn.net/o1/v/t16/f2/m69/AQPnu8qC4Pxb-DUp7S6Txa1-8R5eQd9ccq6j03inqgFnAbwti3Blt7tITaHu362pQl8HtPvPicrbxpovIjOPN39t.mp4",
+        "thumbnailUrl": "https://instagram.fosu2-2.fna.fbcdn.net/v/t51.71878-15/642875732_1649919359369391_2352439236714346116_n.jpg",
+        "likesCount": 36,
+        "commentsCount": 0,
+        "sharesCount": null,
+        "mentions": [],
+        "hashtags": [
+          "golab2dev",
+          "sapbtpexp2026",
+          "saplabs",
+          "lab2learn",
+          "sap"
+        ],
+        "timestamp": "2026-03-05T18:44:51.000Z"
+      },
+      {
+        "id": "3845821346622491155",
+        "caption": "Dia 02 por aqui foi daquele jeito: seguimos com a camisa 10 em campo 💜\n\nHoje o manto oficial foi a roxinha, mas a energia continuou a mesma, muita troca, conexões, conversas estratégicas e aquele orgulho de ver nosso time representando tão bem.\n\n#SAPBTPEXP26 #saplabslatinamerica #eventosap",
+        "url": "https://www.instagram.com/p/DVfGiODDEoT/",
+        "mediaType": "video",
+        "mediaUrl": "https://instagram.fosu2-2.fna.fbcdn.net/o1/v/t16/f2/m69/AQN-LhrzT3XzdEx9w3HMMd_bKOMOtoKZWk-4DAwCDTOH6ix31Fr-IG9h5CxNmZHTn-ksVj6_MSzqbonTG8IvcQmg.mp4",
+        "thumbnailUrl": "https://instagram.fosu2-2.fna.fbcdn.net/v/t51.71878-15/641781006_1644601756557397_4557128536011124274_n.jpg",
+        "likesCount": 30,
+        "commentsCount": 0,
+        "sharesCount": null,
+        "mentions": [],
+        "hashtags": [
+          "SAPBTPEXP26",
+          "saplabslatinamerica",
+          "eventosap"
+        ],
+        "timestamp": "2026-03-05T02:28:44.000Z"
+      },
+      {
+        "id": "3845730620186313602",
+        "caption": "2/3 Segundo dia de #SAPBTPEXP2026 e nosso time segue jogando junto 💛⚽\n\nPorque tecnologia boa se constrói em parceria.\n\n#sap #saplabs #btpexperience #tecnologia",
+        "url": "https://www.instagram.com/p/DVex5-eDEOC/",
+        "mediaType": "image",
+        "mediaUrl": "https://instagram.fosu2-1.fna.fbcdn.net/v/t51.82787-15/645743171_18265071373295949_1964967868716253929_n.jpg",
+        "thumbnailUrl": null,
+        "likesCount": 84,
+        "commentsCount": 1,
+        "sharesCount": null,
+        "mentions": [],
+        "hashtags": [
+          "SAPBTPEXP2026",
+          "sap",
+          "saplabs",
+          "btpexperience",
+          "tecnologia"
+        ],
+        "timestamp": "2026-03-04T23:32:04.000Z"
+      },
+      {
+        "id": "3845071016565702499",
+        "caption": "Primeiro dia de SAP BTP Experience 2026 e nosso stand já entregou tudo ⚽️\n\nQuiz bombando, galera engajada e muita conexão boa por aqui 🔥\n\nE isso foi só o começo… \n\n#SAPBTP #BTPExperience #Inovação #Tecnologia",
+        "url": "https://www.instagram.com/p/DVcb7eujH9j/",
+        "mediaType": "video",
+        "mediaUrl": "https://instagram.fosu2-2.fna.fbcdn.net/o1/v/t16/f2/m69/AQOMuT9Z_UobwfuPXjQM7dkkv2oZQqHqlmmArfFx8wchOUPZ_zrSts58PlCyq26SFFdiVVYUXzmc4seKCNnB-5su.mp4",
+        "thumbnailUrl": "https://instagram.fosu2-2.fna.fbcdn.net/v/t51.71878-15/641760487_1250162727323305_530828891630171963_n.jpg",
+        "likesCount": 45,
+        "commentsCount": 0,
+        "sharesCount": null,
+        "mentions": [],
+        "hashtags": [
+          "SAPBTP",
+          "BTPExperience",
+          "Inovação",
+          "Tecnologia"
+        ],
+        "timestamp": "2026-03-04T01:40:40.000Z"
+      },
+      {
+        "id": "3845011320530046072",
+        "caption": "1/3 Primeiro dia de SAP BTP Experience 2026, e o nosso time já chegou chegando! ⚽️💜",
+        "url": "https://www.instagram.com/p/DVcOWydjIx4/",
+        "mediaType": "carousel",
+        "mediaUrl": "https://instagram.fosu2-1.fna.fbcdn.net/v/t51.82787-15/645821852_18264963097295949_3051963433227653461_n.jpg",
+        "thumbnailUrl": null,
+        "likesCount": 135,
+        "commentsCount": 2,
+        "sharesCount": null,
+        "mentions": [],
+        "hashtags": [],
+        "timestamp": "2026-03-03T23:38:09.000Z"
+      },
+      {
+        "id": "3835453939572204735",
+        "caption": "Conheça nosso time escalado para o #SAPBTPExp2026 !\n\nUm time formado por 16 feras, pronto para entrar em campo no SAP BTP Experience 2026 e mostrar que estratégia, tecnologia e inovação jogam juntas. 🚀⚽\n\nNos vemos no SAP Labs Latin America!",
+        "url": "https://www.instagram.com/p/DU6RQl0kuS_/",
+        "mediaType": "carousel",
+        "mediaUrl": "https://instagram.fosu2-1.fna.fbcdn.net/v/t51.82787-15/630557816_18263626636295949_4241213487181883487_n.jpg",
+        "thumbnailUrl": null,
+        "likesCount": 80,
+        "commentsCount": 1,
+        "sharesCount": null,
+        "mentions": [],
+        "hashtags": [
+          "SAPBTPExp2026"
+        ],
+        "timestamp": "2026-02-18T19:09:21.000Z"
+      },
+      {
+        "id": "3830280900948565304",
+        "caption": "Mais um ano confirmados #SAPBTPExp2026!\n\nDe 3 a 5 de março, o SAP Labs, em São Leopoldo/RS, será palco do maior evento de SAP BTP da América Latina. \n\nOrganizado pela SAP Brasil, o encontro conecta profissionais de tecnologia, líderes da indústria e especialistas de SAP BTP.\n\nSerá uma verdadeira imersão:\n✔️ diversas keynotes inspiradoras\n✔️ 6 histórias reais de clientes\n✔️ 57 sessões hands-on\n✔️ 168 horas de conteúdo técnico\n\nTudo isso conduzido por palestrantes de peso, compartilhando tendências e mostrando como a tecnologia transforma negócios.\n\nAcompanhe a gente nas redes sociais, porque em breve vamos compartilhar mais novidades e tudo o que vai rolar por lá!\n\n⚽️👨🏻💻🚀",
+        "url": "https://www.instagram.com/p/DUn5C-LAJ04/",
+        "mediaType": "image",
+        "mediaUrl": "https://instagram.fosu2-1.fna.fbcdn.net/v/t51.82787-15/629642847_18262891006295949_8356503761450125603_n.jpg",
+        "thumbnailUrl": null,
+        "likesCount": 40,
+        "commentsCount": 2,
+        "sharesCount": null,
+        "mentions": [],
+        "hashtags": [
+          "SAPBTPExp2026!"
+        ],
+        "timestamp": "2026-02-11T15:52:35.000Z"
+      },
+      {
+        "id": "3828867461723290761",
+        "caption": "Mais um ano confirmados no #SAPBTPExp2026 🚀\n\nÉ com orgulho que confirmamos nossa participação como patrocinadores do SAP BTP Experience em 2026, entrando em campo no maior encontro de SAP BTP da América Latina. Escalação pronta, estratégia definida e muita inovação para jogar os três dias de evento.\n\nNos vemos no gramado. ⚽️👨🏻💻",
+        "url": "https://www.instagram.com/p/DUi3quUEXyJ/",
+        "mediaType": "image",
+        "mediaUrl": "https://instagram.fosu2-1.fna.fbcdn.net/v/t51.82787-15/627637111_18262718230295949_1368504760991642446_n.jpg",
+        "thumbnailUrl": null,
+        "likesCount": 37,
+        "commentsCount": 0,
+        "sharesCount": null,
+        "mentions": [],
+        "hashtags": [
+          "SAPBTPExp2026"
+        ],
+        "timestamp": "2026-02-09T17:05:12.000Z"
+      },
+      {
+        "id": "3038846398142108247",
+        "caption": "No dia 08 de fevereiro, nosso líder do time de arquitetura João Vitor Sarti de Oliveira Neri, junto com Bruna Dias de Sousa, Bruno Vianna e Guilherme França do time comercial marcaram presença no 𝑾𝒐𝒓𝒌𝒔𝒉𝒐𝒑 𝑺𝑨𝑷 𝑫𝒂𝒕𝒂 𝑰𝒏𝒕𝒆𝒍𝒍𝒊𝒈𝒆𝒏𝒄𝒆 - 𝑺𝑨𝑷 𝑫𝑰.\n\nO workshop foi ministrado para clientes com o intuito de ajudar na extração de alto volume de dados do S/4hana de maneira inteligente e aprimorada, utilizando o SAP Data Intelligence.\n \nTambém sanamos dúvidas sobre licenciamento de extração de dados e digital access (acesso indireto).\n\nFoi uma oportunidade incrível de ajudar, compartilhar e obter insights.\nQue venham os próximos!\n\n#golab2dev #SAP #workshop #intelligence #arquitetura",
+        "url": "https://www.instagram.com/p/CosJrLYPFJX/",
+        "mediaType": "video",
+        "mediaUrl": "https://instagram.fosu2-2.fna.fbcdn.net/o1/v/t16/f2/m69/AQMLYdxfRWSl51Qbgso0Q14VmKE339GoDo78ZzOrOXlfant3IzZTLZCsi1zYnzc7pbKHMClWws_jE3oQJoEpxacO.mp4",
+        "thumbnailUrl": "https://instagram.fosu2-1.fna.fbcdn.net/v/t51.71878-15/643564226_1617202709304396_854381608058908535_n.jpg",
+        "likesCount": 34,
+        "commentsCount": 1,
+        "sharesCount": null,
+        "mentions": [],
+        "hashtags": [
+          "golab2dev",
+          "SAP",
+          "workshop",
+          "intelligence",
+          "arquitetura"
+        ],
+        "timestamp": "2023-02-15T16:32:47.000Z"
+      },
+      {
+        "id": "2611945791812341049",
+        "caption": "Bate papo com Flávio Alves, ele é co fundador da Lab2dev, e nesse trecho do lab2cast ele conta como foi o início de sua carreira. \n\n https://m.youtube.com/watch?v=YFzFAMjHxpE\n\n#podcast #developer #sap #desenvolvedorweb #sapcloud #ti #tecnologiadainformação #inovation",
+        "url": "https://www.instagram.com/p/CQ_ftvljQ05/",
+        "mediaType": "video",
+        "mediaUrl": "https://instagram.fosu2-1.fna.fbcdn.net/o1/v/t16/f2/m84/AQPGmNZDXzJ_RnS-uv5dt_YUl6fWc3eCBLtn9ZxlhOPgO4Ttzk6VGRyZOWMH3jmLbhcm5F7w2ysDlFVje_33rI7iFffyawVCbqQPasQ.mp4",
+        "thumbnailUrl": "https://instagram.fosu2-1.fna.fbcdn.net/v/t51.71878-15/640135123_1341773304375643_4197245539782946741_n.jpg",
+        "likesCount": 17,
+        "commentsCount": 1,
+        "sharesCount": null,
+        "mentions": [],
+        "hashtags": [
+          "podcast",
+          "developer",
+          "sap",
+          "desenvolvedorweb",
+          "sapcloud",
+          "ti",
+          "tecnologiadainformação",
+          "inovation"
+        ],
+        "timestamp": "2021-07-06T16:20:30.000Z"
+      },
+      {
+        "id": "2611192357693943436",
+        "caption": "Vem conferir o labflash sobre automatização com selenium e Python \n\n#python #automatizacao #selenium #sap #devs #tecnologiadainformação #tech #TI #labflash #igtv #programmers #web",
+        "url": "https://www.instagram.com/p/CQ80Z1Yj-6M/",
+        "mediaType": "video",
+        "mediaUrl": "https://instagram.fosu2-2.fna.fbcdn.net/o1/v/t16/f2/m84/AQOFXTb3_BPVywp7PT1UrcZhXa5u4tvaZ1Su56N0jj76bNAxvN5XRAjiif48g4sxGAy1FR1lBsOBR6g_uuySjhpFWiBZio_dspNoJlk.mp4",
+        "thumbnailUrl": "https://instagram.fosu2-1.fna.fbcdn.net/v/t51.71878-15/643572847_927876453086407_8726938791955827604_n.jpg",
+        "likesCount": 20,
+        "commentsCount": 1,
+        "sharesCount": null,
+        "mentions": [],
+        "hashtags": [
+          "python",
+          "automatizacao",
+          "selenium",
+          "sap",
+          "devs",
+          "tecnologiadainformação",
+          "tech",
+          "TI",
+          "labflash",
+          "igtv",
+          "programmers",
+          "web"
+        ],
+        "timestamp": "2021-07-05T15:22:36.000Z"
+      },
+      {
+        "id": "2542332848665346051",
+        "caption": "",
+        "url": "https://www.instagram.com/p/CNILkGJgUAD/",
+        "mediaType": "video",
+        "mediaUrl": "https://instagram.fosu2-2.fna.fbcdn.net/o1/v/t16/f2/m84/AQNdzjEZfHOOENKgecRTQKhxauEW2N-grXVHkaiR-SEPGYrcWtY297Rp7-iQg9y_ognNeI__mvx6_bPmXY7s97rgyraqLs4Bhw5w2dc.mp4",
+        "thumbnailUrl": "https://instagram.fosu2-1.fna.fbcdn.net/v/t51.71878-15/642756165_1731811108203439_277645440564459663_n.jpg",
+        "likesCount": 29,
+        "commentsCount": 5,
+        "sharesCount": null,
+        "mentions": [],
+        "hashtags": [],
+        "timestamp": "2021-04-01T15:09:53.000Z"
+      },
+      {
+        "id": "2536719274946263103",
+        "caption": "#apiprovider #api #tech #tecnologiadainformacao #technology #apimanagement #sap #scp #developer",
+        "url": "https://www.instagram.com/p/CM0PL2ODvg_/",
+        "mediaType": "video",
+        "mediaUrl": "https://instagram.fosu2-1.fna.fbcdn.net/o1/v/t16/f2/m84/AQPfqlXgWxNn-wqJK-FAFTIxcFn-BbIaqIfd2FMl_6nWAbuEeLmYrAYOqZdD0f6C5dxKusNI0YBa06oP1X2ImxGbe73k4CCHxdKCeTE.mp4",
+        "thumbnailUrl": "https://instagram.fosu2-2.fna.fbcdn.net/v/t51.71878-15/638886635_26646508371640523_5539830093090426214_n.jpg",
+        "likesCount": 44,
+        "commentsCount": 5,
+        "sharesCount": null,
+        "mentions": [],
+        "hashtags": [
+          "apiprovider",
+          "api",
+          "tech",
+          "tecnologiadainformacao",
+          "technology",
+          "apimanagement",
+          "sap",
+          "scp",
+          "developer"
+        ],
+        "timestamp": "2021-03-24T21:16:30.000Z"
+      },
+      {
+        "id": "2531462239514243739",
+        "caption": "https://covid19-brazil-api-docs.now.sh/\n\n#sapcloudplatform #API #sapcai #cloud #desenvolvedoresdesoftware #tecnologiadainformação #tech #devs #consultaapi #inovação #programming #programmer",
+        "url": "https://www.instagram.com/p/CMhj36cj7Kb/",
+        "mediaType": "video",
+        "mediaUrl": "https://instagram.fosu2-1.fna.fbcdn.net/o1/v/t16/f2/m84/AQOgmokjhnrk6ySJ4me5BKCGBnHn7pOryeRJ_NmdxlrpDQD_Tz1VGsJjm9IkbIU3qcchyVegOIBpxnwgrlS0qrhwiLskGG7NO90qa_o.mp4",
+        "thumbnailUrl": "https://instagram.fosu2-2.fna.fbcdn.net/v/t51.71878-15/641765976_2718252235182008_3446347298121786415_n.jpg",
+        "likesCount": 49,
+        "commentsCount": 8,
+        "sharesCount": null,
+        "mentions": [],
+        "hashtags": [
+          "sapcloudplatform",
+          "API",
+          "sapcai",
+          "cloud",
+          "desenvolvedoresdesoftware",
+          "tecnologiadainformação",
+          "tech",
+          "devs",
+          "consultaapi",
+          "inovação",
+          "programming",
+          "programmer"
+        ],
+        "timestamp": "2021-03-17T15:17:13.000Z"
+      },
+      {
+        "id": "2522208650618024018",
+        "caption": "",
+        "url": "https://www.instagram.com/p/CMAr2eNgTBS/",
+        "mediaType": "video",
+        "mediaUrl": "https://instagram.fosu2-2.fna.fbcdn.net/o1/v/t16/f2/m84/AQN_opKNGcziX8l_qIfxlt-bsF3fmNtQ7o-_QOjJRkmAov6lhdJ4buzjyInPKwD8buKJTmHljdIOnj1b5VQx1KuLOa0xgpufbkSwwUs.mp4",
+        "thumbnailUrl": "https://instagram.fosu2-1.fna.fbcdn.net/v/t51.71878-15/641102842_811066755343709_1011105123283671748_n.jpg",
+        "likesCount": 17,
+        "commentsCount": 0,
+        "sharesCount": null,
+        "mentions": [],
+        "hashtags": [],
+        "timestamp": "2021-03-04T21:01:48.000Z"
+      },
+      {
+        "id": "2461236086630870876",
+        "caption": "Quem nunca teve problemas com apontamento de horas dos colaboradores?!\n\nSabemos o quanto é doloroso gerir apontamentos, assim como é custoso manter, implementar e integrar os famosos relógios de ponto.\n\nPensando nisso, nós criamos a solução de apontamentos por aplicativo com total integração com ERP SAP, app de timesheet com geolocalização na qual permite uma experiência agradável, de fácil utilização para os usuários fazerem o apontamento em poucos cliques.\n\nFicou interessado em saber melhor como funciona? Entre em contato com a gente em www.lab2dev.com ou contato@lab2dev.com e vamos te ajudar!\n\n#timesheet #apptimesheet #solucoes #tecnologiadainformação #tech #geolocalização",
+        "url": "https://www.instagram.com/p/CIoES48AW9c/",
+        "mediaType": "video",
+        "mediaUrl": "https://instagram.fosu2-1.fna.fbcdn.net/o1/v/t16/f2/m84/AQMI2n_SDjMou5WYLFJJhwzeOOh_08fNiprjraj--J9f97270tfmSrg5j1AYp2Qxt4pMo3SHW1Nf8Qsz1qb_S_Kld0qhRSBK3ph6qb8.mp4",
+        "thumbnailUrl": "https://instagram.fosu2-2.fna.fbcdn.net/v/t51.71878-15/639744749_2144299122773891_4234542043973931764_n.jpg",
+        "likesCount": 25,
+        "commentsCount": 0,
+        "sharesCount": null,
+        "mentions": [
+          "lab2dev.com"
+        ],
+        "hashtags": [
+          "timesheet",
+          "apptimesheet",
+          "solucoes",
+          "tecnologiadainformação",
+          "tech",
+          "geolocalização"
+        ],
+        "timestamp": "2020-12-10T17:48:59.000Z"
+      },
+      {
+        "id": "2445386077356173426",
+        "caption": "Perder tempo abrindo chamado para resetar senha do S4/HANA??? Nunca mais!!!\n\nCom a solução \"Reset senha do S4/HANA\" você mesmo consegue resetar sua senha com toda segurança e em poucos cliques.\n\nEntre em contato para saber mais :\ncontato@lab2dev.com\nlab2dev.com\n\n#fiori #sapfiori #sap #scp #S4/hana #usuários #technology #tecnologiadainformação",
+        "url": "https://www.instagram.com/p/CHvwa5fgChy/",
+        "mediaType": "video",
+        "mediaUrl": "https://instagram.fosu2-2.fna.fbcdn.net/o1/v/t16/f2/m84/AQO2Z4KTEUiK00fPawPIINtKYI_7GCYiAE6DNEZm6CG12plGyG8M7NqcCr5R_VD6GLgrD47FHwd-J14uofluXW05JsZRH4Vl8C2YLPk.mp4",
+        "thumbnailUrl": "https://instagram.fosu2-1.fna.fbcdn.net/v/t51.71878-15/642375323_1223496859772076_3324869663398699259_n.jpg",
+        "likesCount": 33,
+        "commentsCount": 1,
+        "sharesCount": null,
+        "mentions": [
+          "lab2dev.com"
+        ],
+        "hashtags": [
+          "fiori",
+          "sapfiori",
+          "sap",
+          "scp",
+          "S4/hana",
+          "usuários",
+          "technology",
+          "tecnologiadainformação"
+        ],
+        "timestamp": "2020-11-18T20:54:37.000Z"
+      },
+      {
+        "id": "2367846558340303142",
+        "caption": "🎬📽Você que não conseguiu ver a nossa entrevista para o Programa Mundo Empresarial que foi ao ar no sábado, no canal da Band TV, pode estar conferindo agora nossa participação contando um pouco sobre nós e como é trabalhar com o mundo da SAP.\n\nVem conferir!!\n\n#entrevista #bandtv #programamundoempresarial #mundosap #startupbrasileira #lab2dev #tecnologiadainformação #devs #inovação",
+        "url": "https://www.instagram.com/p/CDcR-ZAgUkm/",
+        "mediaType": "video",
+        "mediaUrl": "https://instagram.fosu2-2.fna.fbcdn.net/o1/v/t16/f2/m84/AQNRW2mjQCLu1zO7ve6kmNh1PbjF6K2BPvAE6s7h83g7ukCCfEiGnfeuxAO1pmARXKmUjSoJiL1MByVoDEaYVMnPsfpVt2EtOtzZLXo.mp4",
+        "thumbnailUrl": "https://instagram.fosu2-1.fna.fbcdn.net/v/t51.71878-15/640438443_872856589120567_6032114651564982352_n.jpg",
+        "likesCount": 73,
+        "commentsCount": 0,
+        "sharesCount": null,
+        "mentions": [],
+        "hashtags": [
+          "entrevista",
+          "bandtv",
+          "programamundoempresarial",
+          "mundosap",
+          "startupbrasileira",
+          "lab2dev",
+          "tecnologiadainformação",
+          "devs",
+          "inovação"
+        ],
+        "timestamp": "2020-08-03T21:23:17.000Z"
+      }
+    ],
+    "youtube_info": {
+      "channel": {
+        "name": "Lab2dev",
+        "url": "https://www.youtube.com/channel/UCtIuQ8agmB0bdxCXex0PzXg",
+        "totalVideos": 40,
+        "totalViews": 943183,
+        "subscribers": 2250
+      },
+      "videos": [
+        {
+          "id": "-E2js00bEfY",
+          "title": "SAP BTP Experience em 2025.",
+          "url": "https://www.youtube.com/watch?v=-E2js00bEfY",
+          "thumbnailUrl": "https://i.ytimg.com/vi/-E2js00bEfY/maxresdefault.jpg",
+          "viewCount": 104,
+          "likes": 4,
+          "commentsCount": 0,
+          "publishedAt": "2025-02-12T12:34:05.000Z"
+        },
+        {
+          "id": "kXLv2fE6KzM",
+          "title": "Isso é Lab2dev",
+          "url": "https://www.youtube.com/watch?v=kXLv2fE6KzM",
+          "thumbnailUrl": "https://i.ytimg.com/vi/kXLv2fE6KzM/maxresdefault.jpg",
+          "viewCount": 83,
+          "likes": 2,
+          "commentsCount": 0,
+          "publishedAt": "2024-11-22T13:52:11.000Z"
+        },
+        {
+          "id": "FYz8FWh3H8g",
+          "title": "Lab2dev Summit 2025 | Assista ao aftermovie do maior evendo de inovação SAP do Brasil",
+          "url": "https://www.youtube.com/watch?v=FYz8FWh3H8g",
+          "thumbnailUrl": "https://i.ytimg.com/vi/FYz8FWh3H8g/maxresdefault.jpg",
+          "viewCount": 33,
+          "likes": 3,
+          "commentsCount": 0,
+          "publishedAt": "2025-11-28T18:25:41.000Z"
+        }
+      ]
+    },
+    "glassdoor_info": {
+      "overall_rating": null,
+      "compensation_benefits_rating": null,
+      "culture_values_rating": null,
+      "career_opportunities_rating": null,
+      "work_life_balance_rating": null,
+      "diversity_inclusion_rating": null,
+      "recommend_to_friend": null,
+      "ceo_rating": null,
+      "rating_distribution": {
+        "one_star": 0,
+        "two_stars": 0,
+        "three_stars": 0,
+        "four_stars": 0,
+        "five_stars": 0
+      },
+      "pros_example": null,
+      "cons_example": null,
+      "advice_example": null
+    },
+    "blog_posts": [
+      {
+        "title": "Infraestrutura SAP BTP: a base invisível que sustenta inovação, Clean Core e IA",
+        "url": "https://www.lab2dev.com/infraestrutura-sap-btp-a-base-invisivel-que-sustenta-inovacao-clean-core-e-ia/",
+        "published_at": "18/03/2026",
+        "reading_time_minutes": 3,
+        "categories": [
+          {
+            "name": "Infraestrutura",
+            "url": "https://www.lab2dev.com/category/infraestrutura/"
+          },
+          {
+            "name": "SAP BTP",
+            "url": "https://www.lab2dev.com/category/sap-btp/"
+          }
+        ],
+        "cover_image_url": null,
+        "author": null
+      },
+      {
+        "title": "Arquitetura SAP Moderna: preparando seu landscape para inovação, Clean Core e IA",
+        "url": "https://www.lab2dev.com/arquitetura-sap-moderna-preparando-seu-landscape-para-inovacao-clean-core-e-ia/",
+        "published_at": "24/02/2026",
+        "reading_time_minutes": 2,
+        "categories": [
+          {
+            "name": "Arquitetura",
+            "url": "https://www.lab2dev.com/category/arquitetura/"
+          },
+          {
+            "name": "Business AI",
+            "url": "https://www.lab2dev.com/category/business-ai/"
+          },
+          {
+            "name": "Clean Core",
+            "url": "https://www.lab2dev.com/category/clean-core/"
+          }
+        ],
+        "cover_image_url": null,
+        "author": null
+      },
+      {
+        "title": "Por que o SAP BTP não é exclusivo do S/4HANA: casos de uso práticos no ECC",
+        "url": "https://www.lab2dev.com/por-que-o-sap-btp-nao-e-exclusivo-do-s-4hana-casos-de-uso-praticos-no-ecc/",
+        "published_at": "09/02/2026",
+        "reading_time_minutes": 4,
+        "categories": [
+          {
+            "name": "Sem categoria",
+            "url": "https://www.lab2dev.com/category/sem-categoria/"
+          }
+        ],
+        "cover_image_url": null,
+        "author": null
+      },
+      {
+        "title": "SAP Build — Acelerando a Inovação com Low-Code no SAP BTP",
+        "url": "https://www.lab2dev.com/sap-build-acelerando-a-inovacao-com-low-code-no-sap-btp/",
+        "published_at": "29/01/2026",
+        "reading_time_minutes": 2,
+        "categories": [
+          {
+            "name": "SAP BTP",
+            "url": "https://www.lab2dev.com/category/sap-btp/"
+          }
+        ],
+        "cover_image_url": null,
+        "author": null
+      },
+      {
+        "title": "GenAI no SAP BTP — Inteligência Generativa aplicada aos processos de negócio",
+        "url": "https://www.lab2dev.com/genai-no-sap-btp-inteligencia-generativa-aplicada-aos-processos-de-negocio/",
+        "published_at": "28/01/2026",
+        "reading_time_minutes": 2,
+        "categories": [
+          {
+            "name": "GenAI",
+            "url": "https://www.lab2dev.com/category/genai/"
+          }
+        ],
+        "cover_image_url": null,
+        "author": null
+      },
+      {
+        "title": "SAP Integration Suite: conectando sistemas, acelerando negócios",
+        "url": "https://www.lab2dev.com/sap-integration-suite-conectando-sistemas-acelerando-negocios/",
+        "published_at": "27/01/2026",
+        "reading_time_minutes": 2,
+        "categories": [
+          {
+            "name": "Integration Suite",
+            "url": "https://www.lab2dev.com/category/integration-suite/"
+          }
+        ],
+        "cover_image_url": null,
+        "author": null
+      }
+    ],
+    "similar_companies": [
+      {
+        "name": "Lab2Learn | SAP BTP",
+        "industry": "Education",
+        "location": "Osasco, São Paulo",
+        "url": "https://br.linkedin.com/company/lab2learn-sap-btp?trk=similar-pages",
+        "logo_url": "https://media.licdn.com/dms/image/v2/D4D0BAQE8JA6dfWfdqw/company-logo_100_100/company-logo_100_100/0/1720795837775/lab2learn_sap_btp_logo",
+        "source": "linkedin"
+      },
+      {
+        "name": "NUMEN",
+        "industry": "IT Services and IT Consulting",
+        "location": "São Paulo, São Paulo",
+        "url": "https://br.linkedin.com/company/numenit?trk=similar-pages",
+        "logo_url": "https://media.licdn.com/dms/image/v2/D4D0BAQHR_-A4czKeew/company-logo_100_100/B4DZZ80J9IG0AQ-/0/1745850769743/numenit_logo",
+        "source": "linkedin"
+      },
+      {
+        "name": "Kinesis IT",
+        "industry": "IT Services and IT Consulting",
+        "location": "Osasco, São Paulo",
+        "url": "https://br.linkedin.com/company/kinesis-it?trk=similar-pages",
+        "logo_url": "https://media.licdn.com/dms/image/v2/D4D0BAQEcJp9TUfUQJg/company-logo_100_100/B4DZwKRoeGHEAQ-/0/1769698920691/kinesis_it_logo",
+        "source": "linkedin"
+      },
+      {
+        "name": "delaware Brasil",
+        "industry": "IT Services and IT Consulting",
+        "location": "Barueri, SP",
+        "url": "https://br.linkedin.com/company/delawarebrasil?trk=similar-pages",
+        "logo_url": "https://media.licdn.com/dms/image/v2/C560BAQG2jdYVvsxnSg/company-logo_100_100/company-logo_100_100/0/1631378051602",
+        "source": "linkedin"
+      },
+      {
+        "name": "CAST",
+        "industry": "IT Services and IT Consulting",
+        "location": "Sao Paulo, SP",
+        "url": "https://br.linkedin.com/company/cast4it?trk=similar-pages",
+        "logo_url": "https://media.licdn.com/dms/image/v2/D4D0BAQEJpAnzKI9J0Q/company-logo_100_100/B4DZiq5tb7HYAQ-/0/1755213912214/cast_group_logo",
+        "source": "linkedin"
+      },
+      {
+        "name": "Accenture Brasil",
+        "industry": "IT Services and IT Consulting",
+        "location": "São Paulo, SP",
+        "url": "https://br.linkedin.com/company/accenturebrasil?trk=similar-pages",
+        "logo_url": "https://media.licdn.com/dms/image/v2/D4D0BAQFxYk90aqWMqA/company-logo_100_100/company-logo_100_100/0/1727873248436/accenturebrasil_logo",
+        "source": "linkedin"
+      },
+      {
+        "name": "EVT IT",
+        "industry": "IT Services and IT Consulting",
+        "location": "São Paulo, SP",
+        "url": "https://br.linkedin.com/company/evtit?trk=similar-pages",
+        "logo_url": "https://media.licdn.com/dms/image/v2/D4D0BAQG_7GD7TDytvQ/company-logo_100_100/company-logo_100_100/0/1688671566546/evtit_logo",
+        "source": "linkedin"
+      },
+      {
+        "name": "Megawork Consulting",
+        "industry": "IT Services and IT Consulting",
+        "location": "São Paulo, SP",
+        "url": "https://br.linkedin.com/company/megawork?trk=similar-pages",
+        "logo_url": "https://media.licdn.com/dms/image/v2/C4E0BAQHmb-Ow2Jk4fg/company-logo_100_100/company-logo_100_100/0/1630596537232/megawork_logo",
+        "source": "linkedin"
+      },
+      {
+        "name": "Mercado Livre Brasil",
+        "industry": "Technology, Information and Internet",
+        "location": "sao pablo, sao pablo",
+        "url": "https://br.linkedin.com/company/mercadolivre-com?trk=similar-pages",
+        "logo_url": "https://media.licdn.com/dms/image/v2/D4D0BAQE4q-iBP4fZ0g/company-logo_100_100/B4DZUUipIKG8AQ-/0/1739806380950/mercadolivre_com_logo",
+        "source": "linkedin"
+      },
+      {
+        "name": "MIGNOW",
+        "industry": "IT Services and IT Consulting",
+        "location": "São Paulo, SP",
+        "url": "https://br.linkedin.com/company/mig-now?trk=similar-pages",
+        "logo_url": "https://media.licdn.com/dms/image/v2/D4D0BAQGMrJveFg8SIQ/company-logo_100_100/B4DZsjMbpzH0AU-/0/1765822020852/mig_now_logo",
+        "source": "linkedin"
+      }
+    ],
+    "market_research_raw": {
+      "company": {
+        "nome": "Lab2dev",
+        "dominio": "lab2dev.com",
+        "descricao_institucional": "Empresa especialista em implementação do SAP Business Technology Platform (BTP), se posicionando como a maior referência no Brasil em soluções baseadas em BTP, Clean Core, e utilizando inovações em IA e dados.",
+        "setor": "Serviços de TI / Consultoria SAP",
+        "produtos_servicos": [
+          "Implementação e consultoria SAP BTP",
+          "Soluções SAP (FIORI, Hana, S/4HANA Cloud)",
+          "FUE Monitoring (monitoramento de licenciamento SAP)",
+          "DataOps (ETL/ELT, Data Pipes)",
+          "Soluções de Sustentabilidade (SAP Sustainability Control Tower, Green Token)",
+          "Analytics (SAP Analytics Cloud, SAP Datasphere)"
+        ],
+        "diferenciais": [
+          "Maior referência em SAP BTP no Brasil",
+          "SAP Gold Partner",
+          "Forte integração com Data & Analytics e Sustentabilidade via M&A"
+        ],
+        "mercado_alvo": "Empresas que utilizam o ecossistema SAP, com foco em transformação digital via BTP e, recentemente, em Data & Analytics/Sustentabilidade.",
+        "modelo_negocio": "Consultoria especializada em SAP BTP, com crescimento inorgânico através de aquisições estratégicas (M&A).",
+        "especialidades": [
+          "SAP BTP",
+          "Clean Core",
+          "Data & Analytics",
+          "Sustentabilidade (ESG)",
+          "DataOps"
+        ],
+        "parceiros": [
+          "Kinesis IT (50% de participação)",
+          "Rationiric (parceria de portfólio DataOps)",
+          "EverBlue Partners (revenda de solução na América do Norte)",
+          "SAP"
+        ],
+        "clientes_citados": [
+          "Whirpool",
+          "Gerdau",
+          "Raízen",
+          "Votorantim",
+          "Transpetro",
+          "Bunge",
+          "Dexco",
+          "Swift",
+          "Piracanjuba",
+          "XP"
+        ],
+        "pessoas_chave": [
+          {
+            "nome": "Igor de Oliveira",
+            "cargo": "Sócio-Fundador e Co-CEO",
+            "linkedin": null,
+            "fonte_url": "https://itforum.com.br/noticias/lab2dev-compra-50-da-kinesis-it-para-ampliar-capacidade-em-analytics/"
+          },
+          {
+            "nome": "Rafael Fassoli",
+            "cargo": "COO da Kinesis IT (após integração)",
+            "linkedin": null,
+            "fonte_url": "https://www.baguete.com.br/noticias/lab2dev-adquire-50-da-kinesis-it"
+          },
+          {
+            "nome": "Paulo Sampaio",
+            "cargo": "Cofundador da Kinesis IT",
+            "linkedin": null,
+            "fonte_url": "https://www.baguete.com.br/noticias/lab2dev-adquire-50-da-kinesis-it"
+          },
+          {
+            "nome": "Paulo Ruiz",
+            "cargo": "Cofundador da Kinesis IT",
+            "linkedin": null,
+            "fonte_url": "https://www.baguete.com.br/noticias/lab2dev-adquire-50-da-kinesis-it"
+          },
+          {
+            "nome": "Ethienni Martins",
+            "cargo": "Fundador da Rationiric",
+            "linkedin": null,
+            "fonte_url": "https://portalerp.com/lab2dev-e-rationiric-formam-parceria-e-fundem-portfolio-de-dataops"
+          }
+        ]
+      },
+      "positioning": {
+        "discurso_institucional": "Posicionamento como a MAIOR REFERÊNCIA em SAP BTP no Brasil, focada em soluções baseadas em BTP, Clean Core, e utilizando M&A para agregar capacidades em Data, Analytics e Sustentabilidade.",
+        "topicos_recorrentes": [
+          "SAP BTP",
+          "Clean Core",
+          "Data & Analytics",
+          "Sustentabilidade (ESG)",
+          "Expansão via M&A"
+        ],
+        "curiosidades_institucionais": [
+          "Possui uma oferta conjunta com a Kinesis IT que inclui soluções SAP de Sustentabilidade e Dados.",
+          "Parceria com EverBlue Partners para revenda de solução FUE Monitoring nos EUA/Canadá."
+        ],
+        "presenca_digital": {
+          "site_institucional": "https://lab2dev.com",
+          "blog": "https://www.lab2dev.com/blog/",
+          "linkedin": "https://www.linkedin.com/company/lab2dev",
+          "instagram": "https://www.instagram.com/lab2dev/",
+          "youtube": "https://www.youtube.com/channel/UCtIuQ8agmB0bdxCXex0PzXg",
+          "outros_canais": [],
+          "eventos": [
+            "Participação na NRF 2026"
+          ],
+          "materiais_ricos": []
+        }
+      },
+      "news_and_market_actions": [
+        {
+          "titulo": "Lab2dev compra 50% da Kinesis IT para ampliar capacidade em analytics",
+          "url": "https://itforum.com.br/noticias/lab2dev-compra-50-da-kinesis-it-para-ampliar-capacidade-em-analytics/",
+          "data": "2024/11",
+          "resumo": "Aquisição de 50% da Kinesis IT, focada em soluções analíticas, dados e sustentabilidade (SAP Analytics Cloud, Datasphere, etc.).",
+          "tipo": "Aquisição",
+          "fonte": "IT Forum"
+        },
+        {
+          "titulo": "Lab2dev e Rationiric formam parceria e fundem portfólio de DataOps",
+          "url": "https://portalerp.com/lab2dev-e-rationiric-formam-parceria-e-fundem-portfolio-de-dataops",
+          "data": null,
+          "resumo": "Parceria e fusão do portfólio de DataOps com a Rationiric, ampliando serviços em ETL/ELT e Data Pipes.",
+          "tipo": "Parceria / Fusão de Portfólio",
+          "fonte": "Portal ERP"
+        },
+        {
+          "titulo": "EverBlue Partners anuncia revenda da solução FUE Monitoring da Lab2dev na América do Norte",
+          "url": "https://www.linkedin.com/company/lab2dev",
+          "data": null,
+          "resumo": "Parceria comercial para distribuição da solução FUE Monitoring desenvolvida pela Lab2dev, visando o mercado dos EUA e Canadá.",
+          "tipo": "Parceria Comercial",
+          "fonte": "LinkedIn (EverBlue Partners)"
+        }
+      ],
+      "strategic_analysis": {
+        "visao_geral": "A Lab2dev está em expansão agressiva, utilizando aquisições para se tornar um provedor de soluções SAP completas (BTP, Dados, Analytics, Sustentabilidade) e buscando escala internacional através de parcerias de revenda.",
+        "posicionamento": "Líder em SAP BTP, agora se consolidando como um player de ponta a ponta em transformação digital SAP, sustentada por uma forte base técnica e cultural (GPTW).",
+        "dinamica_competitiva": "A empresa está competindo pela liderança em modernização SAP, adicionando rapidamente camadas de valor (Analytics, ESG) que são críticas para grandes projetos, através de M&A.",
+        "insights_estrategicos": "Vender o portfólio integrado como um diferencial competitivo. Capitalizar a experiência da Kinesis IT em Data/Analytics e a expansão internacional para abordar clientes com escopo global.",
+        "resumo_executivo": "A Lab2dev, líder em SAP BTP, está em fase de expansão estratégica, notavelmente pela aquisição de 50% da Kinesis IT (Analytics/Sustentabilidade) e fusão de DataOps com Rationiric. Liderada por Igor de Oliveira, a empresa foca em um portfólio completo de modernização SAP e demonstra ambição internacional, como evidenciado pela parceria de revenda na América do Norte."
+      },
+      "references": [
+        "https://itforum.com.br/noticias/lab2dev-compra-50-da-kinesis-it-para-ampliar-capacidade-em-analytics/",
+        "https://www.baguete.com.br/noticias/lab2dev-adquire-50-da-kinesis-it",
+        "https://portalerp.com/lab2dev-e-rationiric-formam-parceria-e-fundem-portfolio-de-dataops",
+        "https://www.linkedin.com/company/lab2dev"
+      ]
+    }
+  }
+]

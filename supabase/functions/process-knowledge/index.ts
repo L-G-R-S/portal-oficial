@@ -1,10 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { corsHeaders } from "../_shared/cors.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -51,14 +48,17 @@ serve(async (req) => {
     // Para simplificar, vamos usar uma abordagem de extração direta se for texto/pdf simples
     // ou enviar para o Gemini Vision para descrever se for imagem.
     
+    // Fetch dynamic API key if exists
+    let apiKey = Deno.env.get("GOOGLE_AI_API_KEY");
+    try {
+      const { data: dbKey } = await supabaseClient.from("system_api_keys").select("api_key").eq("provider", "gemini").maybeSingle();
+      if (dbKey?.api_key) apiKey = dbKey.api_key;
+    } catch(e) {}
+    
     if (document.file_type.includes("pdf")) {
-      // Nota: Em um ambiente real, usaríamos uma lib de PDF. 
-      // Como estamos operando como um agente, vamos simular a extração 
-      // ou usar o próprio Gemini para ler o documento se possível.
-      // Para este MVP, usaremos o Gemini 1.5 Flash para extrair o texto do PDF.
-      text = await extractTextWithGemini(fileData, document.file_type);
+      text = await extractTextWithGemini(fileData, document.file_type, apiKey);
     } else if (document.file_type.startsWith("image/")) {
-      text = await extractTextWithGemini(fileData, document.file_type);
+      text = await extractTextWithGemini(fileData, document.file_type, apiKey);
     } else {
       text = new TextDecoder().decode(await fileData.arrayBuffer());
     }
@@ -71,8 +71,6 @@ serve(async (req) => {
     const chunks = chunkText(text, 1000, 200);
 
     // 5. Gerar embeddings e salvar
-    const apiKey = Deno.env.get("GOOGLE_AI_API_KEY");
-    
     for (const chunk of chunks) {
       const embedding = await generateEmbedding(chunk, apiKey);
       
@@ -110,8 +108,7 @@ serve(async (req) => {
   }
 });
 
-async function extractTextWithGemini(fileData: Blob, mimeType: string) {
-  const apiKey = Deno.env.get("GOOGLE_AI_API_KEY");
+async function extractTextWithGemini(fileData: Blob, mimeType: string, apiKey?: string) {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
   const base64Data = btoa(

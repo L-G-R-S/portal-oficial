@@ -123,6 +123,33 @@ export type Database = {
           },
         ]
       }
+      api_keys: {
+        Row: {
+          apify_api_token: string | null
+          created_at: string
+          gemini_api_key: string | null
+          id: string
+          tavily_api_key: string | null
+          updated_at: string
+        }
+        Insert: {
+          apify_api_token?: string | null
+          created_at?: string
+          gemini_api_key?: string | null
+          id?: string
+          tavily_api_key?: string | null
+          updated_at?: string
+        }
+        Update: {
+          apify_api_token?: string | null
+          created_at?: string
+          gemini_api_key?: string | null
+          id?: string
+          tavily_api_key?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       case_categories: {
         Row: {
           color: string
@@ -176,6 +203,53 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      client_blog_posts: {
+        Row: {
+          author: string | null
+          categories: string | null
+          client_id: string | null
+          cover_image_url: string | null
+          created_at: string | null
+          id: string
+          published_at: string | null
+          reading_time_minutes: number | null
+          title: string | null
+          url: string | null
+        }
+        Insert: {
+          author?: string | null
+          categories?: string | null
+          client_id?: string | null
+          cover_image_url?: string | null
+          created_at?: string | null
+          id?: string
+          published_at?: string | null
+          reading_time_minutes?: number | null
+          title?: string | null
+          url?: string | null
+        }
+        Update: {
+          author?: string | null
+          categories?: string | null
+          client_id?: string | null
+          cover_image_url?: string | null
+          created_at?: string | null
+          id?: string
+          published_at?: string | null
+          reading_time_minutes?: number | null
+          title?: string | null
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_blog_posts_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       client_glassdoor_summary: {
         Row: {
@@ -644,6 +718,7 @@ export type Database = {
         Row: {
           address: string | null
           all_locations: Json | null
+          blog_url: string | null
           business_model: string | null
           clients: Json | null
           cover_url: string | null
@@ -690,6 +765,7 @@ export type Database = {
         Insert: {
           address?: string | null
           all_locations?: Json | null
+          blog_url?: string | null
           business_model?: string | null
           clients?: Json | null
           cover_url?: string | null
@@ -736,6 +812,7 @@ export type Database = {
         Update: {
           address?: string | null
           all_locations?: Json | null
+          blog_url?: string | null
           business_model?: string | null
           clients?: Json | null
           cover_url?: string | null
@@ -785,6 +862,7 @@ export type Database = {
         Row: {
           address: string | null
           all_locations: Json | null
+          blog_url: string | null
           business_model: string | null
           clients: Json | null
           cover_url: string | null
@@ -831,6 +909,7 @@ export type Database = {
         Insert: {
           address?: string | null
           all_locations?: Json | null
+          blog_url?: string | null
           business_model?: string | null
           clients?: Json | null
           cover_url?: string | null
@@ -877,6 +956,7 @@ export type Database = {
         Update: {
           address?: string | null
           all_locations?: Json | null
+          blog_url?: string | null
           business_model?: string | null
           clients?: Json | null
           cover_url?: string | null
@@ -921,6 +1001,53 @@ export type Database = {
           youtube_url?: string | null
         }
         Relationships: []
+      }
+      company_blog_posts: {
+        Row: {
+          author: string | null
+          categories: string | null
+          company_id: string | null
+          cover_image_url: string | null
+          created_at: string | null
+          id: string
+          published_at: string | null
+          reading_time_minutes: number | null
+          title: string | null
+          url: string | null
+        }
+        Insert: {
+          author?: string | null
+          categories?: string | null
+          company_id?: string | null
+          cover_image_url?: string | null
+          created_at?: string | null
+          id?: string
+          published_at?: string | null
+          reading_time_minutes?: number | null
+          title?: string | null
+          url?: string | null
+        }
+        Update: {
+          author?: string | null
+          categories?: string | null
+          company_id?: string | null
+          cover_image_url?: string | null
+          created_at?: string | null
+          id?: string
+          published_at?: string | null
+          reading_time_minutes?: number | null
+          title?: string | null
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_blog_posts_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       company_competitors: {
         Row: {
@@ -1202,6 +1329,39 @@ export type Database = {
           youtube_subscribers?: number | null
           youtube_total_videos?: number | null
           youtube_total_views?: number | null
+        }
+        Relationships: []
+      }
+      context_embeddings: {
+        Row: {
+          content_text: string | null
+          created_at: string
+          embedding: string | null
+          entity_id: string
+          entity_type: string
+          id: string
+          metadata: Json | null
+          source_type: string
+        }
+        Insert: {
+          content_text?: string | null
+          created_at?: string
+          embedding?: string | null
+          entity_id: string
+          entity_type: string
+          id?: string
+          metadata?: Json | null
+          source_type: string
+        }
+        Update: {
+          content_text?: string | null
+          created_at?: string
+          embedding?: string | null
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          metadata?: Json | null
+          source_type?: string
         }
         Relationships: []
       }
@@ -1520,6 +1680,7 @@ export type Database = {
           file_size: number
           file_type: string
           id: string
+          processing_status: string | null
           storage_path: string
           user_id: string
         }
@@ -1531,6 +1692,7 @@ export type Database = {
           file_size: number
           file_type: string
           id?: string
+          processing_status?: string | null
           storage_path: string
           user_id: string
         }
@@ -1542,6 +1704,7 @@ export type Database = {
           file_size?: number
           file_type?: string
           id?: string
+          processing_status?: string | null
           storage_path?: string
           user_id?: string
         }
@@ -1775,47 +1938,12 @@ export type Database = {
         }
         Relationships: []
       }
-      pending_analyses: {
-        Row: {
-          domain: string
-          entity_type: string
-          id: string
-          message: string | null
-          progress: number | null
-          started_at: string | null
-          status: string
-          updated_at: string | null
-          user_id: string
-        }
-        Insert: {
-          domain: string
-          entity_type: string
-          id?: string
-          message?: string | null
-          progress?: number | null
-          started_at?: string | null
-          status?: string
-          updated_at?: string | null
-          user_id: string
-        }
-        Update: {
-          domain?: string
-          entity_type?: string
-          id?: string
-          message?: string | null
-          progress?: number | null
-          started_at?: string | null
-          status?: string
-          updated_at?: string | null
-          user_id?: string
-        }
-        Relationships: []
-      }
       primary_company: {
         Row: {
           address: string | null
           all_locations: Json | null
           analyzed_at: string | null
+          blog_url: string | null
           business_model: string | null
           clients: Json | null
           cover_url: string | null
@@ -1864,6 +1992,7 @@ export type Database = {
           address?: string | null
           all_locations?: Json | null
           analyzed_at?: string | null
+          blog_url?: string | null
           business_model?: string | null
           clients?: Json | null
           cover_url?: string | null
@@ -1912,6 +2041,7 @@ export type Database = {
           address?: string | null
           all_locations?: Json | null
           analyzed_at?: string | null
+          blog_url?: string | null
           business_model?: string | null
           clients?: Json | null
           cover_url?: string | null
@@ -1957,6 +2087,53 @@ export type Database = {
           youtube_url?: string | null
         }
         Relationships: []
+      }
+      primary_company_blog_posts: {
+        Row: {
+          author: string | null
+          categories: string | null
+          cover_image_url: string | null
+          created_at: string | null
+          id: string
+          primary_company_id: string | null
+          published_at: string | null
+          reading_time_minutes: number | null
+          title: string | null
+          url: string | null
+        }
+        Insert: {
+          author?: string | null
+          categories?: string | null
+          cover_image_url?: string | null
+          created_at?: string | null
+          id?: string
+          primary_company_id?: string | null
+          published_at?: string | null
+          reading_time_minutes?: number | null
+          title?: string | null
+          url?: string | null
+        }
+        Update: {
+          author?: string | null
+          categories?: string | null
+          cover_image_url?: string | null
+          created_at?: string | null
+          id?: string
+          primary_company_id?: string | null
+          published_at?: string | null
+          reading_time_minutes?: number | null
+          title?: string | null
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "primary_company_blog_posts_primary_company_id_fkey"
+            columns: ["primary_company_id"]
+            isOneToOne: false
+            referencedRelation: "primary_company"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       primary_company_glassdoor: {
         Row: {
@@ -2457,6 +2634,53 @@ export type Database = {
         }
         Relationships: []
       }
+      prospect_blog_posts: {
+        Row: {
+          author: string | null
+          categories: string | null
+          cover_image_url: string | null
+          created_at: string | null
+          id: string
+          prospect_id: string | null
+          published_at: string | null
+          reading_time_minutes: number | null
+          title: string | null
+          url: string | null
+        }
+        Insert: {
+          author?: string | null
+          categories?: string | null
+          cover_image_url?: string | null
+          created_at?: string | null
+          id?: string
+          prospect_id?: string | null
+          published_at?: string | null
+          reading_time_minutes?: number | null
+          title?: string | null
+          url?: string | null
+        }
+        Update: {
+          author?: string | null
+          categories?: string | null
+          cover_image_url?: string | null
+          created_at?: string | null
+          id?: string
+          prospect_id?: string | null
+          published_at?: string | null
+          reading_time_minutes?: number | null
+          title?: string | null
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prospect_blog_posts_prospect_id_fkey"
+            columns: ["prospect_id"]
+            isOneToOne: false
+            referencedRelation: "prospects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       prospect_glassdoor_summary: {
         Row: {
           advice_example: string | null
@@ -2924,6 +3148,7 @@ export type Database = {
         Row: {
           address: string | null
           all_locations: Json | null
+          blog_url: string | null
           business_model: string | null
           clients: Json | null
           cover_url: string | null
@@ -2970,6 +3195,7 @@ export type Database = {
         Insert: {
           address?: string | null
           all_locations?: Json | null
+          blog_url?: string | null
           business_model?: string | null
           clients?: Json | null
           cover_url?: string | null
@@ -3016,6 +3242,7 @@ export type Database = {
         Update: {
           address?: string | null
           all_locations?: Json | null
+          blog_url?: string | null
           business_model?: string | null
           clients?: Json | null
           cover_url?: string | null
@@ -3171,6 +3398,62 @@ export type Database = {
             referencedRelation: "clients"
             referencedColumns: ["id"]
           },
+        ]
+      }
+      system_api_keys: {
+        Row: {
+          api_key: string
+          id: string
+          provider: string
+          updated_at: string | null
+        }
+        Insert: {
+          api_key: string
+          id?: string
+          provider: string
+          updated_at?: string | null
+        }
+        Update: {
+          api_key?: string
+          id?: string
+          provider?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      user_usage_logs: {
+        Row: {
+          action_type: string
+          created_at: string | null
+          id: string
+          page_path: string | null
+          role: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action_type: string
+          created_at?: string | null
+          id?: string
+          page_path?: string | null
+          role?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action_type?: string
+          created_at?: string | null
+          id?: string
+          page_path?: string | null
+          role?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_usage_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
         ]
       }
       update_logs: {
@@ -3351,11 +3634,27 @@ export type Database = {
         Returns: boolean
       }
       is_super_admin: { Args: { _user_id?: string }; Returns: boolean }
+      match_embeddings: {
+        Args: {
+          filter_entity_id?: string
+          match_count: number
+          match_threshold: number
+          query_embedding: string
+        }
+        Returns: {
+          content_text: string
+          entity_id: string
+          id: string
+          metadata: Json
+          similarity: number
+          source_type: string
+        }[]
+      }
       owns_primary_company: { Args: { pc_id: string }; Returns: boolean }
     }
     Enums: {
       app_role: "super_admin" | "user"
-      user_role: "marketing" | "comercial" | "executivo"
+      user_role: "marketing" | "comercial" | "executivo" | "delivery" | "coe_sap" | "coe_qa" | "people" | "financeiro" | "inovacao"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -3484,7 +3783,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["super_admin", "user"],
-      user_role: ["marketing", "comercial", "executivo"],
+      user_role: ["marketing", "comercial", "executivo", "delivery", "coe_sap", "coe_qa", "people", "financeiro", "inovacao"]
     },
   },
 } as const

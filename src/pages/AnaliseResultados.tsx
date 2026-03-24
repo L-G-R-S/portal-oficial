@@ -26,6 +26,7 @@ import {
   TrendingUp,
   Sparkles,
   Newspaper,
+  BookOpen,
 } from "lucide-react";
 import { useState } from "react";
 import SocialPostsGrid from "@/components/SocialPostsGrid";
@@ -41,36 +42,50 @@ export default function AnaliseResultados() {
     domain?: string;
   } || {};
 
-  const [data] = useState<any>(webhookData || null);
+  const [data] = useState<any>(() => {
+    let wData = Array.isArray(webhookData) ? webhookData[0] : (webhookData || {});
+    if (wData && wData.json) wData = wData.json;
+    return wData;
+  });
 
-  // Nova estrutura do JSON: overview, redes_sociais, glassdoor, mercado
-  const overview = data?.overview || {};
-  const redesSociais = data?.redes_sociais || {};
-  const glassdoor = data?.glassdoor || {};
-  const mercado = data?.mercado || {};
+  // Nova estrutura do JSON: company, linkedin_info, mercado_raw_research ...
+  const overview = data?.company || data?.linkedin_info || data?.overview || {};
+  const redesSociais = data?.redes_sociais || {
+    linkedin: { posts: data?.linkedin_posts, url: overview?.linkedin_url, followers: data?.linkedin_info?.followers, ...data?.linkedin_info },
+    instagram: { posts: data?.instagram_posts, ...data?.instagram_info },
+    youtube: data?.youtube_info 
+  };
+  const glassdoor = data?.glassdoor_info || data?.glassdoor || {};
+  const mercado = data?.mercado || data?.market_research_raw || {};
+  const mercadoCompany = mercado?.company || {};
 
   // Extrair dados do overview
-  const companyName = overview.name || '';
-  const companyWebsite = overview.website || '';
-  const companyDescription = overview.descricao_institucional || '';
-  const companyIndustry = overview.setor || '';
-  const companyHeadquarters = overview.headquarters || '';
-  const companySize = overview.company_size || '';
-  const companyFounded = overview.founded || '';
-  const companyLogoUrl = overview.logo_url || '';
+  const companyName = overview.nome || overview.name || '';
+  const companyWebsite = overview.website || overview.site_institucional || '';
+  const companyDescription = overview.descricao_institucional || overview.description || '';
+  const companyIndustry = overview.setor || overview.industry || '';
+  const companyHeadquarters = redesSociais?.linkedin?.headquarters || overview.endereco || overview.headquarters || '';
+  const companySize = redesSociais?.linkedin?.company_size || overview.company_size || '';
+  const companyFounded = redesSociais?.linkedin?.founded || overview.founded || '';
+  const companyLogoUrl = data?.linkedin_logo || overview.logo_url || data?.linkedin_info?.profile_pic_url || data?.linkedin_info?.logoUrl || redesSociais?.linkedin?.profile_pic_url || '';
   const companyCoverUrl = overview.cover_url || '';
-  const companyTagline = overview.tagline || '';
-  const companySpecialties = overview.specialties || [];
-  const companyProdutosServicos = overview.produtos_servicos || '';
-  const companyDiferenciais = overview.diferenciais || '';
-  const companyMercadoAlvo = overview.mercado_alvo || '';
-  const companyModeloNegocio = overview.modelo_negocio || '';
-  const companyClientes = overview.clientes_citados_publicamente || '';
-  const companyParceiros = overview.parceiros || null;
-  const overallAnalysis = overview.overall_analysis || '';
-  const positioning = overview.positioning || {};
-  const leadership = overview.lideranca_oficial || [];
-  const references = overview.references || [];
+  const companyTagline = redesSociais?.linkedin?.tagline || overview.tagline || data?.linkedin_info?.tagline || '';
+  const companySpecialties = redesSociais?.linkedin?.specialties || overview.specialties || overview.especialidades || data?.linkedin_info?.specialties || data?.linkedin_info?.especialidades || data?.company?.specialties || data?.company?.especialidades || [];
+  const companyProdutosServicos = overview.produtos_servicos || overview.products_services || '';
+  const companyDiferenciais = overview.diferenciais || overview.differentiators || '';
+  
+  const companyMercadoAlvo = Array.isArray(mercadoCompany?.mercado_alvo) 
+    ? mercadoCompany.mercado_alvo.join(", ") 
+    : (mercadoCompany?.mercado_alvo || overview.mercado_alvo || overview.market || '');
+    
+  const companyModeloNegocio = mercadoCompany?.modelo_negocio || overview.modelo_negocio || overview.business_model || '';
+  const companyClientes = mercadoCompany?.clientes_citados || overview.clientes_citados || overview.clientes_citados_publicamente || overview.clients || '';
+  const companyParceiros = mercadoCompany?.parceiros || overview.parceiros || overview.partners || null;
+  const overallAnalysis = mercado?.strategic_analysis?.resumo_executivo || overview.overall_analysis || '';
+  const positioning = mercado?.positioning || overview.positioning || {};
+  const strategicAnalysis = mercado?.strategic_analysis || data?.market_research_raw?.strategic_analysis || null;
+  const leadership = mercadoCompany?.pessoas_chave || overview.pessoas_chave || overview.lideranca_oficial || overview.lideranca || [];
+  const references = mercado?.references || overview.references || [];
 
   // Extrair dados de redes sociais
   const linkedinData = redesSociais.linkedin || {};
@@ -81,11 +96,12 @@ export default function AnaliseResultados() {
   const linkedinPosts = linkedinData.posts || [];
   const instagramPosts = instagramData.posts || [];
   const youtubeVideos = youtubeData.videos || [];
+  const blogPosts = data?.blog_posts || [];
 
   // Extrair dados do mercado
-  const acoesPublicas = mercado.acoes_publicas_eventos || [];
-  const newsAndActions = mercado.news_and_actions || [];
-  const similarCompanies = mercado.similar_companies || [];
+  const acoesPublicas = mercado.acoes_publicas_eventos || mercado.eventos || [];
+  const newsAndActions = mercado.news_and_actions || mercado.noticias || mercado.news_and_market_actions || [];
+  const similarCompanies = mercado.similar_companies || overview.similar_companies || data?.similar_companies || data?.linkedin_info?.similar_companies || [];
 
   const handleSave = async () => {
     if (!companyName || !domain) return;
@@ -109,8 +125,10 @@ export default function AnaliseResultados() {
         description: companyDescription,
         industry: companyIndustry,
         headquarters: companyHeadquarters,
-        size: companySize,
-        year_founded: companyFounded ? parseInt(companyFounded) : null,
+        size: companySize || data?.linkedin_info?.company_size || undefined,
+        employee_count: data?.linkedin_info?.employee_count || undefined,
+        company_type: data?.linkedin_info?.company_type || undefined,
+        year_founded: companyFounded ? parseInt(companyFounded) : (data?.linkedin_info?.founded ? parseInt(data?.linkedin_info?.founded) : null),
         logo_url: companyLogoUrl,
         market: companyMercadoAlvo,
         business_model: companyModeloNegocio,
@@ -119,7 +137,7 @@ export default function AnaliseResultados() {
         partners: companyParceiros ? [companyParceiros] : [],
         clients: companyClientes,
         linkedin_url: overview.linkedin_url || linkedinData.url,
-        linkedin_followers: linkedinData.followers,
+        linkedin_followers: linkedinData.followers || data?.linkedin_info?.followers,
         linkedin_specialties: companySpecialties,
         linkedin_tagline: companyTagline,
         instagram_url: overview.instagram_url || instagramData.profile_url,
@@ -802,7 +820,7 @@ export default function AnaliseResultados() {
 
           {/* Tabs Internas para Posts */}
           <Tabs defaultValue="linkedin" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="linkedin" className="flex items-center gap-2">
                 <Linkedin className="h-4 w-4" />
                 LinkedIn
@@ -814,6 +832,10 @@ export default function AnaliseResultados() {
               <TabsTrigger value="youtube" className="flex items-center gap-2">
                 <Youtube className="h-4 w-4" />
                 YouTube
+              </TabsTrigger>
+              <TabsTrigger value="blog" className="flex items-center gap-2">
+                <BookOpen className="h-4 w-4" />
+                Blog
               </TabsTrigger>
             </TabsList>
             
@@ -848,6 +870,18 @@ export default function AnaliseResultados() {
                 <Card>
                   <CardContent className="p-12 text-center text-muted-foreground">
                     Nenhum vídeo do YouTube disponível.
+                  </CardContent>
+                </Card>
+              )}
+            </TabsContent>
+
+            <TabsContent value="blog" className="mt-4">
+              {blogPosts.length > 0 ? (
+                <SocialPostsGrid posts={blogPosts} type="blog" />
+              ) : (
+                <Card>
+                  <CardContent className="p-12 text-center text-muted-foreground">
+                    Nenhum post do blog disponível.
                   </CardContent>
                 </Card>
               )}
@@ -1064,6 +1098,50 @@ export default function AnaliseResultados() {
 
         {/* ==================== MERCADO TAB ==================== */}
         <TabsContent value="mercado" className="mt-6 space-y-6">
+          {/* Análise Estratégica */}
+          {strategicAnalysis && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5 text-primary" />
+                  Análise Estratégica
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {strategicAnalysis.visao_geral && (
+                  <div>
+                    <h4 className="font-semibold mb-2">Visão Geral</h4>
+                    <p className="text-sm text-muted-foreground">{strategicAnalysis.visao_geral}</p>
+                  </div>
+                )}
+                {strategicAnalysis.posicionamento && (
+                  <div>
+                    <h4 className="font-semibold mb-2">Posicionamento</h4>
+                    <p className="text-sm text-muted-foreground">{strategicAnalysis.posicionamento}</p>
+                  </div>
+                )}
+                {strategicAnalysis.dinamica_competitiva && (
+                  <div>
+                    <h4 className="font-semibold mb-2">Dinâmica Competitiva</h4>
+                    <p className="text-sm text-muted-foreground">{strategicAnalysis.dinamica_competitiva}</p>
+                  </div>
+                )}
+                {strategicAnalysis.insights_estrategicos && (
+                  <div>
+                    <h4 className="font-semibold mb-2">Insights Estratégicos</h4>
+                    <p className="text-sm text-muted-foreground">{strategicAnalysis.insights_estrategicos}</p>
+                  </div>
+                )}
+                {(strategicAnalysis.resumo_executivo || strategicAnalysis.visao_executiva_resumida) && (
+                  <div>
+                    <h4 className="font-semibold mb-2">Resumo Executivo</h4>
+                    <p className="text-sm text-muted-foreground">{strategicAnalysis.resumo_executivo || strategicAnalysis.visao_executiva_resumida}</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
           {/* Ações Públicas / Eventos */}
           {acoesPublicas.length > 0 && (
             <Card>

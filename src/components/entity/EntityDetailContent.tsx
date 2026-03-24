@@ -126,9 +126,9 @@ export function EntityDetailContent({
             <div className="flex-1 space-y-4 text-center sm:text-left">
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-4">
                 <div>
-                  <h1 className="text-2xl sm:text-3xl font-bold">{entity.name || entity.domain}</h1>
+                  <h1 className="text-xl sm:text-2xl font-semibold">{entity.name || entity.domain}</h1>
                   {entity.linkedin_tagline && (
-                    <p className="text-muted-foreground mt-1 text-base sm:text-lg">{entity.linkedin_tagline}</p>
+                    <p className="text-muted-foreground mt-1 text-sm sm:text-base">{entity.linkedin_tagline}</p>
                   )}
                 </div>
                 {glassdoor?.overall_rating && (

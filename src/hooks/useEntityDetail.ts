@@ -22,6 +22,7 @@ export interface EntityDetailData {
     linkedin: any[];
     instagram: any[];
     youtube: any[];
+    blog: any[];
   };
 }
 
@@ -38,136 +39,87 @@ export function useEntityDetail(entityType: EntityType, id: string | undefined) 
     try {
       setIsLoading(true);
 
-      let entityData: any = null;
-      let entityId: string = id;
+      const tableConfig: Record<EntityType, {
+        main: string;
+        glassdoor: string;
+        market: string;
+        similar: string;
+        news: string;
+        leadership: string;
+        linkedin: string;
+        instagram: string;
+        youtube: string;
+        blog: string;
+        idCol: string;
+      }> = {
+        competitor: {
+          main: "companies", glassdoor: "glassdoor_summary", market: "market_research",
+          similar: "similar_companies", news: "market_news", leadership: "company_leadership",
+          linkedin: "linkedin_posts", instagram: "instagram_posts", youtube: "youtube_videos",
+          blog: "company_blog_posts", idCol: "company_id"
+        },
+        prospect: {
+          main: "prospects", glassdoor: "prospect_glassdoor_summary", market: "prospect_market_research",
+          similar: "prospect_similar_companies", news: "prospect_market_news", leadership: "prospect_leadership",
+          linkedin: "prospect_linkedin_posts", instagram: "prospect_instagram_posts", youtube: "prospect_youtube_videos",
+          blog: "prospect_blog_posts", idCol: "prospect_id"
+        },
+        client: {
+          main: "clients", glassdoor: "client_glassdoor_summary", market: "client_market_research",
+          similar: "client_similar_companies", news: "client_market_news", leadership: "client_leadership",
+          linkedin: "client_linkedin_posts", instagram: "client_instagram_posts", youtube: "client_youtube_videos",
+          blog: "client_blog_posts", idCol: "client_id"
+        },
+        primary: {
+          main: "primary_company", glassdoor: "primary_company_glassdoor", market: "primary_company_market_research",
+          similar: "primary_company_similar_companies", news: "primary_company_market_news", leadership: "primary_company_leadership",
+          linkedin: "primary_company_linkedin_posts", instagram: "primary_company_instagram_posts", youtube: "primary_company_youtube_videos",
+          blog: "primary_company_blog_posts", idCol: "primary_company_id"
+        }
+      };
 
-      // Fetch main entity based on type
-      if (entityType === "competitor") {
-        const { data: d, error } = await supabase.from("companies").select("*").eq("id", id).maybeSingle();
-        if (error) throw error;
-        entityData = d;
-      } else if (entityType === "prospect") {
-        const { data: d, error } = await supabase.from("prospects").select("*").eq("id", id).maybeSingle();
-        if (error) throw error;
-        entityData = d;
-      } else if (entityType === "client") {
-        const { data: d, error } = await supabase.from("clients").select("*").eq("id", id).maybeSingle();
-        if (error) throw error;
-        entityData = d;
-      } else {
-        // primary
-        const { data: d, error } = await supabase.from("primary_company").select("*").eq("id", id).maybeSingle();
-        if (error) throw error;
-        entityData = d;
-      }
+      const t = tableConfig[entityType];
 
+      // Fetch main entity
+      const { data: entityData, error: entityError } = await supabase
+        .from(t.main)
+        .select("*")
+        .eq("id", id)
+        .maybeSingle();
+
+      if (entityError) throw entityError;
       if (!entityData) {
         setData(null);
         return;
       }
 
-      entityId = entityData.id;
+      const entityId = entityData.id;
 
-      // Fetch related data based on entity type
-      let glassdoorData: any = null;
-      let marketData: any = null;
-      let similarCompaniesData: any[] = [];
-      let marketNewsData: any[] = [];
-      let leadershipData: any[] = [];
-      let linkedinPosts: any[] = [];
-      let instagramPosts: any[] = [];
-      let youtubeVideos: any[] = [];
-
-      if (entityType === "competitor") {
-        const results = await Promise.all([
-          supabase.from("glassdoor_summary").select("*").eq("company_id", entityId).order("created_at", { ascending: false }).limit(1).maybeSingle(),
-          supabase.from("market_research").select("*").eq("company_id", entityId).maybeSingle(),
-          supabase.from("similar_companies").select("*").eq("company_id", entityId),
-          supabase.from("market_news").select("*").eq("company_id", entityId).order("date", { ascending: false }),
-          supabase.from("company_leadership").select("*").eq("company_id", entityId).order("relevance_score", { ascending: false }),
-          supabase.from("linkedin_posts").select("*").eq("company_id", entityId).order("posted_at", { ascending: false }).limit(50),
-          supabase.from("instagram_posts").select("*").eq("company_id", entityId).order("timestamp", { ascending: false }).limit(50),
-          supabase.from("youtube_videos").select("*").eq("company_id", entityId).order("published_at", { ascending: false }).limit(50),
-        ]);
-        glassdoorData = results[0].data;
-        marketData = results[1].data;
-        similarCompaniesData = results[2].data || [];
-        marketNewsData = results[3].data || [];
-        leadershipData = results[4].data || [];
-        linkedinPosts = results[5].data || [];
-        instagramPosts = results[6].data || [];
-        youtubeVideos = results[7].data || [];
-      } else if (entityType === "prospect") {
-        const results = await Promise.all([
-          supabase.from("prospect_glassdoor_summary").select("*").eq("prospect_id", entityId).order("created_at", { ascending: false }).limit(1).maybeSingle(),
-          supabase.from("prospect_market_research").select("*").eq("prospect_id", entityId).maybeSingle(),
-          supabase.from("prospect_similar_companies").select("*").eq("prospect_id", entityId),
-          supabase.from("prospect_market_news").select("*").eq("prospect_id", entityId).order("date", { ascending: false }),
-          supabase.from("prospect_leadership").select("*").eq("prospect_id", entityId).order("relevance_score", { ascending: false }),
-          supabase.from("prospect_linkedin_posts").select("*").eq("prospect_id", entityId).order("posted_at", { ascending: false }).limit(50),
-          supabase.from("prospect_instagram_posts").select("*").eq("prospect_id", entityId).order("timestamp", { ascending: false }).limit(50),
-          supabase.from("prospect_youtube_videos").select("*").eq("prospect_id", entityId).order("published_at", { ascending: false }).limit(50),
-        ]);
-        glassdoorData = results[0].data;
-        marketData = results[1].data;
-        similarCompaniesData = results[2].data || [];
-        marketNewsData = results[3].data || [];
-        leadershipData = results[4].data || [];
-        linkedinPosts = results[5].data || [];
-        instagramPosts = results[6].data || [];
-        youtubeVideos = results[7].data || [];
-      } else if (entityType === "client") {
-        const results = await Promise.all([
-          supabase.from("client_glassdoor_summary").select("*").eq("client_id", entityId).order("created_at", { ascending: false }).limit(1).maybeSingle(),
-          supabase.from("client_market_research").select("*").eq("client_id", entityId).maybeSingle(),
-          supabase.from("client_similar_companies").select("*").eq("client_id", entityId),
-          supabase.from("client_market_news").select("*").eq("client_id", entityId).order("date", { ascending: false }),
-          supabase.from("client_leadership").select("*").eq("client_id", entityId).order("relevance_score", { ascending: false }),
-          supabase.from("client_linkedin_posts").select("*").eq("client_id", entityId).order("posted_at", { ascending: false }).limit(50),
-          supabase.from("client_instagram_posts").select("*").eq("client_id", entityId).order("timestamp", { ascending: false }).limit(50),
-          supabase.from("client_youtube_videos").select("*").eq("client_id", entityId).order("published_at", { ascending: false }).limit(50),
-        ]);
-        glassdoorData = results[0].data;
-        marketData = results[1].data;
-        similarCompaniesData = results[2].data || [];
-        marketNewsData = results[3].data || [];
-        leadershipData = results[4].data || [];
-        linkedinPosts = results[5].data || [];
-        instagramPosts = results[6].data || [];
-        youtubeVideos = results[7].data || [];
-      } else {
-        // primary
-        const results = await Promise.all([
-          supabase.from("primary_company_glassdoor").select("*").eq("primary_company_id", entityId).order("created_at", { ascending: false }).limit(1).maybeSingle(),
-          supabase.from("primary_company_market_research").select("*").eq("primary_company_id", entityId).maybeSingle(),
-          supabase.from("primary_company_similar_companies").select("*").eq("primary_company_id", entityId),
-          supabase.from("primary_company_market_news").select("*").eq("primary_company_id", entityId).order("date", { ascending: false }),
-          supabase.from("primary_company_leadership").select("*").eq("primary_company_id", entityId).order("relevance_score", { ascending: false }),
-          supabase.from("primary_company_linkedin_posts").select("*").eq("primary_company_id", entityId).order("posted_at", { ascending: false }).limit(50),
-          supabase.from("primary_company_instagram_posts").select("*").eq("primary_company_id", entityId).order("timestamp", { ascending: false }).limit(50),
-          supabase.from("primary_company_youtube_videos").select("*").eq("primary_company_id", entityId).order("published_at", { ascending: false }).limit(50),
-        ]);
-        glassdoorData = results[0].data;
-        marketData = results[1].data;
-        similarCompaniesData = results[2].data || [];
-        marketNewsData = results[3].data || [];
-        leadershipData = results[4].data || [];
-        linkedinPosts = results[5].data || [];
-        instagramPosts = results[6].data || [];
-        youtubeVideos = results[7].data || [];
-      }
+      // Fetch related data based on configured table names
+      const results = await Promise.all([
+        supabase.from(t.glassdoor).select("*").eq(t.idCol, entityId).order("created_at", { ascending: false }).limit(1).maybeSingle(),
+        supabase.from(t.market).select("*").eq(t.idCol, entityId).maybeSingle(),
+        supabase.from(t.similar).select("*").eq(t.idCol, entityId),
+        supabase.from(t.news).select("*").eq(t.idCol, entityId).order("date", { ascending: false }),
+        supabase.from(t.leadership).select("*").eq(t.idCol, entityId).order("relevance_score", { ascending: false }),
+        supabase.from(t.linkedin).select("*").eq(t.idCol, entityId).order("posted_at", { ascending: false }).limit(50),
+        supabase.from(t.instagram).select("*").eq(t.idCol, entityId).order("timestamp", { ascending: false }).limit(50),
+        supabase.from(t.youtube).select("*").eq(t.idCol, entityId).order("published_at", { ascending: false }).limit(50),
+        supabase.from(t.blog).select("*").eq(t.idCol, entityId).order("published_at", { ascending: false }).limit(50),
+      ]);
 
       setData({
         entity: entityData,
-        glassdoor: glassdoorData,
-        marketResearch: marketData,
-        similarCompanies: similarCompaniesData,
-        marketNews: marketNewsData,
-        leadership: leadershipData,
+        glassdoor: results[0].data,
+        marketResearch: results[1].data,
+        similarCompanies: results[2].data || [],
+        marketNews: results[3].data || [],
+        leadership: results[4].data || [],
         socialPosts: {
-          linkedin: linkedinPosts,
-          instagram: instagramPosts,
-          youtube: youtubeVideos,
+          linkedin: results[5].data || [],
+          instagram: results[6].data || [],
+          youtube: results[7].data || [],
+          blog: results[8].data || [],
         },
       });
     } catch (error) {

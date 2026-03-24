@@ -21,7 +21,9 @@ import {
   Zap,
   Timer,
   RefreshCw,
-  Trash2
+  Trash2,
+  User,
+  Bot
 } from 'lucide-react';
 import {
   AlertDialog,
@@ -58,6 +60,7 @@ import {
 } from '@/components/ui/table';
 import { useActivityLogs, type ActivityLog } from '@/hooks/useActivityLogs';
 import { generateLogReport } from '@/utils/logReportGenerator';
+import { useUserAction } from '@/hooks/useUserAction';
 import { ROUTES } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 
@@ -151,6 +154,8 @@ const Logs = () => {
     refresh
   } = useActivityLogs();
 
+  const { trackAction } = useUserAction();
+
   const [isExporting, setIsExporting] = useState(false);
   const [isClearing, setIsClearing] = useState(false);
 
@@ -161,6 +166,7 @@ const Logs = () => {
         start: filters.startDate, 
         end: filters.endDate 
       });
+      trackAction('download_pdf', 'Exportou PDF de Logs de Análise');
     } finally {
       setIsExporting(false);
     }
@@ -476,9 +482,24 @@ const Logs = () => {
                         </Badge>
                       </TableCell>
                       <TableCell className="hidden md:table-cell">
-                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                          {triggerInfo.icon}
-                          <span className="hidden lg:inline">{triggerInfo.label}</span>
+                        <div className="flex flex-col gap-1.5">
+                          <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                            {triggerInfo.icon}
+                            <span className="hidden lg:inline">{triggerInfo.label}</span>
+                          </div>
+                          <Badge variant="outline" className="w-fit text-[10px] leading-tight px-1.5 py-0 flex items-center gap-1 bg-muted/50 font-normal">
+                            {log.trigger_type === 'automatic' || !log.user_name ? (
+                              <>
+                                <Bot className="h-2.5 w-2.5 text-amber-500" />
+                                <span>Automático</span>
+                              </>
+                            ) : (
+                              <>
+                                <User className="h-2.5 w-2.5 text-blue-500" />
+                                <span className="truncate max-w-[120px]" title={log.user_name}>{log.user_name.split(' ')[0]}</span>
+                              </>
+                            )}
+                          </Badge>
                         </div>
                       </TableCell>
                       <TableCell className="hidden lg:table-cell">

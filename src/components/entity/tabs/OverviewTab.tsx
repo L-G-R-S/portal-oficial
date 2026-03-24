@@ -10,6 +10,7 @@ import {
   UserCircle,
   Sparkles,
   Linkedin,
+  Users,
 } from "lucide-react";
 import { isValidUrl } from "@/utils/helpers";
 
@@ -105,6 +106,24 @@ export function OverviewTab({ entity, leadership, specialties }: OverviewTabProp
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">{entity.business_model}</p>
+            </CardContent>
+          </Card>
+        )}
+
+        {entity.clients && Array.isArray(entity.clients) && entity.clients.length > 0 && (
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <Users className="h-4 w-4 text-primary" />
+                Clientes Citados
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-wrap gap-1">
+                {entity.clients.slice(0, 10).map((item: string, idx: number) => (
+                  <Badge key={idx} variant="outline" className="text-xs">{item}</Badge>
+                ))}
+              </div>
             </CardContent>
           </Card>
         )}

@@ -1,9 +1,6 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { corsHeaders } from "../_shared/cors.ts";
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
 
 const WEBHOOK_FULL = 'https://webhooks-659c9b8b-af7b-4ad0-b287-a844749a2bef.primecontrol.com.br/webhook/oficial'
 const WEBHOOK_CONTENT = 'https://webhooks-659c9b8b-af7b-4ad0-b287-a844749a2bef.primecontrol.com.br/webhook/oficialautomatico'
@@ -36,6 +33,7 @@ const entityConfig = {
     marketResearchTable: 'market_research',
     marketNewsTable: 'market_news',
     similarCompaniesTable: 'similar_companies',
+    blogTable: 'company_blog_posts',
     fkColumn: 'company_id'
   },
   prospect: {
@@ -49,6 +47,7 @@ const entityConfig = {
     marketResearchTable: 'prospect_market_research',
     marketNewsTable: 'prospect_market_news',
     similarCompaniesTable: 'prospect_similar_companies',
+    blogTable: 'prospect_blog_posts',
     fkColumn: 'prospect_id'
   },
   client: {
@@ -62,6 +61,7 @@ const entityConfig = {
     marketResearchTable: 'client_market_research',
     marketNewsTable: 'client_market_news',
     similarCompaniesTable: 'client_similar_companies',
+    blogTable: 'client_blog_posts',
     fkColumn: 'client_id'
   }
 }
@@ -73,8 +73,26 @@ async function saveEntityData(
   entityType: string
 ) {
   const config = entityConfig[entityType as keyof typeof entityConfig]
-  const { overview, redes_sociais, mercado } = webhookData
-  const glassdoor = redes_sociais?.glassdoor || webhookData.glassdoor
+  let wData = Array.isArray(webhookData) ? webhookData[0] : (webhookData || {} as any);
+  if (wData.json) wData = wData.json;
+  const overview = wData.company || wData.linkedin_info || wData.overview || {};
+  const redes_sociais = wData.redes_sociais || {
+    linkedin: { posts: wData.linkedin_posts },
+    instagram: { posts: wData.instagram_posts },
+    youtube: wData.youtube_info 
+  };
+  const mercado = wData.mercado || wData.market_research_raw || {};
+  
+  if (!mercado.similar_companies || mercado.similar_companies.length === 0) {
+    mercado.similar_companies = wData.similar_companies || wData.linkedin_info?.similar_companies || overview.similar_companies || [];
+  }
+  if (!mercado.news_and_actions || mercado.news_and_actions.length === 0) {
+    mercado.news_and_actions = mercado.news_and_market_actions || mercado.noticias || wData.noticias || [];
+  }
+
+  const glassdoor = wData.glassdoor_info || (redes_sociais?.glassdoor || wData.glassdoor);
+  const blog_posts = wData.blog_posts || null;
+  const mercadoCompany = mercado?.company || {};
 
   // Build entity record
   const entityRecord: Record<string, any> = {
@@ -82,34 +100,37 @@ async function saveEntityData(
     description: overview?.descricao_institucional || null,
     industry: overview?.setor || null,
     sector: overview?.setor || null,
-    logo_url: overview?.logo_url || null,
-    address: overview?.endereco || null,
-    phone: overview?.telefone || null,
-    market: overview?.mercado_alvo || null,
-    business_model: overview?.modelo_negocio || null,
-    products_services: overview?.produtos_servicos || null,
-    differentiators: overview?.diferenciais || null,
-    partners: overview?.parceiros || null,
-    clients: overview?.clientes_citados || overview?.clientes_citados_publicamente || null,
+    logo_url: wData.linkedin_logo || overview?.logo_url || wData.linkedin_info?.profile_pic_url || wData.linkedin_info?.logoUrl || redes_sociais?.linkedin?.profile_pic_url || null,
+    address: overview?.endereco || overview?.headquarters || wData.linkedin_info?.headquarters || redes_sociais?.linkedin?.headquarters || null,
+    phone: overview?.telefone || wData.linkedin_info?.phone || null,
+    market: Array.isArray(mercadoCompany?.mercado_alvo) 
+      ? mercadoCompany.mercado_alvo.join(", ") 
+      : (mercadoCompany?.mercado_alvo || overview?.mercado_alvo || overview?.market || null),
+    business_model: mercadoCompany?.modelo_negocio || overview?.modelo_negocio || overview?.business_model || null,
+    products_services: wData?.company?.products_services || wData?.company?.produtos_servicos || overview?.produtos_servicos || overview?.products_services || mercadoCompany?.produtos_servicos || null,
+    differentiators: wData?.company?.differentiators || wData?.company?.diferenciais || overview?.diferenciais || overview?.differentiators || mercadoCompany?.diferenciais || null,
+    partners: mercadoCompany?.parceiros || overview?.parceiros || overview?.partners || null,
+    clients: mercadoCompany?.clientes_citados || overview?.clientes_citados || overview?.clientes_citados_publicamente || overview?.clients || null,
     website: overview?.website || overview?.site_institucional || overview?.positioning?.presenca_digital?.site_institucional || null,
-    headquarters: redes_sociais?.linkedin?.headquarters || overview?.endereco || null,
-    year_founded: redes_sociais?.linkedin?.founded ? parseInt(redes_sociais.linkedin.founded) : null,
-    size: redes_sociais?.linkedin?.company_size || null,
-    employee_count: redes_sociais?.linkedin?.employee_count || null,
+    headquarters: redes_sociais?.linkedin?.headquarters || wData.linkedin_info?.headquarters || overview?.endereco || overview?.headquarters || null,
+    year_founded: overview?.founded ? parseInt(overview.founded) : (redes_sociais?.linkedin?.founded ? parseInt(redes_sociais.linkedin.founded) : (wData.linkedin_info?.founded ? parseInt(wData.linkedin_info.founded) : null)),
+    size: redes_sociais?.linkedin?.company_size || wData.linkedin_info?.company_size || overview?.company_size || null,
+    employee_count: overview?.employee_count || redes_sociais?.linkedin?.employee_count || wData.linkedin_info?.employee_count || null,
     linkedin_url: redes_sociais?.linkedin?.url || null,
-    linkedin_followers: redes_sociais?.linkedin?.followers || null,
-    linkedin_specialties: redes_sociais?.linkedin?.specialties || null,
-    linkedin_tagline: redes_sociais?.linkedin?.tagline || null,
-    instagram_url: redes_sociais?.instagram?.profileUrl || null,
-    instagram_username: redes_sociais?.instagram?.username || null,
-    instagram_followers: redes_sociais?.instagram?.profile?.followersCount || null,
-    instagram_follows: redes_sociais?.instagram?.profile?.followsCount || null,
-    instagram_posts_count: redes_sociais?.instagram?.profile?.postsCount || null,
-    youtube_url: redes_sociais?.youtube?.channel?.url || redes_sociais?.youtube?.channel_url || null,
-    youtube_channel_name: redes_sociais?.youtube?.channel?.name || redes_sociais?.youtube?.channel_name || null,
-    youtube_subscribers: redes_sociais?.youtube?.channel?.subscribers || redes_sociais?.youtube?.subscriber_count || null,
-    youtube_total_videos: redes_sociais?.youtube?.channel?.totalVideos || redes_sociais?.youtube?.total_videos || null,
-    youtube_total_views: redes_sociais?.youtube?.channel?.totalViews || redes_sociais?.youtube?.total_views || null,
+    linkedin_followers: overview?.followers || redes_sociais?.linkedin?.followers || wData.linkedin_info?.followers || null,
+    linkedin_specialties: redes_sociais?.linkedin?.specialties || wData.linkedin_info?.specialties || wData.linkedin_info?.especialidades || overview?.specialties || overview?.especialidades || null,
+    linkedin_tagline: redes_sociais?.linkedin?.tagline || wData.linkedin_info?.tagline || overview?.tagline || null,
+    instagram_url: redes_sociais?.instagram?.profileUrl || wData.instagram_info?.profileUrl || null,
+    instagram_username: redes_sociais?.instagram?.username || wData.instagram_info?.username || null,
+    instagram_followers: redes_sociais?.instagram?.profile?.followersCount || wData.instagram_info?.profile?.followersCount || null,
+    instagram_follows: redes_sociais?.instagram?.profile?.followsCount || wData.instagram_info?.profile?.followsCount || null,
+    instagram_posts_count: redes_sociais?.instagram?.profile?.postsCount || wData.instagram_info?.profile?.postsCount || null,
+    youtube_url: redes_sociais?.youtube?.channel?.url || redes_sociais?.youtube?.channel_url || wData.youtube_info?.channel?.url || null,
+    youtube_channel_name: redes_sociais?.youtube?.channel?.name || redes_sociais?.youtube?.channel_name || wData.youtube_info?.channel?.name || null,
+    youtube_subscribers: redes_sociais?.youtube?.channel?.subscribers || redes_sociais?.youtube?.subscriber_count || wData.youtube_info?.channel?.subscribers || null,
+    youtube_total_videos: redes_sociais?.youtube?.channel?.totalVideos || redes_sociais?.youtube?.total_videos || wData.youtube_info?.channel?.totalVideos || null,
+    youtube_total_views: redes_sociais?.youtube?.channel?.totalViews || redes_sociais?.youtube?.total_views || wData.youtube_info?.channel?.totalViews || null,
+    blog_url: blog_posts?.blog_url || null,
     updated_at: new Date().toISOString()
   }
 
@@ -251,18 +272,19 @@ async function saveEntityData(
   }
 
   // Save Leadership
-  if (overview?.lideranca?.length > 0) {
+  const pessoas_chave = mercadoCompany?.pessoas_chave || overview?.pessoas_chave || overview?.lideranca || [];
+  if (pessoas_chave.length > 0) {
     const { error: deleteLeadershipError } = await supabase.from(config.leadershipTable).delete().eq(config.fkColumn, entityId)
     if (deleteLeadershipError) {
       console.error(`[batch-update-sync] ERROR deleting old leadership:`, deleteLeadershipError.message)
     }
     
-    const leadership = overview.lideranca.map((leader: any) => ({
+    const leadership = pessoas_chave.map((leader: any) => ({
       [config.fkColumn]: entityId,
       name: leader.nome || null,
       position: leader.cargo || null,
-      linkedin_url: leader.linkedin || null,
-      source: leader.url_fonte || null,
+      linkedin_url: leader.linkedin || leader.linkedin_url || null,
+      source: leader.url_fonte || leader.fonte_url || null,
     }))
     
     const { error: insertLeadershipError } = await supabase.from(config.leadershipTable).insert(leadership)
@@ -281,15 +303,16 @@ async function saveEntityData(
   
   const marketResearch = {
     [config.fkColumn]: entityId,
-    institutional_discourse: overview?.positioning?.discurso_institucional || null,
-    recurring_topics: overview?.positioning?.topicos_recorrentes || null,
-    digital_presence: overview?.positioning?.presenca_digital || null,
-    public_actions: overview?.positioning?.acoes_publicas || null,
-    institutional_curiosities: overview?.curiosidades_institucionais || null,
-    strategic_analysis: overview?.overall_analysis || null,
-    swot_analysis: mercado?.analises || null,
+    institutional_discourse: mercado?.positioning?.discurso_institucional || overview?.positioning?.discurso_institucional || null,
+    recurring_topics: mercado?.positioning?.topicos_recorrentes || overview?.positioning?.topicos_recorrentes || null,
+    digital_presence: mercado?.positioning?.presenca_digital || overview?.positioning?.presenca_digital || null,
+    public_actions: mercado?.positioning?.acoes_publicas || overview?.positioning?.acoes_publicas || null,
+    institutional_curiosities: mercado?.positioning?.curiosidades_institucionais || overview?.curiosidades_institucionais || null,
+    overall_analysis: mercado?.strategic_analysis?.resumo_executivo || overview?.overall_analysis || null,
+    swot_analysis: mercado?.analises || mercado?.strategic_analysis?.analise_swot || null,
+    strategic_analysis: mercado?.strategic_analysis || null,
     events: mercado?.eventos || [],
-    source_references: Array.isArray(overview?.references) ? overview.references.join(", ") : overview?.references || null,
+    source_references: Array.isArray(mercado?.references) ? mercado.references.join(", ") : (Array.isArray(overview?.references) ? overview.references.join(", ") : overview?.references || null),
   }
   
   const { error: insertResearchError } = await supabase.from(config.marketResearchTable).insert(marketResearch)
@@ -300,19 +323,20 @@ async function saveEntityData(
   }
 
   // Save Market News
-  if (mercado?.news_and_actions?.length > 0) {
+  const newsData = mercado?.news_and_actions || mercado?.news_and_market_actions || [];
+  if (newsData.length > 0) {
     const { error: deleteNewsError } = await supabase.from(config.marketNewsTable).delete().eq(config.fkColumn, entityId)
     if (deleteNewsError) {
       console.error(`[batch-update-sync] ERROR deleting old market news:`, deleteNewsError.message)
     }
     
-    const news = mercado.news_and_actions.map((n: any) => ({
+    const news = newsData.map((n: any) => ({
       [config.fkColumn]: entityId,
-      title: n.titulo || null,
+      title: n.titulo || n.title || null,
       url: n.url || null,
-      date: n.data || null,
-      summary: n.resumo || null,
-      classification: n.tipo || n.classificacao || null,
+      date: n.data || n.date || null,
+      summary: n.resumo || n.summary || null,
+      classification: n.tipo || n.classification || n.classificacao || null,
     }))
     
     console.log(`[batch-update-sync] Attempting to insert ${news.length} news items...`)
@@ -350,9 +374,9 @@ async function saveEntityData(
       mercado.similar_companies.forEach((sc: any) => {
         allSimilar.push({
           [config.fkColumn]: entityId,
-          name: sc.name || null,
-          industry: sc.industry || null,
-          location: sc.location || null,
+          name: sc.name || sc.nome || null,
+          industry: sc.industry || sc.setor || null,
+          location: sc.location || sc.localizacao || null,
           url: sc.url || null,
           logo_url: sc.logo_url || null,
           source: "mercado",
@@ -365,6 +389,40 @@ async function saveEntityData(
         console.error(`[batch-update-sync] ERROR inserting similar companies:`, insertSimilarError.message, insertSimilarError.code, insertSimilarError.details)
       } else {
         console.log(`[batch-update-sync] Saved ${allSimilar.length} similar companies`)
+      }
+    }
+  }
+
+  // Save Blog Posts
+  let blogPostsArray = [];
+  if (Array.isArray(blog_posts)) {
+    blogPostsArray = blog_posts.length > 0 && blog_posts[0].posts ? blog_posts[0].posts : blog_posts;
+  } else if (blog_posts?.posts) {
+    blogPostsArray = blog_posts.posts;
+  }
+  if (blogPostsArray.length > 0) {
+    const { error: deleteBlogError } = await supabase.from((config as any).blogTable).delete().eq(config.fkColumn, entityId)
+    if (deleteBlogError) {
+      console.error(`[batch-update-sync] ERROR deleting old blog posts:`, deleteBlogError.message)
+    }
+    
+    const posts = blogPostsArray.map((post: any) => ({
+      [config.fkColumn]: entityId,
+      title: post.title || null,
+      url: post.url || null,
+      published_at: post.published_at || null,
+      reading_time_minutes: post.reading_time_minutes || null,
+      categories: Array.isArray(post.categories) ? post.categories.map((c: any) => typeof c === 'object' && c !== null ? c.name : c).join(", ") : post.categories || null,
+      cover_image_url: post.cover_image_url || null,
+      author: post.author || null,
+    }))
+    
+    if (posts.length > 0) {
+      const { error: insertBlogError } = await supabase.from((config as any).blogTable).insert(posts)
+      if (insertBlogError) {
+        console.error(`[batch-update-sync] ERROR inserting blog posts:`, insertBlogError.message, insertBlogError.code, insertBlogError.details)
+      } else {
+        console.log(`[batch-update-sync] Saved ${posts.length} blog posts`)
       }
     }
   }
@@ -649,16 +707,22 @@ Deno.serve(async (req) => {
           }
         } else if (isContentNews) {
           // CONTENT & NEWS: Process social media, Glassdoor, and news data
-          let parsedData: WebhookResponse
+          let parsedData: any
           if (Array.isArray(webhookData) && webhookData.length > 0) {
             parsedData = webhookData[0]
           } else {
             parsedData = webhookData
           }
+          const actualData = parsedData.json ? parsedData.json : parsedData;
 
           const config = entityConfig[entity.entityType as keyof typeof entityConfig]
-          const { redes_sociais, mercado } = parsedData
-          const glassdoor = redes_sociais?.glassdoor || parsedData.glassdoor
+          const redes_sociais = actualData.redes_sociais || {
+            linkedin: { posts: actualData.linkedin_posts },
+            instagram: { posts: actualData.instagram_posts },
+            youtube: actualData.youtube_info 
+          };
+          const mercado = actualData.mercado || actualData.market_research_raw || {};
+          const glassdoor = actualData.glassdoor_info || (redes_sociais?.glassdoor || actualData.glassdoor);
 
           // Save Glassdoor data
           if (glassdoor && (glassdoor.overall_rating || glassdoor.rating)) {
@@ -807,11 +871,11 @@ Deno.serve(async (req) => {
             if (newNews.length > 0) {
               const newsToInsert = newNews.map((n: any) => ({
                 [config.fkColumn]: entity.id,
-                title: n.titulo || null,
+                title: n.titulo || n.title || null,
                 url: n.url || null,
-                date: n.data || null,
-                summary: n.resumo || null,
-                classification: n.tipo || n.classificacao || null,
+                date: n.data || n.date || null,
+                summary: n.resumo || n.summary || null,
+                classification: n.tipo || n.classification || n.classificacao || null,
               }))
               
               console.log(`[batch-update-sync] Inserting ${newsToInsert.length} news items for ${entity.domain}...`)
@@ -827,20 +891,23 @@ Deno.serve(async (req) => {
           }
         } else {
           // FULL UPDATE: Parse and save all data
-          let parsedData: WebhookResponse
+          let parsedData: any
           if (Array.isArray(webhookData) && webhookData.length > 0) {
             parsedData = webhookData[0]
           } else {
             parsedData = webhookData
           }
+          const actualData = parsedData.json ? parsedData.json : parsedData;
 
-          if (!parsedData.overview) {
+          const hasOverview = actualData.overview || actualData.linkedin_info || actualData.company;
+
+          if (!hasOverview) {
             console.warn(`[batch-update-sync] No overview data for ${entity.domain}, skipping...`)
             failedEntities.push(entity.domain)
             continue
           }
 
-          await saveEntityData(supabase, entity.id, parsedData, entity.entityType)
+          await saveEntityData(supabase, entity.id, actualData, entity.entityType)
         }
         
         entitiesUpdated++

@@ -47,7 +47,8 @@ export function FloatingChatButton() {
         size="lg"
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          "fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg z-50 hover:scale-105 transition-all duration-200",
+          "fixed z-50 h-[56px] w-[56px] rounded-full shadow-lg hover:scale-105 transition-all duration-200",
+          "bottom-6 left-1/2 -translate-x-1/2 md:bottom-12 md:left-auto md:right-8 md:translate-x-0",
           isOpen && "scale-0 opacity-0 pointer-events-none"
         )}
       >
@@ -57,7 +58,8 @@ export function FloatingChatButton() {
       {/* Chat Panel */}
       <div
         className={cn(
-          "fixed bottom-6 right-6 z-50 transition-all duration-300 ease-out",
+          "fixed z-50 transition-all duration-300 ease-out",
+          "bottom-[88px] left-1/2 -translate-x-1/2 md:bottom-28 md:left-auto md:right-8 md:translate-x-0",
           sizeClasses[size],
           isOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
         )}

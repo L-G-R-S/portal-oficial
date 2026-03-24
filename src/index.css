@@ -2,29 +2,36 @@
 @tailwind components;
 @tailwind utilities;
 
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+  position: relative;
+  -webkit-text-size-adjust: 100%;
+}
+
 @layer base {
   :root {
-    /* Cores principais - Azul Escuro (#0d111d) e Laranja (#ff751f) */
+    /* Cores principais - Azul Escuro (#001A33) e Laranja (#ff751f) */
     --background: 0 0% 100%;
-    --foreground: 220 38% 8%;
+    --foreground: 209 100% 10%;
     --card: 0 0% 100%;
-    --card-foreground: 220 38% 8%;
+    --card-foreground: 209 100% 10%;
     --popover: 0 0% 100%;
-    --popover-foreground: 220 38% 8%;
+    --popover-foreground: 209 100% 10%;
     
     /* Laranja como primária */
     --primary: 23 100% 56%;
     --primary-foreground: 0 0% 100%;
     
     /* Azul escuro como secundária */
-    --secondary: 220 38% 8%;
+    --secondary: 209 100% 10%;
     --secondary-foreground: 0 0% 100%;
     
-    /* Cinzas para elementos neutros */
+    /* Cinzas para elementos neutros baseados no cinza da Prime */
     --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 40%;
+    --muted-foreground: 218 15% 40%;
     --accent: 0 0% 96%;
-    --accent-foreground: 220 38% 8%;
+    --accent-foreground: 209 100% 10%;
     
     /* Destructive mantém vermelho para alertas */
     --destructive: 0 84% 60%;
@@ -37,23 +44,23 @@
     --radius: 0.5rem;
     
     /* Sidebar com azul escuro */
-    --sidebar-background: 220 38% 8%;
+    --sidebar-background: 209 100% 10%;
     --sidebar-foreground: 0 0% 100%;
     --sidebar-primary: 23 100% 56%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 38% 12%;
+    --sidebar-accent: 209 100% 15%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 220 38% 15%;
+    --sidebar-border: 209 100% 15%;
     --sidebar-ring: 23 100% 56%;
   }
 
   .dark {
     /* Dark mode - fundo azul escuro */
-    --background: 220 38% 8%;
+    --background: 209 100% 8%;
     --foreground: 0 0% 100%;
-    --card: 220 38% 12%;
+    --card: 209 100% 12%;
     --card-foreground: 0 0% 100%;
-    --popover: 220 38% 12%;
+    --popover: 209 100% 12%;
     --popover-foreground: 0 0% 100%;
     
     /* Laranja como primária (mesmo no dark) */
@@ -61,29 +68,29 @@
     --primary-foreground: 0 0% 100%;
     
     /* Azul mais claro para contraste no dark */
-    --secondary: 220 38% 20%;
+    --secondary: 209 100% 20%;
     --secondary-foreground: 0 0% 100%;
     
     /* Cinzas ajustados para dark mode */
-    --muted: 220 38% 15%;
-    --muted-foreground: 0 0% 70%;
-    --accent: 220 38% 15%;
+    --muted: 209 100% 15%;
+    --muted-foreground: 218 15% 70%;
+    --accent: 209 100% 15%;
     --accent-foreground: 0 0% 100%;
     
     --destructive: 0 62% 50%;
     --destructive-foreground: 0 0% 100%;
     
-    --border: 220 38% 20%;
-    --input: 220 38% 20%;
+    --border: 209 100% 20%;
+    --input: 209 100% 20%;
     --ring: 23 100% 56%;
     
-    --sidebar-background: 220 38% 8%;
+    --sidebar-background: 209 100% 8%;
     --sidebar-foreground: 0 0% 100%;
     --sidebar-primary: 23 100% 56%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 38% 15%;
+    --sidebar-accent: 209 100% 15%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 220 38% 20%;
+    --sidebar-border: 209 100% 20%;
     --sidebar-ring: 23 100% 56%;
   }
 }
@@ -95,5 +102,13 @@
 
   body {
     @apply bg-background text-foreground;
+  }
+
+  html.text-lg-base {
+    font-size: 110%;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
   }
 }

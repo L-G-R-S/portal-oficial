@@ -131,25 +131,25 @@ export function NewsFeed({ news }: NewsFeedProps) {
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="text-lg font-semibold flex items-center gap-2">
+      <CardHeader className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-0 text-center sm:text-left">
+        <CardTitle className="text-lg font-semibold flex items-center justify-center sm:justify-start gap-2 w-full">
           <Newspaper className="h-5 w-5 text-primary" />
           Notícias Recentes
         </CardTitle>
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="all" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-4">
-            <TabsTrigger value="all">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 mb-4 h-auto gap-1">
+            <TabsTrigger value="all" className="whitespace-normal h-auto min-h-10 text-[11px] sm:text-sm">
               Todas ({news.length})
             </TabsTrigger>
-            <TabsTrigger value="competitors">
+            <TabsTrigger value="competitors" className="whitespace-normal h-auto min-h-10 text-[11px] sm:text-sm">
               Concorrentes ({competitorNews.length})
             </TabsTrigger>
-            <TabsTrigger value="prospects">
+            <TabsTrigger value="prospects" className="whitespace-normal h-auto min-h-10 text-[11px] sm:text-sm">
               Prospects ({prospectNews.length})
             </TabsTrigger>
-            <TabsTrigger value="clients">
+            <TabsTrigger value="clients" className="whitespace-normal h-auto min-h-10 text-[11px] sm:text-sm">
               Clientes ({clientNews.length})
             </TabsTrigger>
           </TabsList>

@@ -6,7 +6,7 @@ interface Profile {
   id: string;
   user_id: string;
   full_name: string;
-  role: 'administrador' | 'executivo' | 'marketing' | 'comercial';
+  role: 'administrador' | 'executivo' | 'marketing' | 'comercial' | 'delivery' | 'coe_sap' | 'coe_qa' | 'people' | 'financeiro' | 'inovacao';
   created_at: string;
   updated_at: string;
 }
@@ -18,7 +18,7 @@ interface AuthContextType {
   profile: Profile | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
-  signUp: (email: string, password: string, fullName: string, role: 'executivo' | 'marketing' | 'comercial', receiveEmailUpdates?: boolean) => Promise<{ error: any }>;
+  signUp: (email: string, password: string, fullName: string, role: 'executivo' | 'marketing' | 'comercial' | 'delivery' | 'coe_sap' | 'coe_qa' | 'people' | 'financeiro' | 'inovacao', receiveEmailUpdates?: boolean) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   isAdmin: boolean;
   isSuperAdmin: boolean;
@@ -85,12 +85,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                           userData.user.email?.split('@')[0] || 
                           'Usuário';
           
+          const roleFromMeta = userData.user.user_metadata?.role;
+          
           const { data: newProfile, error: insertError } = await supabase
             .from('profiles')
             .insert({
               user_id: userId,
               full_name: fullName,
-              role: 'marketing' as const
+              email: userData.user.email,
+              role: (roleFromMeta || 'marketing') as any
             })
             .select()
             .single();
@@ -151,7 +154,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return { error };
   };
 
-  const signUp = async (email: string, password: string, fullName: string, role: 'executivo' | 'marketing' | 'comercial', receiveEmailUpdates?: boolean) => {
+  const signUp = async (email: string, password: string, fullName: string, role: 'executivo' | 'marketing' | 'comercial' | 'delivery' | 'coe_sap' | 'coe_qa' | 'people' | 'financeiro' | 'inovacao', receiveEmailUpdates?: boolean) => {
     const { error, data } = await supabase.auth.signUp({
       email,
       password,
@@ -159,6 +162,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         emailRedirectTo: `${window.location.origin}/`,
         data: {
           full_name: fullName,
+          role: role,
         },
       },
     });
@@ -167,15 +171,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setTimeout(async () => {
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
-          // Update profile with role
-          if (role !== 'marketing') {
-            await supabase
-              .from('profiles')
-              .update({ role, full_name: fullName })
-              .eq('user_id', user.id);
-          }
-
-          // If user opted in for email updates, create subscriber entry
+          // If user opted in for email updates, update profile and create subscriber entry
           if (receiveEmailUpdates) {
             await supabase
               .from('profiles')
@@ -201,17 +197,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signOut = async () => {
-    // Sign out from Supabase
-    await supabase.auth.signOut();
-    
-    // Clear local state
-    setUser(null);
-    setProfile(null);
-    setUserRole(null);
-    setIsSuperAdmin(false);
-    
-    // Redirect to login page
-    window.location.href = '/login';
+    try {
+      // Sign out from Supabase (server-side invalidation)
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error('Error during sign out:', error);
+    } finally {
+      // Clear local state
+      setUser(null);
+      setProfile(null);
+      setUserRole(null);
+      setIsSuperAdmin(false);
+      
+      // Force clear any supabase auth tokens in localStorage to prevent ghost sessions
+      Object.keys(localStorage).forEach(key => {
+        if (key.startsWith('sb-') && key.endsWith('-auth-token')) {
+          localStorage.removeItem(key);
+        }
+      });
+    }
   };
 
   // Função isAdmin removida - não existe mais role de administrador

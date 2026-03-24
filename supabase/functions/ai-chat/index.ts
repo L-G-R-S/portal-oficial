@@ -1,11 +1,8 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { getGoogleAccessToken } from "./auth.ts";
+import { corsHeaders } from "../_shared/cors.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
 
 interface ChatMessage {
   role: "user" | "assistant" | "system";
@@ -493,18 +490,10 @@ serve(async (req) => {
       );
     }
 
-    const GOOGLE_AI_API_KEY = Deno.env.get("GOOGLE_AI_API_KEY");
+    let GOOGLE_AI_API_KEY = Deno.env.get("GOOGLE_AI_API_KEY");
     const GOOGLE_CLOUD_PROJECT_ID = Deno.env.get("GOOGLE_CLOUD_PROJECT_ID");
     const GOOGLE_CLOUD_LOCATION = Deno.env.get("GOOGLE_CLOUD_LOCATION") || "us-central1";
     const GOOGLE_SERVICE_ACCOUNT_JSON = Deno.env.get("GOOGLE_SERVICE_ACCOUNT_JSON");
-
-    if (!GOOGLE_AI_API_KEY && (!GOOGLE_CLOUD_PROJECT_ID || !GOOGLE_SERVICE_ACCOUNT_JSON)) {
-      console.error("No AI credentials configured (tried GOOGLE_AI_API_KEY and Vertex AI)");
-      return new Response(
-        JSON.stringify({ error: "Serviço de IA não configurado. Por favor, configure GOOGLE_AI_API_KEY ou as credenciais do Vertex AI." }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
 
     // Validate auth header
     const authHeader = req.headers.get("Authorization");
@@ -522,6 +511,23 @@ serve(async (req) => {
     
     // Use service role for data fetching (bypasses RLS for context building)
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    
+    try {
+      const { data: dbKey } = await supabase.from("system_api_keys").select("api_key").eq("provider", "gemini").maybeSingle();
+      if (dbKey?.api_key) {
+        GOOGLE_AI_API_KEY = dbKey.api_key;
+      }
+    } catch (e) {
+      console.error("Falha ao buscar chave no banco, utilizando Deno.env se existir:", e);
+    }
+
+    if (!GOOGLE_AI_API_KEY && (!GOOGLE_CLOUD_PROJECT_ID || !GOOGLE_SERVICE_ACCOUNT_JSON)) {
+      console.error("No AI credentials configured (tried GOOGLE_AI_API_KEY and Vertex AI)");
+      return new Response(
+        JSON.stringify({ error: "Serviço de IA não configurado. Adicione via configurações ou Deno.env." }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
     
     // Validate the JWT using getClaims
     const token = authHeader.replace("Bearer ", "");

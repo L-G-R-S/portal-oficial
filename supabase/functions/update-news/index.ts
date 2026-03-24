@@ -1,10 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { corsHeaders } from "../_shared/cors.ts";
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
 
 const WEBHOOK_URL = "https://webhooks-659c9b8b-af7b-4ad0-b287-a844749a2bef.primecontrol.com.br/webhook/newsupdater";
 
@@ -296,6 +293,35 @@ serve(async (req) => {
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
     console.error('[update-news] Error:', errorMessage);
+
+    // Tentativa de registrar a falha na tela de notificações do usuário, se ele foi autenticado
+    try {
+      if (typeof req !== 'undefined') {
+        const authHeader = req.headers.get('Authorization');
+        if (authHeader?.startsWith('Bearer ')) {
+          const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+          const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+          const userClient = createClient(supabaseUrl, supabaseAnonKey, {
+            global: { headers: { Authorization: authHeader } }
+          });
+          const { data: { user } } = await userClient.auth.getUser();
+          
+          if (user) {
+            const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+            const supabase = createClient(supabaseUrl, supabaseServiceKey);
+            await supabase.from('notifications').insert({
+              user_id: user.id,
+              title: 'Falha na Atualização',
+              message: `Erro ao buscar atualizações (n8n): ${errorMessage}`,
+              type: 'error',
+            });
+          }
+        }
+      }
+    } catch (notifyErr) {
+      console.error('[update-news] Error sending error notification:', notifyErr);
+    }
+
     return new Response(
       JSON.stringify({ error: errorMessage }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

@@ -4,6 +4,7 @@ import { useNotificationContext } from "@/contexts/NotificationContext";
 import { useSaveCompetitor } from "@/hooks/useSaveCompetitor";
 import { WEBHOOK_URL, ROUTES } from "@/lib/constants";
 import { supabase } from "@/integrations/supabase/client";
+import { useUserAction } from "@/hooks/useUserAction";
 
 export type EntityType = 'competitor' | 'prospect' | 'client' | 'primary';
 
@@ -25,6 +26,7 @@ interface AnalysisContextType {
   startAnalysis: (domain: string, entityType?: EntityType) => Promise<void>;
   cancelAnalysis: (domain: string) => void;
   cancelAllAnalyses: () => void;
+  onAnalysisComplete: (domain: string, cb: (entityId: string | null, route: string) => void) => () => void;
 }
 
 const MAX_CONCURRENT_ANALYSES = 300;
@@ -49,14 +51,24 @@ const entityLabels: Record<EntityType, { singular: string; plural: string; table
 
 const AnalysisContext = createContext<AnalysisContextType | undefined>(undefined);
 
+type CompleteCb = (entityId: string | null, route: string) => void;
+const completionCallbacks = new Map<string, Set<CompleteCb>>();
+
 export function AnalysisProvider({ children }: { children: React.ReactNode }) {
   const [analyses, setAnalyses] = useState<Map<string, AnalysisState>>(new Map());
   const abortControllersRef = useRef<Map<string, AbortController>>(new Map());
   const messageIntervalsRef = useRef<Map<string, NodeJS.Timeout>>(new Map());
 
+  const onAnalysisComplete = useCallback((domain: string, cb: CompleteCb) => {
+    if (!completionCallbacks.has(domain)) completionCallbacks.set(domain, new Set());
+    completionCallbacks.get(domain)!.add(cb);
+    return () => { completionCallbacks.get(domain)?.delete(cb); };
+  }, []);
+
   const { toast } = useToast();
   const { addNotification, playNotificationSound } = useNotificationContext();
   const { saveCompetitor } = useSaveCompetitor();
+  const { trackAction } = useUserAction();
 
   // Cleanup message intervals when analyses change
   useEffect(() => {
@@ -129,6 +141,8 @@ export function AnalysisProvider({ children }: { children: React.ReactNode }) {
       return newMap;
     });
 
+    trackAction('nova_analise', `Iniciou análise para ${domain} (${labels.singular})`);
+
     // Start message rotation for this analysis
     const messageInterval = setInterval(() => updateAnalysisMessage(domain), 4000);
     messageIntervalsRef.current.set(domain, messageInterval);
@@ -165,6 +179,10 @@ export function AnalysisProvider({ children }: { children: React.ReactNode }) {
           } else {
             webhookData = parsed;
           }
+          
+          if (webhookData?.json) {
+            webhookData = webhookData.json;
+          }
         } catch {
           throw new Error("Resposta inválida do servidor");
         }
@@ -172,8 +190,8 @@ export function AnalysisProvider({ children }: { children: React.ReactNode }) {
         throw new Error("Webhook retornou resposta vazia");
       }
 
-      const companyData = webhookData?.overview || webhookData?.company;
-      if (!companyData) {
+      const companyData = webhookData?.overview || webhookData?.company || webhookData?.linkedin_info;
+      if (!companyData || typeof companyData !== 'object') {
         console.error("Estrutura recebida:", JSON.stringify(webhookData, null, 2));
         throw new Error("Estrutura de dados do webhook está incorreta");
       }
@@ -189,7 +207,7 @@ export function AnalysisProvider({ children }: { children: React.ReactNode }) {
         console.log("=== END PRIMARY COMPANY DEBUG ===");
       }
 
-      const companyName = companyData.name || domain;
+      const companyName = companyData.name || companyData.nome || domain;
       const completedAt = new Date();
       const durationSeconds = Math.round((completedAt.getTime() - newAnalysis.startedAt.getTime()) / 1000);
 
@@ -238,6 +256,14 @@ export function AnalysisProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (saved) {
+        // Fire completion callbacks
+        const cbs = completionCallbacks.get(domain);
+        if (cbs) {
+          const detailRoute = entityId ? `${labels.route}/${entityId}` : null;
+          cbs.forEach(cb => cb(entityId, detailRoute || labels.analyzeRoute));
+          completionCallbacks.delete(domain);
+        }
+
         addNotification({
           title: "Análise Concluída",
           message: `A análise de ${companyName} foi concluída com sucesso.`,
@@ -300,6 +326,13 @@ export function AnalysisProvider({ children }: { children: React.ReactNode }) {
         description: error instanceof Error ? error.message : "Não foi possível completar a análise.",
         variant: "destructive",
       });
+
+      addNotification({
+        title: "Falha na Análise",
+        message: `A análise de ${domain} encontrou um erro: ${error instanceof Error ? error.message : "Erro desconhecido"}.`,
+        type: 'error',
+      });
+      playNotificationSound();
 
       // Mark as error and remove
       setAnalyses(prev => {
@@ -366,7 +399,8 @@ export function AnalysisProvider({ children }: { children: React.ReactNode }) {
       activeAnalysesCount,
       startAnalysis, 
       cancelAnalysis,
-      cancelAllAnalyses 
+      cancelAllAnalyses,
+      onAnalysisComplete
     }}>
       {children}
     </AnalysisContext.Provider>

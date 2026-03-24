@@ -103,32 +103,32 @@ export default function ForgotPassword() {
       <div className="flex-1 flex items-center justify-center p-8 bg-background">
         <div className="w-full max-w-md space-y-8">
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-foreground">Esqueci minha senha</h2>
-            <p className="mt-2 text-muted-foreground">
-              Digite seu e-mail e enviaremos um link para recuperação
+            <h2 className="text-2xl font-semibold text-foreground">RECUPERAR SENHA</h2>
+            <p className="mt-2 text-muted-foreground text-sm">
+              Digite seu e-mail corporativo para receber as instruções
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="mt-8 space-y-6">
             <div>
-              <Label htmlFor="email" className="text-foreground">E-mail</Label>
+              <Label htmlFor="email" className="text-foreground">E-mail Corporativo</Label>
               <Input
                 id="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Digite seu e-mail"
+                placeholder="nome@primecontrol.com.br"
                 required
-                className="h-12"
+                className="h-10 text-sm mt-1"
               />
             </div>
 
             <Button
               type="submit"
               disabled={loading}
-              className="w-full h-12 text-base bg-primary hover:bg-primary/90 text-primary-foreground"
+              className="w-full h-10 text-sm bg-primary hover:bg-primary/90 text-primary-foreground"
             >
-              {loading ? 'Enviando...' : 'Enviar Link de Recuperação'}
+              {loading ? 'Enviando instruções...' : 'Enviar instruções'}
             </Button>
 
             <Link

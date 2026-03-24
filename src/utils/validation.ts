@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const profileSchema = z.object({
   full_name: z.string().trim().min(1, 'Nome é obrigatório').max(100),
-  role: z.enum(['executivo', 'marketing', 'comercial']),
+  role: z.enum(['executivo', 'marketing', 'comercial', 'delivery', 'coe_sap', 'coe_qa', 'people', 'financeiro', 'inovacao']),
 });
 
 export const passwordSchema = z

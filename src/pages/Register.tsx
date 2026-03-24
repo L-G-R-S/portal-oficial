@@ -15,7 +15,7 @@ export default function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [role, setRole] = useState<'executivo' | 'marketing' | 'comercial'>('marketing');
+  const [role, setRole] = useState<'executivo' | 'marketing' | 'comercial' | 'delivery' | 'coe_sap' | 'coe_qa' | 'people' | 'financeiro' | 'inovacao'>('marketing');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [receiveEmailUpdates, setReceiveEmailUpdates] = useState(false);
@@ -69,7 +69,7 @@ export default function Register() {
       toast.error(error.message || 'Erro ao criar conta');
     } else {
       toast.success('Conta criada com sucesso!');
-      navigate('/');
+      navigate('/confirm-email');
     }
 
     setLoading(false);
@@ -92,8 +92,8 @@ export default function Register() {
       <div className="flex-1 flex items-center justify-center p-8 bg-background">
         <div className="w-full max-w-md space-y-8">
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-foreground">CRIAR CONTA</h2>
-            <p className="mt-2 text-muted-foreground">Preencha seus dados</p>
+            <h2 className="text-2xl font-semibold text-foreground">CRIAR CONTA</h2>
+            <p className="mt-2 text-muted-foreground text-sm">Preencha seus dados</p>
           </div>
 
           <form onSubmit={handleSubmit} className="mt-8 space-y-6">
@@ -107,7 +107,7 @@ export default function Register() {
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="Digite seu nome completo"
                   required
-                  className="h-12"
+                  className="h-10 text-sm"
                 />
               </div>
 
@@ -120,20 +120,26 @@ export default function Register() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Digite seu e-mail"
                   required
-                  className="h-12"
+                  className="h-10 text-sm"
                 />
               </div>
 
               <div>
                 <Label htmlFor="role" className="text-foreground">Função</Label>
                 <Select value={role} onValueChange={(value: any) => setRole(value)}>
-                  <SelectTrigger className="h-12">
+                  <SelectTrigger className="h-10 text-sm">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="marketing">Marketing</SelectItem>
                     <SelectItem value="comercial">Comercial</SelectItem>
                     <SelectItem value="executivo">Executivo</SelectItem>
+                    <SelectItem value="delivery">Delivery</SelectItem>
+                    <SelectItem value="coe_sap">COE SAP</SelectItem>
+                    <SelectItem value="coe_qa">COE QA</SelectItem>
+                    <SelectItem value="people">People</SelectItem>
+                    <SelectItem value="financeiro">Financeiro</SelectItem>
+                    <SelectItem value="inovacao">Inovação</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -148,14 +154,14 @@ export default function Register() {
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Digite sua senha"
                     required
-                    className="h-12 pr-10"
+                    className="h-10 pr-10 text-sm"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
                   >
-                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
               </div>
@@ -170,14 +176,14 @@ export default function Register() {
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="Confirme sua senha"
                     required
-                    className="h-12 pr-10"
+                    className="h-10 pr-10 text-sm"
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
                   >
-                    {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
               </div>
@@ -208,7 +214,7 @@ export default function Register() {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full h-12 text-base bg-primary hover:bg-primary/90 text-primary-foreground"
+              className="w-full h-10 text-sm bg-primary hover:bg-primary/90 text-primary-foreground"
             >
               {loading ? 'Criando conta...' : 'Criar Conta'}
             </Button>

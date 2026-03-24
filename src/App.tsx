@@ -34,6 +34,8 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import ConfirmEmail from "./pages/ConfirmEmail";
+import UsageDashboard from "./pages/UsageDashboard";
 
 const App = () => (
   <AuthProvider>
@@ -48,6 +50,7 @@ const App = () => (
               <Route path="/register" element={<Register />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/confirm-email" element={<ConfirmEmail />} />
               <Route path="/" element={<PrivateRoute><Layout><Dashboard /></Layout></PrivateRoute>} />
               <Route path="/competitors" element={<PrivateRoute><Layout><Competitors /></Layout></PrivateRoute>} />
               <Route path="/concorrentes/salvos" element={<PrivateRoute><Layout><CompetitorsSalvos /></Layout></PrivateRoute>} />
@@ -65,6 +68,7 @@ const App = () => (
               <Route path="/analise-cliente" element={<PrivateRoute><Layout><AnaliseCliente /></Layout></PrivateRoute>} />
               <Route path="/primary-company/:id" element={<PrivateRoute><Layout><PrimaryCompanyDetail /></Layout></PrivateRoute>} />
               <Route path="/settings" element={<PrivateRoute><Layout><Settings /></Layout></PrivateRoute>} />
+              <Route path="/platform-usage" element={<PrivateRoute><Layout><UsageDashboard /></Layout></PrivateRoute>} />
               <Route path="/logs" element={<PrivateRoute><Layout><Logs /></Layout></PrivateRoute>} />
               <Route path="/knowledge-base" element={<PrivateRoute><Layout><KnowledgeBase /></Layout></PrivateRoute>} />
               <Route path="/user-management" element={<PrivateRoute><Layout><UserManagement /></Layout></PrivateRoute>} />

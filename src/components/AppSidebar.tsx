@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { 
   BarChart3, 
   Users, 
@@ -7,7 +7,7 @@ import {
   UserPlus,
   Briefcase,
 } from "lucide-react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import {
   Sidebar,
   SidebarContent,
@@ -44,14 +44,23 @@ const clientItems = [
 ];
 
 export function AppSidebar() {
+  const location = useLocation();
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
-  const [isCompetitorsOpen, setIsCompetitorsOpen] = useState(false);
-  const [isProspectsOpen, setIsProspectsOpen] = useState(false);
-  const [isClientsOpen, setIsClientsOpen] = useState(false);
+  
+  const [isCompetitorsOpen, setIsCompetitorsOpen] = useState(() => competitorItems.some(item => location.pathname.startsWith(item.url)));
+  const [isProspectsOpen, setIsProspectsOpen] = useState(() => prospectItems.some(item => location.pathname.startsWith(item.url)));
+  const [isClientsOpen, setIsClientsOpen] = useState(() => clientItems.some(item => location.pathname.startsWith(item.url)));
+  
   const { profile, signOut, isSuperAdmin } = useAuth();
   const { avatarUrl } = useProfileAvatar(profile?.user_id);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (competitorItems.some(item => location.pathname.startsWith(item.url))) setIsCompetitorsOpen(true);
+    if (prospectItems.some(item => location.pathname.startsWith(item.url))) setIsProspectsOpen(true);
+    if (clientItems.some(item => location.pathname.startsWith(item.url))) setIsClientsOpen(true);
+  }, [location.pathname]);
 
   return (
     <Sidebar className="border-r-0">
@@ -62,6 +71,11 @@ export function AppSidebar() {
             alt="Prime Control" 
             className="h-10 w-auto"
           />
+          {!collapsed && (
+            <span className="text-xs font-semibold text-sidebar-foreground/60 bg-sidebar-accent px-2 py-0.5 rounded-md ml-auto">
+              v1.0
+            </span>
+          )}
         </div>
       </SidebarHeader>
 
@@ -77,7 +91,7 @@ export function AppSidebar() {
                     className={({ isActive }) => cn(
                       "flex items-center gap-3 px-3 py-2 rounded-lg transition-colors",
                       "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                      isActive && "bg-sidebar-primary text-sidebar-primary-foreground"
+                      isActive && "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
                     )}
                   >
                     <BarChart3 className="h-4 w-4" />
@@ -86,116 +100,48 @@ export function AppSidebar() {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               
-              {/* Competitors Dropdown */}
-              <SidebarMenuItem>
-                <Collapsible open={isCompetitorsOpen} onOpenChange={setIsCompetitorsOpen}>
-                  <CollapsibleTrigger asChild>
-                    <SidebarMenuButton className="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground w-full">
-                      <Users className="h-4 w-4" />
-                      {!collapsed && (
-                        <>
-                          <span className="text-sm font-medium flex-1 text-left">Concorrentes</span>
-                          <ChevronDown className={cn("h-4 w-4 transition-transform", isCompetitorsOpen && "rotate-180")} />
-                        </>
-                      )}
-                    </SidebarMenuButton>
-                  </CollapsibleTrigger>
-                  {!collapsed && (
-                    <CollapsibleContent>
-                      <div className="ml-6 space-y-1">
-                        {competitorItems.map((item) => (
-                          <SidebarMenuButton key={item.title} asChild>
-                            <NavLink 
-                              to={item.url}
-                              className={({ isActive }) => cn(
-                                "flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-sm",
-                                "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                                isActive && "bg-sidebar-primary text-sidebar-primary-foreground"
-                              )}
-                            >
-                              {item.title}
-                            </NavLink>
-                          </SidebarMenuButton>
-                        ))}
-                      </div>
-                    </CollapsibleContent>
-                  )}
-                </Collapsible>
-              </SidebarMenuItem>
-
-              {/* Prospects Dropdown */}
-              <SidebarMenuItem>
-                <Collapsible open={isProspectsOpen} onOpenChange={setIsProspectsOpen}>
-                  <CollapsibleTrigger asChild>
-                    <SidebarMenuButton className="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground w-full">
-                      <UserPlus className="h-4 w-4" />
-                      {!collapsed && (
-                        <>
-                          <span className="text-sm font-medium flex-1 text-left">Prospects</span>
-                          <ChevronDown className={cn("h-4 w-4 transition-transform", isProspectsOpen && "rotate-180")} />
-                        </>
-                      )}
-                    </SidebarMenuButton>
-                  </CollapsibleTrigger>
-                  {!collapsed && (
-                    <CollapsibleContent>
-                      <div className="ml-6 space-y-1">
-                        {prospectItems.map((item) => (
-                          <SidebarMenuButton key={item.title} asChild>
-                            <NavLink 
-                              to={item.url}
-                              className={({ isActive }) => cn(
-                                "flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-sm",
-                                "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                                isActive && "bg-sidebar-primary text-sidebar-primary-foreground"
-                              )}
-                            >
-                              {item.title}
-                            </NavLink>
-                          </SidebarMenuButton>
-                        ))}
-                      </div>
-                    </CollapsibleContent>
-                  )}
-                </Collapsible>
-              </SidebarMenuItem>
-
-              {/* Clients Dropdown */}
-              <SidebarMenuItem>
-                <Collapsible open={isClientsOpen} onOpenChange={setIsClientsOpen}>
-                  <CollapsibleTrigger asChild>
-                    <SidebarMenuButton className="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground w-full">
-                      <Briefcase className="h-4 w-4" />
-                      {!collapsed && (
-                        <>
-                          <span className="text-sm font-medium flex-1 text-left">Clientes</span>
-                          <ChevronDown className={cn("h-4 w-4 transition-transform", isClientsOpen && "rotate-180")} />
-                        </>
-                      )}
-                    </SidebarMenuButton>
-                  </CollapsibleTrigger>
-                  {!collapsed && (
-                    <CollapsibleContent>
-                      <div className="ml-6 space-y-1">
-                        {clientItems.map((item) => (
-                          <SidebarMenuButton key={item.title} asChild>
-                            <NavLink 
-                              to={item.url}
-                              className={({ isActive }) => cn(
-                                "flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-sm",
-                                "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                                isActive && "bg-sidebar-primary text-sidebar-primary-foreground"
-                              )}
-                            >
-                              {item.title}
-                            </NavLink>
-                          </SidebarMenuButton>
-                        ))}
-                      </div>
-                    </CollapsibleContent>
-                  )}
-                </Collapsible>
-              </SidebarMenuItem>
+              {/* Dynamic Dropdowns */}
+              {[
+                { title: "Concorrentes", icon: Users, items: competitorItems, open: isCompetitorsOpen, setOpen: setIsCompetitorsOpen },
+                { title: "Prospects", icon: UserPlus, items: prospectItems, open: isProspectsOpen, setOpen: setIsProspectsOpen },
+                { title: "Clientes", icon: Briefcase, items: clientItems, open: isClientsOpen, setOpen: setIsClientsOpen }
+              ].map((section) => (
+                <SidebarMenuItem key={section.title}>
+                  <Collapsible open={section.open} onOpenChange={section.setOpen}>
+                    <CollapsibleTrigger asChild>
+                      <SidebarMenuButton className="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground w-full">
+                        <section.icon className="h-4 w-4" />
+                        {!collapsed && (
+                          <>
+                            <span className="text-sm font-medium flex-1 text-left">{section.title}</span>
+                            <ChevronDown className={cn("h-4 w-4 transition-transform", section.open && "rotate-180")} />
+                          </>
+                        )}
+                      </SidebarMenuButton>
+                    </CollapsibleTrigger>
+                    {!collapsed && (
+                      <CollapsibleContent>
+                        <div className="ml-6 space-y-2 mt-1 mb-2">
+                          {section.items.map((item) => (
+                            <SidebarMenuButton key={item.title} asChild>
+                              <NavLink 
+                                to={item.url}
+                                className={({ isActive }) => cn(
+                                  "flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-sm",
+                                  "text-sidebar-foreground/80 hover:bg-white/5 hover:text-white",
+                                  (isActive || location.pathname.startsWith(item.url)) && "bg-white/10 text-white font-semibold"
+                                )}
+                              >
+                                {item.title}
+                              </NavLink>
+                            </SidebarMenuButton>
+                          ))}
+                        </div>
+                      </CollapsibleContent>
+                    )}
+                  </Collapsible>
+                </SidebarMenuItem>
+              ))}
 
 
 

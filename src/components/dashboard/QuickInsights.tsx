@@ -32,7 +32,7 @@ export function QuickInsights({
   clients,
   recentNews 
 }: QuickInsightsProps) {
-  // All companies for comparison
+  // All companies for comparison (Primary + Competitors only)
   const allCompanies = [
     ...(primaryCompany ? [primaryCompany] : []),
     ...competitors
@@ -103,7 +103,7 @@ export function QuickInsights({
       icon: TrendingUp,
       title: 'Sua posição no LinkedIn',
       value: `${linkedInRank}º lugar`,
-      subtitle: `Entre ${allCompanies.length} empresas`,
+      subtitle: `Comparado a ${competitors.length} concorrentes`,
       color: linkedInRank <= 3 ? clientColor : prospectColor,
       bgColor: linkedInRank <= 3 ? clientBg : prospectBg
     },
@@ -144,7 +144,7 @@ export function QuickInsights({
   if (insights.length === 0) return null;
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {insights.map((insight, index) => insight && (
         <Card key={index} className="p-5 bg-card border shadow-sm min-h-[100px] flex items-center">
           <div className="flex items-center gap-4 w-full">

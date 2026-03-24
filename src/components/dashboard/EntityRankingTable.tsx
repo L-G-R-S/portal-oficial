@@ -152,7 +152,9 @@ export function EntityRankingTable({ primaryCompany, competitors, prospects, cli
         </div>
       </CardHeader>
       <CardContent className="p-0 sm:p-6">
-        <div className="overflow-x-auto">
+        
+        {/* Desktop Table View */}
+        <div className="hidden md:block overflow-x-auto min-w-0">
           <Table>
             <TableHeader>
               <TableRow>
@@ -229,6 +231,57 @@ export function EntityRankingTable({ primaryCompany, competitors, prospects, cli
               ))}
             </TableBody>
           </Table>
+        </div>
+
+        {/* Mobile List View */}
+        <div className="md:hidden flex flex-col gap-3 p-4">
+          {sortedEntities.slice(0, 10).map((entity, index) => (
+            <div 
+              key={entity.id}
+              className={`flex flex-col gap-3 p-4 rounded-xl border ${entity.type === 'primary' ? 'bg-primary/5 border-primary/20' : 'bg-card border-border'} shadow-sm cursor-pointer hover:bg-muted/50 transition-colors relative min-w-0`}
+              onClick={() => handleRowClick(entity)}
+            >
+              <div className="absolute top-4 right-4 text-sm font-bold opacity-20 text-foreground">
+                #{index + 1}
+              </div>
+              <div className="flex items-center gap-3 pr-8">
+                {entity.logo_url ? (
+                  <img 
+                    src={entity.logo_url} 
+                    alt={entity.name || ''} 
+                    className="w-10 h-10 rounded-lg object-contain bg-white border shrink-0"
+                  />
+                ) : (
+                  <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center shrink-0 border">
+                    <Building2 className="h-5 w-5 text-muted-foreground" />
+                  </div>
+                )}
+                <div className="flex flex-col min-w-0">
+                  <span className="font-semibold text-foreground truncate">{entity.name || '-'}</span>
+                  <div className="mt-1">{getTypeBadge(entity.type)}</div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 mt-2 rounded-lg bg-muted/40 p-3">
+                <div className="flex items-center gap-2">
+                  <Linkedin className="h-4 w-4" style={{ color: SOCIAL_COLORS.linkedin }} />
+                  <span className="text-xs font-semibold">{formatNumber(entity.linkedin_followers)}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                  <span className="text-xs font-semibold">{entity.glassdoor_rating ? entity.glassdoor_rating.toFixed(1) : '-'}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Instagram className="h-4 w-4" style={{ color: SOCIAL_COLORS.instagram }} />
+                  <span className="text-xs font-semibold">{formatNumber(entity.instagram_followers)}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Youtube className="h-4 w-4" style={{ color: SOCIAL_COLORS.youtube }} />
+                  <span className="text-xs font-semibold">{formatNumber(entity.youtube_subscribers)}</span>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
 
         {/* Legend */}

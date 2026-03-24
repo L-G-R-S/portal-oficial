@@ -87,9 +87,9 @@ export function CompanyHeader({ displayData, competitor, glassdoorRating }: Comp
           <div className="flex-1 space-y-4 pt-4">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <h1 className="text-3xl font-bold">{name}</h1>
+                <h1 className="text-2xl font-semibold">{name}</h1>
                 {tagline && (
-                  <p className="text-muted-foreground mt-1 text-lg">{tagline}</p>
+                  <p className="text-muted-foreground mt-1 text-base">{tagline}</p>
                 )}
               </div>
               {glassdoorRating && (

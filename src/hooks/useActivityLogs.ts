@@ -18,6 +18,7 @@ export interface ActivityLog {
   duration_seconds: number | null;
   error_message: string | null;
   created_at: string | null;
+  user_name?: string | null;
 }
 
 export interface LogFilters {
@@ -56,14 +57,12 @@ export const useActivityLogs = () => {
       // 1. Fetch individual activity logs
       let activityQuery = supabase
         .from('analysis_activity_log')
-        .select('*')
-        .eq('user_id', user.id);
+        .select('*');
 
       // 2. Fetch batch update logs
       let updateQuery = supabase
         .from('update_logs')
-        .select('*')
-        .eq('user_id', user.id);
+        .select('*');
 
       // Apply initial filters to both where applicable
       if (filters.startDate) {
@@ -79,6 +78,25 @@ export const useActivityLogs = () => {
 
       if (activityRes.error) throw activityRes.error;
       if (updateRes.error) throw updateRes.error;
+
+      // Collect unique user IDs to fetch profiles separately
+      const allFetchedLogs = [...(activityRes.data || []), ...(updateRes.data || [])];
+      const uniqueUserIds = [...new Set(allFetchedLogs.map(log => log.user_id).filter(Boolean))];
+      
+      let profilesMap: Record<string, string> = {};
+      if (uniqueUserIds.length > 0) {
+        const { data: profilesData } = await supabase
+          .from('profiles')
+          .select('user_id, full_name')
+          .in('user_id', uniqueUserIds);
+          
+        if (profilesData) {
+          profilesMap = profilesData.reduce((acc, profile) => {
+            acc[profile.user_id] = profile.full_name;
+            return acc;
+          }, {} as Record<string, string>);
+        }
+      }
 
       // Map update logs to ActivityLog format
       const mappedUpdateLogs: ActivityLog[] = (updateRes.data || []).map(log => ({
@@ -100,11 +118,18 @@ export const useActivityLogs = () => {
           ? Math.round((new Date(log.completed_at).getTime() - new Date(log.started_at).getTime()) / 1000)
           : null,
         error_message: log.error_message,
-        created_at: log.started_at
+        created_at: log.started_at,
+        user_name: profilesMap[log.user_id] || null
+      }));
+
+      // Map activity logs to include user_name
+      const mappedActivityLogs: ActivityLog[] = (activityRes.data || []).map((log: any) => ({
+        ...log,
+        user_name: profilesMap[log.user_id] || null
       }));
 
       // Combine and filter
-      let allLogs = [...(activityRes.data || []), ...mappedUpdateLogs];
+      let allLogs = [...mappedActivityLogs, ...mappedUpdateLogs];
 
       // Apply remaining filters
       if (filters.entityType && filters.entityType !== 'all') {
@@ -149,13 +174,11 @@ export const useActivityLogs = () => {
       // (This could be optimized by using the combined list from loadLogs if they weren't separate requests)
       let activityQuery = supabase
         .from('analysis_activity_log')
-        .select('*')
-        .eq('user_id', user.id);
+        .select('*');
 
       let updateQuery = supabase
         .from('update_logs')
-        .select('*')
-        .eq('user_id', user.id);
+        .select('*');
 
       if (filters.startDate) {
         activityQuery = activityQuery.gte('created_at', filters.startDate.toISOString());

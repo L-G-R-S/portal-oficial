@@ -292,10 +292,10 @@ export function MercadoTab({
                 <p className="text-sm text-muted-foreground">{strategicAnalysis.insights_estrategicos}</p>
               </div>
             )}
-            {strategicAnalysis.visao_executiva_resumida && (
+            {(strategicAnalysis.visao_executiva_resumida || strategicAnalysis.resumo_executivo) && (
               <div>
                 <h4 className="font-semibold mb-2">Resumo Executivo</h4>
-                <p className="text-sm text-muted-foreground">{strategicAnalysis.visao_executiva_resumida}</p>
+                <p className="text-sm text-muted-foreground">{strategicAnalysis.visao_executiva_resumida || strategicAnalysis.resumo_executivo}</p>
               </div>
             )}
           </CardContent>

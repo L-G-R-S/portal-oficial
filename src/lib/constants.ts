@@ -30,7 +30,7 @@ export const ROUTES = {
   ANALISE_PROSPECT: "/analise-prospect",
   
   // Clients
-  CLIENTS: "/clients",
+  CLIENTS: "/clientes",
   CLIENT_DETAIL: "/client",
   ANALISE_CLIENTE: "/analise-cliente",
   

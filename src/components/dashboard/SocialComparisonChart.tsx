@@ -85,22 +85,22 @@ function SocialChartsGrid({
   const youtubeData = data.map(d => ({ id: d.id, name: d.name, value: d.youtube, type: d.type }));
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <div>
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 min-w-0">
+      <div className="min-w-0">
         <div className="flex items-center gap-2 mb-3">
           <Linkedin className="h-4 w-4 text-[hsl(210,100%,50%)]" />
           <span className="text-sm font-medium">LinkedIn</span>
         </div>
         <SocialChart data={linkedinData} primaryId={primaryId} />
       </div>
-      <div>
+      <div className="min-w-0">
         <div className="flex items-center gap-2 mb-3">
           <Instagram className="h-4 w-4 text-[hsl(340,80%,55%)]" />
           <span className="text-sm font-medium">Instagram</span>
         </div>
         <SocialChart data={instagramData} primaryId={primaryId} />
       </div>
-      <div>
+      <div className="min-w-0">
         <div className="flex items-center gap-2 mb-3">
           <Youtube className="h-4 w-4 text-[hsl(0,100%,50%)]" />
           <span className="text-sm font-medium">YouTube</span>
@@ -147,11 +147,11 @@ export function SocialComparisonChart({
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="competitors" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-4">
-            <TabsTrigger value="competitors">Concorrentes ({competitors.length})</TabsTrigger>
-            <TabsTrigger value="prospects">Prospects ({prospects.length})</TabsTrigger>
-            <TabsTrigger value="clients">Clientes ({clients.length})</TabsTrigger>
-            <TabsTrigger value="all">Todos</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 mb-4 h-auto gap-1">
+            <TabsTrigger value="competitors" className="whitespace-normal h-auto min-h-10 text-[11px] sm:text-sm">Concorrentes ({competitors.length})</TabsTrigger>
+            <TabsTrigger value="prospects" className="whitespace-normal h-auto min-h-10 text-[11px] sm:text-sm">Prospects ({prospects.length})</TabsTrigger>
+            <TabsTrigger value="clients" className="whitespace-normal h-auto min-h-10 text-[11px] sm:text-sm">Clientes ({clients.length})</TabsTrigger>
+            <TabsTrigger value="all" className="whitespace-normal h-auto min-h-10 text-[11px] sm:text-sm">Todos</TabsTrigger>
           </TabsList>
 
           <TabsContent value="competitors">
