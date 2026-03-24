@@ -696,11 +696,18 @@ Para ações especiais (Tool Calling), use as tags [ORBI_ACTION] ou [ORBI_FILE] 
     const transformStream = new TransformStream({
       async transform(chunk, controller) {
         buffer += new TextDecoder().decode(chunk);
-        let startIdx = 0;
-        while ((startIdx = buffer.indexOf('{"candidates":', startIdx)) !== -1) {
+        let searchStart = 0;
+        let candidatesIdx;
+        while ((candidatesIdx = buffer.indexOf('"candidates"', searchStart)) !== -1) {
+          const openBraceIdx = buffer.lastIndexOf('{', candidatesIdx);
+          if (openBraceIdx === -1) {
+            searchStart = candidatesIdx + 12;
+            continue;
+          }
+
           let braceCount = 0;
           let endIdx = -1;
-          for (let i = startIdx; i < buffer.length; i++) {
+          for (let i = openBraceIdx; i < buffer.length; i++) {
             if (buffer[i] === '{') braceCount++;
             else if (buffer[i] === '}') {
               braceCount--;
@@ -712,7 +719,7 @@ Para ações especiais (Tool Calling), use as tags [ORBI_ACTION] ou [ORBI_FILE] 
           }
 
           if (endIdx !== -1) {
-            const jsonStr = buffer.substring(startIdx, endIdx + 1);
+            const jsonStr = buffer.substring(openBraceIdx, endIdx + 1);
             try {
               const data = JSON.parse(jsonStr);
               const content = data.candidates?.[0]?.content?.parts?.[0]?.text;
@@ -724,7 +731,7 @@ Para ações especiais (Tool Calling), use as tags [ORBI_ACTION] ou [ORBI_FILE] 
               console.error("Error parsing JSON chunk:", e);
             }
             buffer = buffer.substring(endIdx + 1);
-            startIdx = 0;
+            searchStart = 0;
           } else {
             break;
           }
