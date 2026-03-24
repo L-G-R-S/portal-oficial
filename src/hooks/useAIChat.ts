@@ -105,7 +105,10 @@ export function useAIChat(options: UseAIChatOptions = {}) {
     if (!actionMatch) return { executed: false };
 
     try {
-      const actionData: OrbiAction = JSON.parse(actionMatch[1].trim());
+      let jsonStr = actionMatch[1].trim();
+      // Remove any markdown code blocks that Gemini might add
+      jsonStr = jsonStr.replace(/^```[a-z]*\n/i, '').replace(/\n```$/i, '');
+      const actionData: OrbiAction = JSON.parse(jsonStr);
       
       switch (actionData.action) {
         case 'analyze_company':

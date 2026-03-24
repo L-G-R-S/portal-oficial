@@ -612,7 +612,16 @@ Diretrizes:
 4. Mantenha um tom profissional e analítico.
 5. Sempre responda em Português do Brasil.
 
-Para ações especiais (Tool Calling), use as tags [ORBI_ACTION] ou [ORBI_FILE] conforme definido nas suas instruções internas.`;
+Para enviar o link de download de um documento da BASE DE CONHECIMENTO para o usuário, use EXATAMENTE a tag abaixo:
+[ORBI_FILE]{"name": "nome_do_arquivo.pdf", "url": "url_fornecida_no_contexto", "type": "application/pdf"}[/ORBI_FILE]
+
+Para executar AÇÕES no sistema a pedido do usuário (como iniciar novas análises ou alterar a foto do perfil), retorne APENAS um bloco JSON válido encapsulado pela tag [ORBI_ACTION]. As ações permitidas são:
+1. Analisar nova empresa: [ORBI_ACTION]{"action": "analyze_company", "params": {"domain": "empresa.com.br", "entityType": "competitor"}}[/ORBI_ACTION]
+2. Gerar relatório PDF da empresa: [ORBI_ACTION]{"action": "generate_entity_report", "params": {"entityId": "uuid_da_empresa", "entityType": "competitor"}}[/ORBI_ACTION]
+3. Atualizar foto de perfil do usuário: [ORBI_ACTION]{"action": "update_profile_picture", "params": {}}[/ORBI_ACTION]
+4. Excluir foto de perfil do usuário: [ORBI_ACTION]{"action": "delete_profile_picture", "params": {}}[/ORBI_ACTION]
+
+NÃO utilize blocos de código Markdown (\`\`\`json) para as tags ORBI_FILE ou ORBI_ACTION.`;
 
     // 6. Map conversation history and current content to Gemini format
     const contents = conversationHistory.map(msg => ({

@@ -29,7 +29,10 @@ function parseOrbiFiles(text: string): { cleanText: string; files: OrbiFile[] } 
   
   while ((match = regex.exec(text)) !== null) {
     try {
-      const fileData = JSON.parse(match[1]);
+      let jsonStr = match[1].trim();
+      // Remove markdown code blocks if the AI decided to format the JSON
+      jsonStr = jsonStr.replace(/^```[a-z]*\n/i, '').replace(/\n```$/i, '');
+      const fileData = JSON.parse(jsonStr);
       files.push(fileData);
       cleanText = cleanText.replace(match[0], '');
     } catch (e) {
