@@ -673,10 +673,10 @@ Para ações especiais (Tool Calling), use as tags [ORBI_ACTION] ou [ORBI_FILE] 
         contents,
         system_instruction: { parts: [{ text: systemPrompt }] },
         generation_config: {
-          temperature: 0.2,
-          top_p: 0.8,
+          temperature: 1.0,
+          top_p: 0.95,
           top_k: 40,
-          max_output_tokens: 4096,
+          max_output_tokens: 8192,
         },
         tools: [{ google_search: {} }],
       }),
@@ -722,7 +722,11 @@ Para ações especiais (Tool Calling), use as tags [ORBI_ACTION] ou [ORBI_FILE] 
             const jsonStr = buffer.substring(openBraceIdx, endIdx + 1);
             try {
               const data = JSON.parse(jsonStr);
-              const content = data.candidates?.[0]?.content?.parts?.[0]?.text;
+              const parts = data.candidates?.[0]?.content?.parts || [];
+              let content = "";
+              for (const p of parts) {
+                if (p.text) content += p.text;
+              }
               if (content) {
                 const sseData = JSON.stringify({ choices: [{ delta: { content } }] });
                 controller.enqueue(new TextEncoder().encode(`data: ${sseData}\n\n`));
