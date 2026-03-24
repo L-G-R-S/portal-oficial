@@ -455,14 +455,36 @@ export function useAIChat(options: UseAIChatOptions = {}) {
     
     // Check if user wants to save documents to knowledge base
     const wantsSave = shouldSaveDocument(content);
-    const pdfFiles = files?.filter(f => f.type === 'application/pdf') || [];
+    const uploadedFiles = files?.filter(f => f.url) || [];
     
-    if (wantsSave && pdfFiles.length > 0 && user?.id) {
-      // Save PDFs to knowledge base
-      for (const file of pdfFiles) {
+    if (wantsSave && uploadedFiles.length > 0 && user?.id) {
+      // Show user message
+      const userMessage: ChatMessage = {
+        id: crypto.randomUUID(),
+        role: "user",
+        content: content.trim(),
+        timestamp: new Date(),
+        files,
+      };
+      setMessages(prev => [...prev, userMessage]);
+      setIsLoading(true);
+      await saveMessage("user", content.trim());
+
+      const assistantId = crypto.randomUUID();
+      const loadingMsg = '⏳ **Salvando na Base de Conhecimento...** Processando os arquivos.';
+      setMessages(prev => [...prev, { id: assistantId, role: 'assistant', content: loadingMsg, timestamp: new Date() }]);
+
+      const savedNames: string[] = [];
+      const failedNames: string[] = [];
+
+      for (const file of uploadedFiles) {
         try {
-          const storagePath = file.url.split('/').slice(-2).join('/'); // Extract storage path from URL
-          
+          // Extract the storage path from the public URL
+          // URL format: .../storage/v1/object/public/chat-uploads/USER_ID/TIMESTAMP-filename
+          let storagePath = file.url.split('/chat-uploads/')[1] || file.url.split('/').slice(-2).join('/');
+          // Clean any query params
+          storagePath = storagePath.split('?')[0];
+
           const { error: dbError } = await supabase
             .from("knowledge_documents")
             .insert({
@@ -471,18 +493,33 @@ export function useAIChat(options: UseAIChatOptions = {}) {
               file_type: file.type,
               file_size: file.size,
               storage_path: storagePath,
-              content_summary: `Documento enviado via chat: ${file.name}`,
+              content_summary: `Documento adicionado via chat: ${file.name}`,
             });
 
           if (dbError) {
             console.error("Error saving document to knowledge base:", dbError);
+            failedNames.push(file.name);
           } else {
-            console.log(`Document "${file.name}" saved to knowledge base`);
+            savedNames.push(file.name);
           }
         } catch (err) {
           console.error("Error processing document for knowledge base:", err);
+          failedNames.push(file.name);
         }
       }
+
+      let resultMsg = '';
+      if (savedNames.length > 0) {
+        resultMsg += `✅ **Salvo na Base de Conhecimento!**\n\nOs seguintes arquivos foram adicionados:\n${savedNames.map(n => `- **${n}**`).join('\n')}\n\nAgora posso usar esses documentos para responder suas perguntas. 🧠`;
+      }
+      if (failedNames.length > 0) {
+        resultMsg += `${savedNames.length > 0 ? '\n\n' : ''}❌ **Erro ao salvar:** ${failedNames.join(', ')}. Tente novamente.`;
+      }
+
+      setMessages(prev => prev.map(msg => msg.id === assistantId ? { ...msg, content: resultMsg } : msg));
+      await saveMessage('assistant', resultMsg);
+      setIsLoading(false);
+      return;
     }
     
     // Add user message
