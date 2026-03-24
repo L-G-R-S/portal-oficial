@@ -646,9 +646,9 @@ Para ações especiais (Tool Calling), use as tags [ORBI_ACTION] ou [ORBI_FILE] 
     let authHeaderValue: string | null = null;
 
     if (GOOGLE_AI_API_KEY) {
-      apiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:streamGenerateContent?key=${GOOGLE_AI_API_KEY}`;
+      apiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:streamGenerateContent?key=${GOOGLE_AI_API_KEY}`;
     } else {
-      apiEndpoint = `https://${GOOGLE_CLOUD_LOCATION}-aiplatform.googleapis.com/v1/projects/${GOOGLE_CLOUD_PROJECT_ID}/locations/${GOOGLE_CLOUD_LOCATION}/publishers/google/models/gemini-2.0-flash-lite:streamGenerateContent`;
+      apiEndpoint = `https://${GOOGLE_CLOUD_LOCATION}-aiplatform.googleapis.com/v1/projects/${GOOGLE_CLOUD_PROJECT_ID}/locations/${GOOGLE_CLOUD_LOCATION}/publishers/google/models/gemini-2.0-flash:streamGenerateContent`;
       
       try {
         const sa = JSON.parse(GOOGLE_SERVICE_ACCOUNT_JSON!);
