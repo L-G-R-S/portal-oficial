@@ -40,6 +40,40 @@ const shouldSaveDocument = (message: string): boolean => {
   return SAVE_KEYWORDS.some(keyword => lowerMessage.includes(keyword));
 };
 
+// Keywords that detect direct action intents to handle client-side
+const DELETE_PHOTO_KEYWORDS = [
+  'remova minha foto', 'remove minha foto', 'remover foto', 'remova a foto',
+  'delete minha foto', 'deletar foto', 'excluir foto', 'exclua minha foto',
+  'remova meu perfil', 'apague minha foto', 'apagar foto',
+];
+
+const detectDeletePhotoIntent = (message: string): boolean => {
+  const lower = message.toLowerCase();
+  return DELETE_PHOTO_KEYWORDS.some(kw => lower.includes(kw));
+};
+
+// Detect an analyze company command like "analise labs2dev.com" or "analise a empresa xpto.com como prospect"
+const detectAnalyzeIntent = (message: string): { domain: string; entityType: string } | null => {
+  const lower = message.toLowerCase();
+  // Broad regex to detect analysis request patterns
+  const patterns = [
+    /analis[ea](?:\s+a\s+empresa|\s+o\s+dom[ií]nio|\s+novamente)?\s+([a-z0-9.-]+\.[a-z]{2,})/i,
+    /(?:analise|analisar|fazer análise de|iniciar análise de)\s+([a-z0-9.-]+\.[a-z]{2,})/i,
+  ];
+  
+  for (const pattern of patterns) {
+    const match = lower.match(pattern);
+    if (match) {
+      const domain = match[1].trim();
+      const entityType = lower.includes('prospect') ? 'prospect'
+        : lower.includes('cliente') ? 'client'
+        : 'competitor';
+      return { domain, entityType };
+    }
+  }
+  return null;
+};
+
 // Action type for Orbi tool calling
 interface OrbiAction {
   action: string;
@@ -452,6 +486,44 @@ export function useAIChat(options: UseAIChatOptions = {}) {
 
     // Save user message
     await saveMessage("user", content.trim());
+
+    // --- CLIENT-SIDE INTENT DETECTION ---
+    // Detect and execute direct actions without relying on Gemini's ORBI_ACTION tags,
+    // because Gemini's google_search tool registration conflicts with custom text patterns.
+    const trimmedContent = content.trim();
+
+    if (detectDeletePhotoIntent(trimmedContent) && user?.id) {
+      try {
+        await supabase.from('profiles').update({ avatar_url: null }).eq('user_id', user.id);
+        window.dispatchEvent(new CustomEvent('avatar-updated', { detail: { avatarUrl: null } }));
+        const successMsg = getActionFriendlyMessage({ action: 'delete_profile_picture', params: {} });
+        const assistantId = crypto.randomUUID();
+        setMessages(prev => [...prev, { id: assistantId, role: 'assistant', content: successMsg, timestamp: new Date() }]);
+        await saveMessage('assistant', successMsg);
+        setIsLoading(false);
+        return;
+      } catch (e) {
+        console.error('Error deleting profile picture (client-side):', e);
+      }
+    }
+
+    const analyzeIntent = detectAnalyzeIntent(trimmedContent);
+    if (analyzeIntent) {
+      try {
+        startAnalysis(analyzeIntent.domain, analyzeIntent.entityType as EntityType).catch(err => {
+          console.error('Analysis error:', err);
+        });
+        const successMsg = getActionFriendlyMessage({ action: 'analyze_company', params: analyzeIntent });
+        const assistantId = crypto.randomUUID();
+        setMessages(prev => [...prev, { id: assistantId, role: 'assistant', content: successMsg, timestamp: new Date() }]);
+        await saveMessage('assistant', successMsg);
+        setIsLoading(false);
+        return;
+      } catch (e) {
+        console.error('Error starting analysis (client-side):', e);
+      }
+    }
+    // --- END CLIENT-SIDE INTENT DETECTION ---
 
     // Build conversation history for context
     const conversationHistory = messages.map(msg => ({
