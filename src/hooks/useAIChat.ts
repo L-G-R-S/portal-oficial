@@ -574,80 +574,118 @@ export function useAIChat(options: UseAIChatOptions = {}) {
       }
     }
 
-    // Client-side PDF generation: triggered when user is in entity context and requests a PDF
-    if (detectPdfIntent(trimmedContent) && options.entityId && options.entityType) {
-      const tableNames: Record<string, string> = {
-        competitor: 'companies',
-        prospect: 'prospects',
-        client: 'clients',
-        primary: 'primary_company'
-      };
-      const tableName = tableNames[options.entityType] || 'companies';
-      const assistantId = crypto.randomUUID();
+    // Client-side PDF generation: works both on entity detail pages (with entityId) and list pages (without)
+    if (detectPdfIntent(trimmedContent)) {
+      let resolvedEntityId: string | null = options.entityId || null;
+      let resolvedEntityType: string = options.entityType || 'competitor';
 
-      // Add a 'generating...' placeholder message
-      const loadingMsg = '⏳ **Gerando o PDF...** Aguarde um momento, estou preparando o relatório completo da empresa.';
-      setMessages(prev => [...prev, { id: assistantId, role: 'assistant', content: loadingMsg, timestamp: new Date() }]);
+      // If no entityId (user is on a list page), scan recent AI messages for a company name
+      if (!resolvedEntityId) {
+        const recentAiTexts = messages
+          .filter(m => m.role === 'assistant')
+          .slice(-5)
+          .map(m => m.content)
+          .join(' ');
 
-      try {
-        const { data: entityData, error: entityError } = await supabase
-          .from(tableName as any)
-          .select('*')
-          .eq('id', options.entityId)
-          .single();
+        // Look for **BoldedName** in recent AI responses
+        const boldMatch = recentAiTexts.match(/\*\*([A-Z][A-Za-z0-9. &-]+)\*\*/);
+        const candidateName = boldMatch?.[1]?.trim();
 
-        if (entityError || !entityData) throw new Error('Entidade não encontrada');
+        if (candidateName) {
+          const searchTables = [
+            { table: 'companies', type: 'competitor' },
+            { table: 'prospects', type: 'prospect' },
+            { table: 'clients', type: 'client' },
+          ];
+          for (const { table, type } of searchTables) {
+            const { data } = await supabase
+              .from(table as any)
+              .select('id')
+              .ilike('name', `%${candidateName}%`)
+              .limit(1);
+            if (data && data.length > 0) {
+              resolvedEntityId = (data[0] as any).id;
+              resolvedEntityType = type;
+              break;
+            }
+          }
+        }
+      }
 
-        const ed = entityData as any;
-        const companyData = {
-          name: ed.name || ed.domain,
-          domain: ed.domain,
-          industry: ed.industry || ed.linkedin_industry,
-          sector: ed.sector,
-          size: ed.size,
-          headquarters: ed.headquarters,
-          hq_location: ed.hq_location,
-          year_founded: ed.year_founded,
-          employees: ed.employee_count,
-          description: ed.description,
-          logo_url: ed.logo_url,
-          linkedin_tagline: ed.linkedin_tagline || ed.tagline,
-          linkedin_followers: ed.linkedin_followers,
-          instagram_followers: ed.instagram_followers,
-          youtube_subscribers: ed.youtube_subscribers,
-          youtube_total_views: ed.youtube_total_views,
-          products_services: ed.products_services,
-          differentiators: ed.differentiators,
+      if (resolvedEntityId) {
+        const tableNames: Record<string, string> = {
+          competitor: 'companies',
+          prospect: 'prospects',
+          client: 'clients',
+          primary: 'primary_company'
         };
+        const tableName = tableNames[resolvedEntityType] || 'companies';
+        const assistantId = crypto.randomUUID();
 
-        await generateCompetitorReport({
-          competitor: companyData,
-          company: companyData,
-          glassdoor: null,
-          marketResearch: null,
-          marketNews: [],
-          leadership: [],
-          similarCompanies: [],
-          socialPosts: { linkedin: [], instagram: [], youtube: [] },
-        });
+        // Add a 'generating...' placeholder message
+        const loadingMsg = '⏳ **Gerando o PDF...** Aguarde um momento, estou preparando o relatório completo da empresa.';
+        setMessages(prev => [...prev, { id: assistantId, role: 'assistant', content: loadingMsg, timestamp: new Date() }]);
 
-        const fileName = `relatorio_${(ed.name || ed.domain).replace(/[^a-zA-Z0-9]/g, '_').toLowerCase()}.pdf`;
-        const successMsg = `📄 **Relatório PDF Pronto!**
+        try {
+          const { data: entityData, error: entityError } = await supabase
+            .from(tableName as any)
+            .select('*')
+            .eq('id', resolvedEntityId)
+            .single();
+
+          if (entityError || !entityData) throw new Error('Entidade não encontrada');
+
+          const ed = entityData as any;
+          const companyData = {
+            name: ed.name || ed.domain,
+            domain: ed.domain,
+            industry: ed.industry || ed.linkedin_industry,
+            sector: ed.sector,
+            size: ed.size,
+            headquarters: ed.headquarters,
+            hq_location: ed.hq_location,
+            year_founded: ed.year_founded,
+            employees: ed.employee_count,
+            description: ed.description,
+            logo_url: ed.logo_url,
+            linkedin_tagline: ed.linkedin_tagline || ed.tagline,
+            linkedin_followers: ed.linkedin_followers,
+            instagram_followers: ed.instagram_followers,
+            youtube_subscribers: ed.youtube_subscribers,
+            youtube_total_views: ed.youtube_total_views,
+            products_services: ed.products_services,
+            differentiators: ed.differentiators,
+          };
+
+          await generateCompetitorReport({
+            competitor: companyData,
+            company: companyData,
+            glassdoor: null,
+            marketResearch: null,
+            marketNews: [],
+            leadership: [],
+            similarCompanies: [],
+            socialPosts: { linkedin: [], instagram: [], youtube: [] },
+          });
+
+          const fileName = `relatorio_${(ed.name || ed.domain).replace(/[^a-zA-Z0-9]/g, '_').toLowerCase()}.pdf`;
+          const successMsg = `📄 **Relatório PDF Pronto!**
 
 O download de **${fileName}** foi iniciado automaticamente.
 
 O arquivo contém todas as informações da empresa: visão geral, redes sociais, Glassdoor, notícias de mercado e muito mais.`;
-        setMessages(prev => prev.map(msg => msg.id === assistantId ? { ...msg, content: successMsg } : msg));
-        await saveMessage('assistant', successMsg);
-      } catch (e) {
-        console.error('Error generating PDF (client-side):', e);
-        const errMsg = '❌ **Erro ao gerar PDF**\n\nNão foi possível gerar o relatório. Tente novamente.';
-        setMessages(prev => prev.map(msg => msg.id === assistantId ? { ...msg, content: errMsg } : msg));
-        await saveMessage('assistant', errMsg);
-      }
+          setMessages(prev => prev.map(msg => msg.id === assistantId ? { ...msg, content: successMsg } : msg));
+          await saveMessage('assistant', successMsg);
+        } catch (e) {
+          console.error('Error generating PDF (client-side):', e);
+          const errMsg = '❌ **Erro ao gerar PDF**\n\nNão foi possível gerar o relatório. Tente novamente.';
+          setMessages(prev => prev.map(msg => msg.id === assistantId ? { ...msg, content: errMsg } : msg));
+          await saveMessage('assistant', errMsg);
+        }
 
-      setIsLoading(false);
-      return;
+        setIsLoading(false);
+        return;
+      }
     }
     // --- END CLIENT-SIDE INTENT DETECTION ---
 
