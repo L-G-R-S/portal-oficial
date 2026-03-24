@@ -34,12 +34,6 @@ export function FloatingChatButton() {
     setSize(size === "normal" ? "expanded" : "normal");
   };
 
-  // Size configurations
-  const sizeClasses = {
-    normal: "w-[380px] h-[520px] max-w-[calc(100vw-48px)] max-h-[calc(100vh-100px)]",
-    expanded: "w-[600px] h-[700px] max-w-[calc(100vw-48px)] max-h-[calc(100vh-48px)]",
-  };
-
   return (
     <>
       {/* Floating Button */}
@@ -48,7 +42,7 @@ export function FloatingChatButton() {
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
           "fixed z-50 h-[56px] w-[56px] rounded-full shadow-lg hover:scale-105 transition-all duration-200",
-          "bottom-6 left-1/2 -translate-x-1/2 md:bottom-12 md:left-auto md:right-8 md:translate-x-0",
+          "bottom-6 left-1/2 -translate-x-1/2 md:bottom-8 md:left-auto md:right-8 md:translate-x-0",
           isOpen && "scale-0 opacity-0 pointer-events-none"
         )}
       >
@@ -58,9 +52,13 @@ export function FloatingChatButton() {
       {/* Chat Panel */}
       <div
         className={cn(
-          "fixed z-50 transition-all duration-300 ease-out",
-          "bottom-[88px] left-1/2 -translate-x-1/2 md:bottom-28 md:left-auto md:right-8 md:translate-x-0",
-          sizeClasses[size],
+          "fixed z-50 transition-all duration-300 ease-out flex flex-col",
+          // Mobile: normal = bottom sheet, expanded = full screen
+          isExpanded
+            ? "inset-x-2 inset-y-2 md:inset-auto md:top-4 md:right-4 md:bottom-4 md:w-[620px]"
+            : "bottom-[88px] left-2 right-2 h-[480px] md:bottom-20 md:left-auto md:right-8 md:w-[380px] md:h-[520px]",
+          // Always constrain height to viewport
+          "max-h-[calc(100vh-1rem)]",
           isOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
         )}
       >

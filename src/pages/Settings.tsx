@@ -204,9 +204,9 @@ export default function Settings() {
         </div>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 items-start">
+      <div className="grid gap-6 md:grid-cols-2 items-start w-full">
         {/* Coluna Esquerda */}
-        <div className="space-y-6">
+        <div className="space-y-6 min-w-0">
           {/* Foto de Perfil */}
           <Card>
             <CardHeader className="pb-4">
@@ -316,7 +316,7 @@ export default function Settings() {
         </div>
 
         {/* Coluna Direita */}
-        <div className="space-y-6">
+        <div className="space-y-6 min-w-0">
           {/* Informações Pessoais */}
           <Card>
             <CardHeader className="pb-4">

@@ -42,14 +42,14 @@ export function AutoUpdateCard() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
           <span className="text-sm text-muted-foreground">Status</span>
           <Badge variant={settings?.is_enabled ? "default" : "secondary"}>
             {settings?.is_enabled ? 'Ativo' : 'Desativado'}
           </Badge>
         </div>
 
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
           <span className="text-sm text-muted-foreground">Última atualização</span>
           <span className="text-sm font-medium flex items-center gap-1">
             <Clock className="h-3 w-3" />
@@ -57,7 +57,7 @@ export function AutoUpdateCard() {
           </span>
         </div>
 
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
           <span className="text-sm text-muted-foreground">Próxima atualização</span>
           <span className="text-sm font-medium">
             {isUpdating ? (

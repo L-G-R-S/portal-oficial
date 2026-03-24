@@ -180,23 +180,23 @@ export function PrimaryCompanySettings() {
             </div>
 
             <div className="flex items-start gap-3 p-3 rounded-lg border bg-muted/30">
-              <Avatar className="h-12 w-12">
+              <Avatar className="h-12 w-12 shrink-0">
                 <AvatarImage src={primaryCompany.logo_url || undefined} alt={primaryCompany.name || ""} />
                 <AvatarFallback className="text-lg bg-primary/10 text-primary">
                   {primaryCompany.name?.substring(0, 2).toUpperCase() || primaryCompany.domain?.substring(0, 2).toUpperCase() || "??"}
                 </AvatarFallback>
               </Avatar>
               
-              <div className="flex-1 space-y-2">
-                <div>
-                  <h3 className="font-semibold text-lg">
+              <div className="flex-1 space-y-2 min-w-0">
+                <div className="min-w-0">
+                  <h3 className="font-semibold text-lg truncate">
                     {primaryCompany.name || primaryCompany.domain}
                   </h3>
                   {primaryCompany.industry && (
-                    <p className="text-sm text-muted-foreground">{primaryCompany.industry}</p>
+                    <p className="text-sm text-muted-foreground truncate">{primaryCompany.industry}</p>
                   )}
                   {primaryCompany.headquarters && (
-                    <p className="text-sm text-muted-foreground">{primaryCompany.headquarters}</p>
+                    <p className="text-sm text-muted-foreground truncate">{primaryCompany.headquarters}</p>
                   )}
                 </div>
 
@@ -246,7 +246,7 @@ export function PrimaryCompanySettings() {
                     href={primaryCompany.website.startsWith("http") ? primaryCompany.website : `https://${primaryCompany.website}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+                    className="inline-flex items-center gap-1 text-xs text-primary hover:underline truncate max-w-full"
                   >
                     <ExternalLink className="h-3 w-3" />
                     {primaryCompany.domain}
