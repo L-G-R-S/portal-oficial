@@ -27,7 +27,7 @@ interface NewsItem {
   classification: string | null;
   entity_name: string | null;
   entity_logo: string | null;
-  entity_type: 'competitor' | 'prospect' | 'client';
+  entity_type: 'competitor' | 'prospect' | 'client' | 'primary';
 }
 
 interface ActivityItem {
@@ -79,156 +79,54 @@ export function useDashboardData(): DashboardData {
     try {
       setIsLoading(true);
 
-      // Fetch primary company (shared across all users)
-      const { data: primaryData } = await supabase
-        .from('primary_company')
-        .select('*')
-        .maybeSingle();
-
-      let primaryCompanyData: EntityData | null = null;
-
-      if (primaryData) {
-        // Fetch primary company Glassdoor rating
-        const { data: primaryGlassdoor } = await supabase
-          .from('primary_company_glassdoor')
-          .select('overall_rating')
-          .eq('primary_company_id', primaryData.id)
-          .maybeSingle();
-
-        primaryCompanyData = {
-          id: primaryData.id,
-          name: primaryData.name,
-          domain: primaryData.domain,
-          logo_url: primaryData.logo_url,
-          industry: primaryData.industry,
-          linkedin_followers: primaryData.linkedin_followers,
-          instagram_followers: primaryData.instagram_followers,
-          youtube_subscribers: primaryData.youtube_subscribers,
-          glassdoor_rating: primaryGlassdoor?.overall_rating ?? null,
-          type: 'primary'
-        };
-        setPrimaryCompany(primaryCompanyData);
-      }
-
-      // Fetch competitors with glassdoor
-      const { data: competitorsData } = await supabase
+      // Fetch all companies (primary, competitors, prospects, clients)
+      const { data: companiesData } = await supabase
         .from('companies')
-        .select('id, name, domain, logo_url, industry, linkedin_followers, instagram_followers, youtube_subscribers')
+        .select('*')
         .order('linkedin_followers', { ascending: false, nullsFirst: false });
 
-      const competitorsList: EntityData[] = (competitorsData || []).map(c => ({
-        ...c,
-        type: 'competitor' as const
+      const allCompaniesList: EntityData[] = (companiesData || []).map(c => ({
+        id: c.id,
+        name: c.name,
+        domain: c.domain,
+        logo_url: c.logo_url,
+        industry: c.industry,
+        linkedin_followers: c.linkedin_followers,
+        instagram_followers: c.instagram_followers,
+        youtube_subscribers: c.youtube_subscribers,
+        type: c.entity_type as any
       }));
 
-      // Get glassdoor ratings for competitors
-      if (competitorsList.length > 0) {
+      // Get glassdoor ratings for all
+      if (allCompaniesList.length > 0) {
         const { data: glassdoorData } = await supabase
           .from('glassdoor_summary')
           .select('company_id, overall_rating')
-          .in('company_id', competitorsList.map(c => c.id));
+          .in('company_id', allCompaniesList.map(c => c.id));
 
         if (glassdoorData) {
-          competitorsList.forEach(c => {
+          allCompaniesList.forEach(c => {
             const gd = glassdoorData.find(g => g.company_id === c.id);
             c.glassdoor_rating = gd?.overall_rating ?? null;
           });
         }
       }
 
-      setCompetitors(competitorsList);
+      setPrimaryCompany(allCompaniesList.find(c => c.type === 'primary') || null);
+      setCompetitors(allCompaniesList.filter(c => c.type === 'competitor'));
+      setProspects(allCompaniesList.filter(c => c.type === 'prospect'));
+      setClients(allCompaniesList.filter(c => c.type === 'client'));
 
-      // Fetch prospects
-      const { data: prospectsData } = await supabase
-        .from('prospects')
-        .select('id, name, domain, logo_url, industry, linkedin_followers, instagram_followers, youtube_subscribers')
-        .order('linkedin_followers', { ascending: false, nullsFirst: false });
+      // Fetch recent news from single table
+      const { data: newsData } = await supabase
+        .from('market_news')
+        .select('id, title, url, date, summary, classification, company_id')
+        .order('date', { ascending: false, nullsFirst: false })
+        .limit(60);
 
-      const prospectsList: EntityData[] = (prospectsData || []).map(p => ({
-        ...p,
-        type: 'prospect' as const
-      }));
-
-      // Get glassdoor ratings for prospects
-      if (prospectsList.length > 0) {
-        const { data: prospectGlassdoor } = await supabase
-          .from('prospect_glassdoor_summary')
-          .select('prospect_id, overall_rating')
-          .in('prospect_id', prospectsList.map(p => p.id));
-
-        if (prospectGlassdoor) {
-          prospectsList.forEach(p => {
-            const gd = prospectGlassdoor.find(g => g.prospect_id === p.id);
-            p.glassdoor_rating = gd?.overall_rating ?? null;
-          });
-        }
-      }
-
-      setProspects(prospectsList);
-
-      // Fetch clients
-      const { data: clientsData } = await supabase
-        .from('clients')
-        .select('id, name, domain, logo_url, industry, linkedin_followers, instagram_followers, youtube_subscribers')
-        .order('linkedin_followers', { ascending: false, nullsFirst: false });
-
-      const clientsList: EntityData[] = (clientsData || []).map(c => ({
-        ...c,
-        type: 'client' as const
-      }));
-
-      // Get glassdoor ratings for clients
-      if (clientsList.length > 0) {
-        const { data: clientGlassdoor } = await supabase
-          .from('client_glassdoor_summary')
-          .select('client_id, overall_rating')
-          .in('client_id', clientsList.map(c => c.id));
-
-        if (clientGlassdoor) {
-          clientsList.forEach(c => {
-            const gd = clientGlassdoor.find(g => g.client_id === c.id);
-            c.glassdoor_rating = gd?.overall_rating ?? null;
-          });
-        }
-      }
-
-      setClients(clientsList);
-
-      // Fetch recent news from all sources (increased limit)
-      const [competitorNews, prospectNews, clientNews] = await Promise.all([
-        supabase
-          .from('market_news')
-          .select('id, title, url, date, summary, classification, company_id')
-          .order('date', { ascending: false, nullsFirst: false })
-          .limit(20),
-        supabase
-          .from('prospect_market_news')
-          .select('id, title, url, date, summary, classification, prospect_id')
-          .order('date', { ascending: false, nullsFirst: false })
-          .limit(20),
-        supabase
-          .from('client_market_news')
-          .select('id, title, url, date, summary, classification, client_id')
-          .order('date', { ascending: false, nullsFirst: false })
-          .limit(20)
-      ]);
-
-      // Map news with entity info
-      const allNews: NewsItem[] = [];
-
-      (competitorNews.data || []).forEach(n => {
-        const entity = competitorsList.find(c => c.id === n.company_id);
-        allNews.push({
-          ...n,
-          entity_name: entity?.name ?? null,
-          entity_logo: entity?.logo_url ?? null,
-          entity_type: 'competitor'
-        });
-      });
-
-      (prospectNews.data || []).forEach(n => {
-        const entity = prospectsList.find(p => p.id === n.prospect_id);
-        allNews.push({
+      const allNews: NewsItem[] = (newsData || []).map(n => {
+        const entity = allCompaniesList.find(c => c.id === n.company_id);
+        return {
           id: n.id,
           title: n.title,
           url: n.url,
@@ -237,31 +135,9 @@ export function useDashboardData(): DashboardData {
           classification: n.classification,
           entity_name: entity?.name ?? null,
           entity_logo: entity?.logo_url ?? null,
-          entity_type: 'prospect'
-        });
-      });
-
-      (clientNews.data || []).forEach(n => {
-        const entity = clientsList.find(c => c.id === n.client_id);
-        allNews.push({
-          id: n.id,
-          title: n.title,
-          url: n.url,
-          date: n.date,
-          summary: n.summary,
-          classification: n.classification,
-          entity_name: entity?.name ?? null,
-          entity_logo: entity?.logo_url ?? null,
-          entity_type: 'client'
-        });
-      });
-
-      // Sort by date and take top 20 for filters
-      allNews.sort((a, b) => {
-        if (!a.date) return 1;
-        if (!b.date) return -1;
-        return new Date(b.date).getTime() - new Date(a.date).getTime();
-      });
+          entity_type: entity?.type as any
+        };
+      }).filter(n => n.entity_type && n.entity_type !== 'primary');
 
       setRecentNews(allNews.slice(0, 20));
 
@@ -298,9 +174,6 @@ export function useDashboardData(): DashboardData {
     const channel = supabase
       .channel('dashboard-changes')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'companies' }, loadData)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'prospects' }, loadData)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'clients' }, loadData)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'primary_company' }, loadData)
       .subscribe();
 
     return () => {

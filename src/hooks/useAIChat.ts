@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useUserAction } from "@/hooks/useUserAction";
 import { useAnalysisContext, EntityType } from "@/contexts/AnalysisContext";
 import { toast } from "sonner";
 import type { UploadedFile } from "@/components/chat/ChatInput";
@@ -140,6 +141,7 @@ export function useAIChat(options: UseAIChatOptions = {}) {
   const { persistHistory = true } = options;
   const { user } = useAuth();
   const { startAnalysis } = useAnalysisContext();
+  const { trackAction } = useUserAction();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -450,6 +452,9 @@ export function useAIChat(options: UseAIChatOptions = {}) {
 
   const sendMessage = useCallback(async (content: string, files?: UploadedFile[]) => {
     if (!content.trim() || isLoading) return;
+
+    // Track Orbi Chat action
+    trackAction('orb_chat', 'Conversou com o Orb');
 
     setError(null);
     

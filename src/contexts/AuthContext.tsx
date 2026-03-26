@@ -198,6 +198,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     try {
+      // Inserir log de logout antes de deslogar
+      if (user && profile && !isSuperAdmin) {
+        await supabase.from('user_usage_logs').insert({
+          user_id: user.id,
+          role: profile.role,
+          action_type: 'logout',
+          page_path: 'Saiu do sistema'
+        });
+      }
+
       // Sign out from Supabase (server-side invalidation)
       await supabase.auth.signOut();
     } catch (error) {

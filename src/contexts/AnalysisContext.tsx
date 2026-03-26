@@ -44,9 +44,9 @@ const progressMessages = [
 
 const entityLabels: Record<EntityType, { singular: string; plural: string; table: string; route: string; analyzeRoute: string }> = {
   competitor: { singular: 'concorrente', plural: 'concorrentes', table: 'companies', route: ROUTES.COMPETITOR_DETAIL, analyzeRoute: ROUTES.ANALISE_INTELIGENTE },
-  prospect: { singular: 'prospect', plural: 'prospects', table: 'prospects', route: ROUTES.PROSPECT_DETAIL, analyzeRoute: ROUTES.ANALISE_PROSPECT },
-  client: { singular: 'cliente', plural: 'clientes', table: 'clients', route: ROUTES.CLIENT_DETAIL, analyzeRoute: ROUTES.ANALISE_CLIENTE },
-  primary: { singular: 'empresa principal', plural: 'empresas principais', table: 'primary_company', route: '/configuracoes', analyzeRoute: '/configuracoes' },
+  prospect: { singular: 'prospect', plural: 'prospects', table: 'companies', route: ROUTES.PROSPECT_DETAIL, analyzeRoute: ROUTES.ANALISE_PROSPECT },
+  client: { singular: 'cliente', plural: 'clientes', table: 'companies', route: ROUTES.CLIENT_DETAIL, analyzeRoute: ROUTES.ANALISE_CLIENTE },
+  primary: { singular: 'empresa principal', plural: 'empresas principais', table: 'companies', route: '/configuracoes', analyzeRoute: '/configuracoes' },
 };
 
 const AnalysisContext = createContext<AnalysisContextType | undefined>(undefined);
@@ -214,25 +214,14 @@ export function AnalysisProvider({ children }: { children: React.ReactNode }) {
       // Salvar automaticamente baseado no tipo de entidade
       const saved = await saveCompetitor({ webhookData, domain, entityType });
 
-      // Get the entity ID from the database
+      // Get the entity ID from the database (all entity types use companies table)
       let entityId: string | null = null;
-      
-      if (entityType === 'competitor') {
-        const { data } = await supabase.from('companies').select('id').eq('domain', domain).maybeSingle();
-        entityId = data?.id || null;
-      } else if (entityType === 'prospect') {
-        const { data } = await supabase.from('prospects').select('id').eq('domain', domain).maybeSingle();
-        entityId = data?.id || null;
-      } else if (entityType === 'client') {
-        const { data } = await supabase.from('clients').select('id').eq('domain', domain).maybeSingle();
-        entityId = data?.id || null;
-      } else if (entityType === 'primary') {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-          const { data } = await supabase.from('primary_company').select('id').eq('user_id', user.id).maybeSingle();
-          entityId = data?.id || null;
-        }
-      }
+      const { data: entityRecord } = await supabase
+        .from('companies')
+        .select('id')
+        .eq('domain', domain)
+        .maybeSingle();
+      entityId = entityRecord?.id || null;
 
       // Log the activity to analysis_activity_log
       if (entityId) {

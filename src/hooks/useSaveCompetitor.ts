@@ -2,6 +2,7 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { EntityType } from "@/contexts/AnalysisContext";
+import { formatDateForSupabase } from "@/utils/helpers";
 
 export interface SaveCompetitorData {
   webhookData: {
@@ -22,97 +23,27 @@ export interface SaveCompetitorData {
   entityType?: EntityType;
 }
 
-const entityLabels: Record<EntityType, { singular: string; table: string; glassdoorTable: string; glassdoorFk: string }> = {
-  competitor: { singular: 'concorrente', table: 'companies', glassdoorTable: 'glassdoor_summary', glassdoorFk: 'company_id' },
-  prospect: { singular: 'prospect', table: 'prospects', glassdoorTable: 'prospect_glassdoor_summary', glassdoorFk: 'prospect_id' },
-  client: { singular: 'cliente', table: 'clients', glassdoorTable: 'client_glassdoor_summary', glassdoorFk: 'client_id' },
-  primary: { singular: 'empresa principal', table: 'primary_company', glassdoorTable: 'primary_company_glassdoor', glassdoorFk: 'primary_company_id' },
+const entityLabels: Record<EntityType, string> = {
+  competitor: 'concorrente',
+  prospect: 'prospect',
+  client: 'cliente',
+  primary: 'empresa principal',
 };
 
-type EntityConfig = {
-  fkName: string;
-  tables: {
-    linkedin: string;
-    instagram: string;
-    youtube: string;
-    leadership: string;
-    marketResearch: string;
-    marketNews: string;
-    similarCompanies: string;
-    blogPosts: string;
-  }
-};
+const tables = {
+  main: 'companies',
+  linkedin: 'linkedin_posts',
+  instagram: 'instagram_posts',
+  youtube: 'youtube_videos',
+  leadership: 'company_leadership',
+  marketResearch: 'market_research',
+  marketNews: 'market_news',
+  similarCompanies: 'similar_companies',
+  blogPosts: 'company_blog_posts',
+  glassdoor: 'glassdoor_summary',
+  fkName: 'company_id'
+} as const;
 
-const entityConfigs: Record<EntityType, EntityConfig> = {
-  competitor: {
-    fkName: 'company_id',
-    tables: {
-      linkedin: 'linkedin_posts',
-      instagram: 'instagram_posts',
-      youtube: 'youtube_videos',
-      leadership: 'company_leadership',
-      marketResearch: 'market_research',
-      marketNews: 'market_news',
-      similarCompanies: 'similar_companies',
-      blogPosts: 'company_blog_posts',
-    }
-  },
-  client: {
-    fkName: 'client_id',
-    tables: {
-      linkedin: 'client_linkedin_posts',
-      instagram: 'client_instagram_posts',
-      youtube: 'client_youtube_videos',
-      leadership: 'client_leadership',
-      marketResearch: 'client_market_research',
-      marketNews: 'client_market_news',
-      similarCompanies: 'client_similar_companies',
-      blogPosts: 'client_blog_posts',
-    }
-  },
-  prospect: {
-    fkName: 'prospect_id',
-    tables: {
-      linkedin: 'prospect_linkedin_posts',
-      instagram: 'prospect_instagram_posts',
-      youtube: 'prospect_youtube_videos',
-      leadership: 'prospect_leadership',
-      marketResearch: 'prospect_market_research',
-      marketNews: 'prospect_market_news',
-      similarCompanies: 'prospect_similar_companies',
-      blogPosts: 'prospect_blog_posts',
-    }
-  },
-  primary: {
-    fkName: 'primary_company_id',
-    tables: {
-      linkedin: 'primary_company_linkedin_posts',
-      instagram: 'primary_company_instagram_posts',
-      youtube: 'primary_company_youtube_videos',
-      leadership: 'primary_company_leadership',
-      marketResearch: 'primary_company_market_research',
-      marketNews: 'primary_company_market_news',
-      similarCompanies: 'primary_company_similar_companies',
-      blogPosts: 'primary_company_blog_posts',
-    }
-  }
-};
-
-const formatDateForSupabase = (dateStr: string | null | undefined): string | null => {
-  if (!dateStr) return null;
-  
-  const brDateRegex = /^(\d{2})\/(\d{2})\/(\d{4})/;
-  const match = dateStr.match(brDateRegex);
-  if (match) {
-    const [_, day, month, year] = match;
-    const parsed = new Date(`${year}-${month}-${day}T12:00:00.000Z`);
-    if (!isNaN(parsed.getTime())) return parsed.toISOString();
-  }
-  
-  const parsed = new Date(dateStr);
-  if (isNaN(parsed.getTime())) return null;
-  return parsed.toISOString();
-};
 
 export function useSaveCompetitor() {
   const [isSaving, setIsSaving] = useState(false);
@@ -126,8 +57,7 @@ export function useSaveCompetitor() {
     mercado: any,
     blog_posts?: any
   ) => {
-    const config = entityConfigs[entityType];
-    const { fkName, tables } = config;
+    const fkName = tables.fkName;
 
     // LinkedIn posts
     if (redes_sociais?.linkedin?.posts?.length > 0) {
@@ -349,8 +279,8 @@ export function useSaveCompetitor() {
   const saveCompetitor = async ({ webhookData, domain, entityType = 'competitor' }: SaveCompetitorData): Promise<boolean> => {
     try {
       setIsSaving(true);
-      const labels = entityLabels[entityType];
-      console.log(`Starting to save ${labels.singular} data for:`, domain);
+      const singularLabel = entityLabels[entityType];
+      console.log(`Starting to save ${singularLabel} data for:`, domain);
 
       let actualData = Array.isArray(webhookData) ? webhookData[0] : (webhookData || {});
       if (actualData.json) actualData = actualData.json;
@@ -380,6 +310,7 @@ export function useSaveCompetitor() {
       // 1. Upsert entity data
       const entityRecord: Record<string, any> = {
         domain: domain,
+        entity_type: entityType,
         name: overview.nome || overview.name || null,
         description: overview.descricao_institucional || overview.description || null,
         industry: overview.setor || overview.industry || null,
@@ -425,36 +356,21 @@ export function useSaveCompetitor() {
 
       let entityId: string;
 
-      // Handle different entity types with explicit table references
-      if (entityType === 'competitor' || entityType === 'prospect' || entityType === 'client') {
-        const table = labels.table;
-        const { data: existing } = await supabase.from(table).select("id").eq("domain", domain).maybeSingle();
-        if (existing) {
-          await supabase.from(table).update(entityRecord as any).eq("id", existing.id);
-          entityId = existing.id;
-        } else {
-          const { data: newEntity, error } = await supabase.from(table).insert(entityRecord as any).select("id").single();
-          if (error) throw error;
-          entityId = newEntity.id;
-        }
-      } else if (entityType === 'primary') {
+      if (entityType === 'primary') {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) throw new Error("User not authenticated");
-        
-        const primaryRecord = { ...entityRecord, user_id: user.id, analyzed_at: new Date().toISOString() };
-        const { data: existing } = await supabase.from("primary_company").select("id").eq("user_id", user.id).maybeSingle();
-        
-        if (existing) {
-          const { error: updateError } = await supabase.from("primary_company").update(primaryRecord as any).eq("id", existing.id);
-          if (updateError) throw updateError;
-          entityId = existing.id;
-        } else {
-          const { data: newEntity, error } = await supabase.from("primary_company").insert(primaryRecord as any).select("id").single();
-          if (error) throw error;
-          entityId = newEntity.id;
-        }
+        entityRecord.user_id = user.id;
+        entityRecord.analyzed_at = new Date().toISOString();
+      }
+
+      const { data: existing } = await supabase.from('companies').select("id").eq("domain", domain).maybeSingle();
+      if (existing) {
+        await supabase.from('companies').update(entityRecord).eq("id", existing.id);
+        entityId = existing.id;
       } else {
-        throw new Error(`Unknown entity type: ${entityType}`);
+        const { data: newEntity, error } = await supabase.from('companies').insert(entityRecord).select("id").single();
+        if (error) throw error;
+        entityId = newEntity.id;
       }
 
       console.log("Entity saved with ID:", entityId);
@@ -483,8 +399,8 @@ export function useSaveCompetitor() {
             interviews: glassdoor.interviews || [],
           };
 
-          await supabase.from(labels.glassdoorTable).delete().eq(labels.glassdoorFk, entityId);
-          await supabase.from(labels.glassdoorTable).insert({ [labels.glassdoorFk]: entityId, ...glassdoorBase });
+          await supabase.from(tables.glassdoor).delete().eq(tables.fkName, entityId);
+          await supabase.from(tables.glassdoor).insert({ [tables.fkName]: entityId, ...glassdoorBase });
           console.log(`Inserted Glassdoor data for ${entityType}`);
         } catch (error) {
           console.error("Failed to process Glassdoor data:", error);
@@ -493,7 +409,7 @@ export function useSaveCompetitor() {
 
       toast({
         title: "Sucesso!",
-        description: `Dados do ${labels.singular} salvos com sucesso.`,
+        description: `Dados do ${singularLabel} salvos com sucesso.`,
       });
 
       return true;

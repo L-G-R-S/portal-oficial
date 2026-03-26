@@ -433,6 +433,42 @@ export function MercadoTab({
         </CardContent>
       </Card>
 
+      {/* References Section */}
+      {marketResearch?.source_references && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Link className="h-5 w-5 text-primary" />
+              Referências e Fontes
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {marketResearch.source_references.split(',').map((url: string, idx: number) => {
+                const cleanUrl = url.trim();
+                if (!isValidUrl(cleanUrl)) return null;
+                
+                return (
+                  <a 
+                    key={`ref-${idx}`} 
+                    href={cleanUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 p-3 border rounded-lg hover:bg-accent transition-colors group"
+                  >
+                    <Globe className="h-4 w-4 text-muted-foreground group-hover:text-primary" />
+                    <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors truncate">
+                      {cleanUrl.replace(/^https?:\/\//, '').replace(/\/$/, '')}
+                    </span>
+                    <ExternalLink className="h-3 w-3 ml-auto opacity-50 group-hover:opacity-100" />
+                  </a>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Similar Companies */}
       {similarCompanies.length > 0 && (
         <Card>

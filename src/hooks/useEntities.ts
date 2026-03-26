@@ -6,9 +6,9 @@ import { UnifiedEntity } from "@/components/entity/UnifiedEntityCard";
 export type EntityType = "competitor" | "prospect" | "client";
 
 interface EntityConfig {
-  table: "companies" | "prospects" | "clients";
-  glassdoorTable: "glassdoor_summary" | "prospect_glassdoor_summary" | "client_glassdoor_summary";
-  glassdoorForeignKey: "company_id" | "prospect_id" | "client_id";
+  table: "companies";
+  glassdoorTable: "glassdoor_summary";
+  glassdoorForeignKey: "company_id";
   labels: {
     singular: string;
     plural: string;
@@ -23,15 +23,15 @@ const entityConfigs: Record<EntityType, EntityConfig> = {
     labels: { singular: "Concorrente", plural: "concorrentes" },
   },
   prospect: {
-    table: "prospects",
-    glassdoorTable: "prospect_glassdoor_summary",
-    glassdoorForeignKey: "prospect_id",
+    table: "companies",
+    glassdoorTable: "glassdoor_summary",
+    glassdoorForeignKey: "company_id",
     labels: { singular: "Prospect", plural: "prospects" },
   },
   client: {
-    table: "clients",
-    glassdoorTable: "client_glassdoor_summary",
-    glassdoorForeignKey: "client_id",
+    table: "companies",
+    glassdoorTable: "glassdoor_summary",
+    glassdoorForeignKey: "company_id",
     labels: { singular: "Cliente", plural: "clientes" },
   },
 };
@@ -49,9 +49,10 @@ export function useEntities(entityType: EntityType) {
       const { data, error } = await supabase
         .from(config.table)
         .select(`
-          id, domain, name, sector, industry, employee_count, headquarters, 
-          year_founded, website, linkedin_url, logo_url, updated_at, created_at
+          id, domain, name, sector, industry, employee_count, headquarters, address,
+          year_founded, website, linkedin_url, logo_url, updated_at, created_at, entity_type
         `)
+        .eq('entity_type', entityType)
         .order("updated_at", { ascending: false });
 
       if (error) throw error;
@@ -62,34 +63,21 @@ export function useEntities(entityType: EntityType) {
       let glassdoorMap = new Map<string, number | null>();
       
       if (entityIds.length > 0) {
-        if (entityType === "competitor") {
-          const { data: gd } = await supabase
-            .from("glassdoor_summary")
-            .select("company_id, overall_rating")
-            .in("company_id", entityIds);
-          glassdoorMap = new Map((gd || []).map(g => [g.company_id!, g.overall_rating]));
-        } else if (entityType === "prospect") {
-          const { data: gd } = await supabase
-            .from("prospect_glassdoor_summary")
-            .select("prospect_id, overall_rating")
-            .in("prospect_id", entityIds);
-          glassdoorMap = new Map((gd || []).map(g => [g.prospect_id!, g.overall_rating]));
-        } else {
-          const { data: gd } = await supabase
-            .from("client_glassdoor_summary")
-            .select("client_id, overall_rating")
-            .in("client_id", entityIds);
-          glassdoorMap = new Map((gd || []).map(g => [g.client_id!, g.overall_rating]));
-        }
+        const { data: gd } = await supabase
+          .from("glassdoor_summary")
+          .select("company_id, overall_rating")
+          .in("company_id", entityIds);
+        glassdoorMap = new Map((gd || []).map(g => [g.company_id!, g.overall_rating]));
       }
       
       const mappedData: UnifiedEntity[] = (data || []).map(entity => ({
         ...entity,
-        hq_location: entity.headquarters,
-        location: entity.headquarters,
+        hq_location: entity.headquarters || entity.address,
+        location: entity.headquarters || entity.address,
         founded_year: entity.year_founded,
         site: entity.website,
         employees: entity.employee_count,
+        address: entity.address,
         glassdoor_rating: glassdoorMap.get(entity.id) || null,
       }));
       

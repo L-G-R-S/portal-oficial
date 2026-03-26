@@ -31,3 +31,5 @@ GUIDE.md
 .lovable
 
 .env
+*.sql
+documentation/

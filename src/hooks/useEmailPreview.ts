@@ -10,7 +10,7 @@ interface NewsItem {
   date: string;
   entity_type: 'competitor' | 'prospect' | 'client';
   entity_id: string;
-  news_table: 'market_news' | 'prospect_market_news' | 'client_market_news';
+  news_table: 'market_news';
   selected: boolean;
   excluded: boolean;
   edited_title?: string;
@@ -91,72 +91,30 @@ export function useEmailPreview() {
         (excludedData || []).map(e => `${e.news_table}:${e.news_id}`)
       );
 
-      const [competitorNews, prospectNews, clientNews] = await Promise.all([
-        supabase
-          .from('market_news')
-          .select('id, title, summary, url, date, company_id')
-          .gte('date', weekAgo.toISOString())
-          .order('date', { ascending: false })
-          .limit(20),
-        supabase
-          .from('prospect_market_news')
-          .select('id, title, summary, url, date, prospect_id')
-          .gte('date', weekAgo.toISOString())
-          .order('date', { ascending: false })
-          .limit(20),
-        supabase
-          .from('client_market_news')
-          .select('id, title, summary, url, date, client_id')
-          .gte('date', weekAgo.toISOString())
-          .order('date', { ascending: false })
-          .limit(20),
-      ]);
+      const { data: newsData } = await supabase
+        .from('market_news')
+        .select('id, title, summary, url, date, company_id, companies!inner(entity_type)')
+        .gte('date', weekAgo.toISOString())
+        .order('date', { ascending: false })
+        .limit(60);
 
       let allNews: NewsItem[] = [];
 
-      if (competitorNews.data) {
-        allNews.push(...competitorNews.data.map(n => ({
-          id: n.id,
-          title: n.title,
-          summary: n.summary,
-          url: n.url,
-          date: n.date,
-          entity_type: 'competitor' as const,
-          entity_id: n.company_id,
-          news_table: 'market_news' as const,
-          selected: !excludedSet.has(`market_news:${n.id}`),
-          excluded: excludedSet.has(`market_news:${n.id}`),
-        })));
-      }
-
-      if (prospectNews.data) {
-        allNews.push(...prospectNews.data.map(n => ({
-          id: n.id,
-          title: n.title,
-          summary: n.summary,
-          url: n.url,
-          date: n.date,
-          entity_type: 'prospect' as const,
-          entity_id: n.prospect_id,
-          news_table: 'prospect_market_news' as const,
-          selected: !excludedSet.has(`prospect_market_news:${n.id}`),
-          excluded: excludedSet.has(`prospect_market_news:${n.id}`),
-        })));
-      }
-
-      if (clientNews.data) {
-        allNews.push(...clientNews.data.map(n => ({
-          id: n.id,
-          title: n.title,
-          summary: n.summary,
-          url: n.url,
-          date: n.date,
-          entity_type: 'client' as const,
-          entity_id: n.client_id,
-          news_table: 'client_market_news' as const,
-          selected: !excludedSet.has(`client_market_news:${n.id}`),
-          excluded: excludedSet.has(`client_market_news:${n.id}`),
-        })));
+      if (newsData) {
+        allNews = newsData
+          .filter((n: any) => n.companies?.entity_type && n.companies.entity_type !== 'primary')
+          .map((n: any) => ({
+            id: n.id,
+            title: n.title,
+            summary: n.summary,
+            url: n.url,
+            date: n.date,
+            entity_type: n.companies.entity_type as 'competitor' | 'prospect' | 'client',
+            entity_id: n.company_id,
+            news_table: 'market_news' as const,
+            selected: !excludedSet.has(`market_news:${n.id}`),
+            excluded: excludedSet.has(`market_news:${n.id}`),
+          }));
       }
 
       // Filter by high impact if enabled (but keep excluded for display)

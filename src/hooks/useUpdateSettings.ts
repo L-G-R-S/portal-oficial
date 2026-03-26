@@ -353,21 +353,24 @@ export function useUpdateSettings() {
           label = 'concorrentes';
           const { count: compCount } = await supabase
             .from('companies')
-            .select('*', { count: 'exact', head: true });
+            .select('*', { count: 'exact', head: true })
+            .eq('entity_type', 'competitor');
           entityCount = compCount || 0;
           break;
         case 'prospect':
           label = 'prospects';
           const { count: prospCount } = await supabase
-            .from('prospects')
-            .select('*', { count: 'exact', head: true });
+            .from('companies')
+            .select('*', { count: 'exact', head: true })
+            .eq('entity_type', 'prospect');
           entityCount = prospCount || 0;
           break;
         case 'client':
           label = 'clientes';
           const { count: clientCount } = await supabase
-            .from('clients')
-            .select('*', { count: 'exact', head: true });
+            .from('companies')
+            .select('*', { count: 'exact', head: true })
+            .eq('entity_type', 'client');
           entityCount = clientCount || 0;
           break;
       }

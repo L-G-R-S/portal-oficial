@@ -50,6 +50,7 @@ export interface UnifiedEntity {
   updated_at: string | null;
   created_at: string | null;
   glassdoor_rating: number | null;
+  address?: string | null;
 }
 
 interface UnifiedEntityCardProps {
@@ -87,7 +88,7 @@ export function UnifiedEntityCard({
   };
 
   const getLocation = () => {
-    return entity.hq_location || entity.headquarters || entity.location || null;
+    return entity.hq_location || entity.headquarters || entity.address || entity.location || null;
   };
 
   const getEmployees = () => {
@@ -99,7 +100,7 @@ export function UnifiedEntityCard({
   };
 
   const getFoundedYear = () => {
-    return entity.founded_year || entity.year_founded || null;
+    return entity.year_founded || entity.founded_year || null;
   };
 
   const site = getSite();

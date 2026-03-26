@@ -55,6 +55,18 @@ const ENTITY_CONFIGS = {
     similarCompaniesTable: 'client_similar_companies',
     blogTable: 'client_blog_posts',
   },
+  primary: {
+    table: 'primary_company',
+    fkColumn: 'primary_company_id',
+    linkedinTable: 'primary_company_linkedin_posts',
+    instagramTable: 'primary_company_instagram_posts',
+    youtubeTable: 'primary_company_youtube_videos',
+    leadershipTable: 'primary_company_leadership',
+    marketResearchTable: 'primary_company_market_research',
+    marketNewsTable: 'primary_company_market_news',
+    similarCompaniesTable: 'primary_company_similar_companies',
+    blogTable: 'primary_company_blog_posts',
+  },
 };
 
 serve(async (req: Request) => {
@@ -71,47 +83,75 @@ serve(async (req: Request) => {
 
     // ─── PRE-PROCESS: merge N8N "source_type" format ──────────────────────────
     // If the payload has items with source_type, consolidate them into one doc per domain
-    const hasMergeFormat = Array.isArray(rawPayload) && rawPayload.some((item: any) => item.source_type || item.linkedin_info);
+    const hasMergeFormat = Array.isArray(rawPayload) && rawPayload.some((item: any) => 
+      item.source_type || item.linkedin_info || item.instagram_info || item.youtube_info || item.google_maps_info
+    );
 
     let payload: any[];
 
     if (hasMergeFormat) {
       const merged: Record<string, any> = {};
 
+      // In N8N, an array of items usually belongs to a single execution (one company).
+      // Find a domain from ANY item in the array to use as a fallback.
+      let sharedDomain = null;
       for (const item of rawPayload) {
-        // Find domain from any source
+        sharedDomain = sharedDomain || 
+          item.company?.dominio || 
+          item.empresa?.dominio || 
+          item.domain || 
+          item.linkedin_info?.website?.replace(/^https?:\/\//, '').replace(/\/$/, '') || 
+          item.market_research_raw?.company?.dominio;
+          
+        if (sharedDomain) break;
+      }
+
+      for (const item of rawPayload) {
+        // Find domain from any source, fallback to sharedDomain
         const domain =
           item.company?.dominio ||
+          item.empresa?.dominio ||
+          item.domain ||
           item.linkedin_info?.website?.replace(/^https?:\/\//, '').replace(/\/$/, '') ||
+          item.market_research_raw?.company?.dominio ||
+          sharedDomain ||
           null;
 
-        if (!domain) continue;
+        if (!domain) {
+          console.warn("Could not determine domain for item during merge:", item);
+          continue;
+        }
 
         if (!merged[domain]) merged[domain] = { company: { dominio: domain } };
         const doc = merged[domain];
-
         const st = item.source_type;
+
+        if (item.linkedin_logo && !doc.linkedin_logo) {
+          doc.linkedin_logo = item.linkedin_logo;
+        }
 
         if (st === 'linkedin_info' || item.linkedin_info) {
           const li = item.linkedin_info || item;
           doc.linkedin_info = li;
-          // Also build a company object from linkedin_info
+          if (li.logoUrl && !doc.linkedin_logo) doc.linkedin_logo = li.logoUrl;
+          // Merging rather than overwriting
           doc.company = {
             dominio: domain,
+            ...doc.company,
             nome: li.name || doc.company?.nome || null,
-            descricao_institucional: li.description || null,
-            setor: li.industry || null,
-            website: li.website || null,
-            linkedin_url: li.url || null,
-            followers: li.followers || null,
-            company_size: li.company_size || null,
-            employee_count: li.employee_count || null,
-            company_type: li.company_type || null,
-            headquarters: li.headquarters || null,
-            founded: li.founded || null,
-            country_code: li.country_code || null,
-            specialties: li.specialties || [],
-            tagline: li.tagline || null,
+            descricao_institucional: li.description || doc.company?.descricao_institucional || null,
+            setor: li.industry || doc.company?.setor || null,
+            website: li.website || doc.company?.website || null,
+            linkedin_url: li.url || doc.company?.linkedin_url || null,
+            followers: li.followers || doc.company?.followers || null,
+            company_size: li.company_size || doc.company?.company_size || null,
+            employee_count: li.employee_count || doc.company?.employee_count || null,
+            company_type: li.company_type || doc.company?.company_type || null,
+            headquarters: li.headquarters || doc.company?.headquarters || null,
+            founded: li.founded || doc.company?.founded || null,
+            country_code: li.country_code || doc.company?.country_code || null,
+            specialties: li.specialties || doc.company?.specialties || [],
+            tagline: li.tagline || doc.company?.tagline || null,
           };
           if (Array.isArray(li.similar_companies)) {
             doc.similar_companies = li.similar_companies;
@@ -121,7 +161,10 @@ serve(async (req: Request) => {
         if (st === 'linkedin_posts' || item.linkedin_posts) {
           if (!doc.linkedin_posts) doc.linkedin_posts = [];
           const p = item.linkedin_posts;
-          if (p) doc.linkedin_posts.push(p);
+          if (p) {
+            if (Array.isArray(p)) doc.linkedin_posts.push(...p);
+            else doc.linkedin_posts.push(p);
+          }
         }
 
         if (item.instagram_info && !doc.instagram_info) {
@@ -131,8 +174,12 @@ serve(async (req: Request) => {
           }
         }
 
-        if (st === 'instagram_posts' && item.posts) {
-          doc.instagram_posts = [...(doc.instagram_posts || []), ...item.posts];
+        if (st === 'instagram_posts' || item.posts || item.instagram_posts) {
+          const p = item.posts || item.instagram_posts;
+          if (p) {
+            if (Array.isArray(p)) doc.instagram_posts = [...(doc.instagram_posts || []), ...p];
+            else doc.instagram_posts = [...(doc.instagram_posts || []), p];
+          }
         }
 
         if (st === 'youtube_info' || item.youtube_info) {
@@ -181,10 +228,20 @@ serve(async (req: Request) => {
       }
 
       const actualData = webhookData.market_research_raw || webhookData;
-      const overview = actualData.overview || actualData.visao_geral || {};
-      const redes_sociais = actualData.redes_sociais || actualData.social_media || {};
-      const mercado = actualData.mercado || actualData.market_research_raw || actualData;
-      const companyData = webhookData.company || webhookData.empresa || actualData.company || overview || {};
+      const overview = webhookData.overview || actualData.overview || actualData.visao_geral || {};
+      const redes_sociais = webhookData.redes_sociais || actualData.redes_sociais || webhookData.social_media || actualData.social_media || {};
+      const mercado = webhookData.market_research_raw || actualData.mercado || actualData;
+      
+      // Coletar múltiplos candidatos a companyData e mesclar todos
+      const allCands = [
+        mercado?.company,
+        overview,
+        actualData.company,
+        webhookData.empresa,
+        webhookData.company
+      ].filter(Boolean);
+      
+      const companyData = allCands.reduce((acc, curr) => ({ ...acc, ...curr }), {});
       const mercadoCompany = mercado?.company || {};
 
       // Also pull from linkedin_info if available
@@ -217,26 +274,60 @@ serve(async (req: Request) => {
         differentiators: companyData.diferenciais || companyData.differentiators || mercadoCompany?.diferenciais || null,
         partners: mercadoCompany?.parceiros || overview.parceiros || null,
         clients: mercadoCompany?.clientes_citados || overview.clientes_citados || null,
-        website: companyData.website || liInfo.website || overview.website || overview.site_institucional || null,
+        website: (function() {
+          const url = companyData.website || liInfo.website || overview.website || overview.site_institucional || companyData.site || presencaDigital?.site_institucional || null;
+          if (!url) return null;
+          return url.startsWith('http') ? url : `https://${url}`;
+        })(),
         headquarters: companyData.headquarters || liInfo.headquarters || redes_sociais?.linkedin?.headquarters || overview.endereco || null,
-        year_founded: companyData.founded ? parseInt(companyData.founded) : (liInfo.founded ? parseInt(liInfo.founded) : null),
+        year_founded: (function() {
+          const val = companyData.founded || companyData.founded_year || companyData.ano_fundacao || liInfo.founded || 
+                      mercadoCompany.founded || mercadoCompany.founded_year || mercadoCompany.ano_fundacao || null;
+          if (!val) return null;
+          const parsed = parseInt(String(val).replace(/[^\d]/g, ''));
+          return isNaN(parsed) ? null : parsed;
+        })(),
         size: companyData.company_size || liInfo.company_size || redes_sociais?.linkedin?.company_size || null,
         employee_count: companyData.employee_count || liInfo.employee_count || redes_sociais?.linkedin?.employee_count || null,
-        linkedin_url: companyData.linkedin_url || liInfo.url || redes_sociais?.linkedin?.url || presencaDigital?.linkedin || null,
-        linkedin_followers: companyData.followers || liInfo.followers || redes_sociais?.linkedin?.followers || null,
+        linkedin_url: (function() {
+          const url = companyData.linkedin_url || liInfo.url || redes_sociais?.linkedin?.url || presencaDigital?.linkedin || companyData.linkedin || 
+                      mercadoCompany.linkedin_url || mercadoCompany.linkedin || null;
+          if (!url) return null;
+          return url.startsWith('http') ? url : `https://${url}`;
+        })(),
+        linkedin_followers: (function() {
+           const val = companyData.followers || liInfo.followers || redes_sociais?.linkedin?.followers || companyData.followers_count || 
+                       mercadoCompany.followers || mercadoCompany.followers_count || webhookData.followers || null;
+           return val ? parseInt(String(val)) : null;
+        })(),
         linkedin_specialties: companyData.specialties || liInfo.specialties || redes_sociais?.linkedin?.specialties || null,
         linkedin_tagline: companyData.tagline || liInfo.tagline || redes_sociais?.linkedin?.tagline || null,
-        instagram_url: webhookData?.instagram_info?.profileUrl || redes_sociais?.instagram?.profileUrl || presencaDigital?.instagram || null,
+        instagram_url: (function() {
+          const url = webhookData?.instagram_info?.profileUrl || redes_sociais?.instagram?.profileUrl || presencaDigital?.instagram || 
+                      webhookData?.instagram_info?.url || redes_sociais?.instagram?.url || null;
+          if (!url) return null;
+          return url.startsWith('http') ? url : `https://${url}`;
+        })(),
         instagram_username: webhookData?.instagram_info?.username || redes_sociais?.instagram?.username || null,
-        instagram_followers: webhookData?.instagram_info?.profile?.followersCount || redes_sociais?.instagram?.profile?.followersCount || null,
+        instagram_followers: (function() {
+           const val = webhookData?.instagram_info?.profile?.followersCount || redes_sociais?.instagram?.profile?.followersCount || 
+                       webhookData?.instagram_info?.followersCount || redes_sociais?.instagram?.followersCount || null;
+           return val ? parseInt(String(val)) : null;
+        })(),
         instagram_follows: webhookData?.instagram_info?.profile?.followsCount || redes_sociais?.instagram?.profile?.followsCount || null,
         instagram_posts_count: webhookData?.instagram_info?.profile?.postsCount || redes_sociais?.instagram?.profile?.postsCount || null,
-        youtube_url: webhookData?.youtube_info?.channel?.url || redes_sociais?.youtube?.channel?.url || null,
+        youtube_url: (function() {
+          const url = webhookData?.youtube_info?.channel?.url || redes_sociais?.youtube?.channel?.url || presencaDigital?.youtube || null;
+          if (!url) return null;
+          if (typeof url === 'string' && url.includes('linkedin.com')) return null;
+          return url.startsWith('http') ? url : `https://${url}`;
+        })(),
         youtube_channel_name: webhookData?.youtube_info?.channel?.name || redes_sociais?.youtube?.channel?.name || null,
         youtube_subscribers: webhookData?.youtube_info?.channel?.subscribers || redes_sociais?.youtube?.channel?.subscribers || null,
         youtube_total_videos: webhookData?.youtube_info?.channel?.totalVideos || redes_sociais?.youtube?.channel?.totalVideos || null,
         youtube_total_views: webhookData?.youtube_info?.channel?.totalViews || redes_sociais?.youtube?.channel?.totalViews || null,
         blog_url: companyData.blog_url || null,
+        analyzed_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
 
@@ -256,16 +347,28 @@ serve(async (req: Request) => {
         tablesToUpdate.push('companies');
       }
 
-      console.log(`Domain ${domain} found in: ${tablesToUpdate.join(', ')}`);
-
       for (const tableKey of tablesToUpdate) {
         const cfg = ENTITY_CONFIGS[tableKey as keyof typeof ENTITY_CONFIGS];
         const fk = cfg.fkColumn;
 
         // Upsert entity record
+        
+        // Usar uma cópia para evitar contaminação entre tabelas
+        const recordToUpsert = { ...entityRecord };
+        
+        // Se estivermos atualizando a tabela 'companies', precisamos garantir que o entity_type não seja 'rebaixado'
+        if (tableKey === 'companies') {
+          const { data: current } = await supabase.from('companies').select('entity_type').eq('domain', domain).maybeSingle();
+          if (current?.entity_type === 'primary') {
+             recordToUpsert.entity_type = 'primary';
+          } else {
+             recordToUpsert.entity_type = (webhookData.source_type && webhookData.source_type !== 'company') ? webhookData.source_type : 'competitor';
+          }
+        }
+
         const { data: insertedEntity, error: entityError } = await supabase
           .from(cfg.table)
-          .upsert(entityRecord, { onConflict: 'domain' })
+          .upsert(recordToUpsert, { onConflict: 'domain' })
           .select()
           .single();
 

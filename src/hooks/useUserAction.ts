@@ -4,12 +4,15 @@ import { useAuth } from '@/contexts/AuthContext';
 
 export type UserActionType = 
   | 'login' 
+  | 'logout'
+  | 'orb_chat'
   | 'nova_analise' 
   | 'download_pdf' 
   | 'novo_concorrente' 
   | 'nova_entidade'
   | 'atualizacao_perfil' 
-  | 'upload_foto';
+  | 'upload_foto'
+  | 'config_change';
 
 export const useUserAction = () => {
   const { user, profile, isSuperAdmin } = useAuth();

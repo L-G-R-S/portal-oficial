@@ -23,7 +23,7 @@ import {
 import type { EntityDetailData } from "@/hooks/useEntityDetail";
 import { generateCompetitorReport } from "@/utils/pdfReportGenerator";
 import { useUpdateNews } from "@/hooks/useUpdateNews";
-import { isValidUrl } from "@/utils/helpers";
+import { isValidUrl, ensureProtocol } from "@/utils/helpers";
 
 // Import tab components
 import { OverviewTab } from "./tabs/OverviewTab";
@@ -173,10 +173,10 @@ export function EntityDetailContent({
                     {entity.size}
                   </Badge>
                 )}
-                {entity.year_founded && (
+                {(entity.year_founded || entity.founded_year) && (
                   <Badge variant="secondary" className="flex items-center gap-1">
                     <Calendar className="h-3 w-3" />
-                    Fundada em {entity.year_founded}
+                    Fundada em {entity.year_founded || entity.founded_year}
                   </Badge>
                 )}
               </div>
@@ -184,7 +184,7 @@ export function EntityDetailContent({
               <div className="flex flex-wrap justify-center sm:justify-start gap-2 sm:gap-3">
                 {isValidUrl(entity.website) && (
                   <Button variant="outline" size="sm" asChild>
-                    <a href={entity.website} target="_blank" rel="noopener noreferrer">
+                    <a href={ensureProtocol(entity.website)} target="_blank" rel="noopener noreferrer">
                       <Globe className="h-4 w-4 mr-2" />
                       Website
                       <ExternalLink className="h-3 w-3 ml-1" />
@@ -193,7 +193,7 @@ export function EntityDetailContent({
                 )}
                 {isValidUrl(entity.linkedin_url) && (
                   <Button variant="outline" size="sm" asChild>
-                    <a href={entity.linkedin_url} target="_blank" rel="noopener noreferrer">
+                    <a href={ensureProtocol(entity.linkedin_url)} target="_blank" rel="noopener noreferrer">
                       <Linkedin className="h-4 w-4 mr-2" />
                       LinkedIn
                       <ExternalLink className="h-3 w-3 ml-1" />
@@ -202,7 +202,7 @@ export function EntityDetailContent({
                 )}
                 {isValidUrl(entity.instagram_url) && (
                   <Button variant="outline" size="sm" asChild>
-                    <a href={entity.instagram_url} target="_blank" rel="noopener noreferrer">
+                    <a href={ensureProtocol(entity.instagram_url)} target="_blank" rel="noopener noreferrer">
                       <Instagram className="h-4 w-4 mr-2" />
                       Instagram
                       <ExternalLink className="h-3 w-3 ml-1" />
@@ -211,7 +211,7 @@ export function EntityDetailContent({
                 )}
                 {isValidUrl(entity.youtube_url) && (
                   <Button variant="outline" size="sm" asChild>
-                    <a href={entity.youtube_url} target="_blank" rel="noopener noreferrer">
+                    <a href={ensureProtocol(entity.youtube_url)} target="_blank" rel="noopener noreferrer">
                       <Youtube className="h-4 w-4 mr-2" />
                       YouTube
                       <ExternalLink className="h-3 w-3 ml-1" />

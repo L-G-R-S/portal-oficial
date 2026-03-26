@@ -95,8 +95,9 @@ export default function UsageDashboard() {
       const { data: allProfiles, error: profileErr } = await supabase.from('profiles').select('*');
       if (profileErr) throw profileErr;
       
-      // Exclui super admins dos cálculos e contagem de usuários
-      const profiles = allProfiles?.filter(p => p.role !== 'super_admin') || [];
+      // Exclui administradores (administrador e super_admin via roles) dos cálculos
+      // Exclui administradores (administrador e super_admin via roles) dos cálculos
+      const profiles = allProfiles?.filter(p => (p.role as string) !== 'administrador') || [];
       const totalUsers = profiles.length;
       
       // Extrai roles dinâmicas do banco (das contas que não são super_admin)
@@ -111,6 +112,8 @@ export default function UsageDashboard() {
           profiles (full_name)
         `)
         .neq('role', 'super_admin')
+        .neq('role', 'administrador')
+        .neq('action_type', 'page_view')
         .gte('created_at', startDate)
         .lte('created_at', endDate)
         .order('created_at', { ascending: false })
@@ -124,6 +127,7 @@ export default function UsageDashboard() {
         .from('user_usage_logs')
         .select('user_id, role')
         .neq('role', 'super_admin')
+        .neq('role', 'administrador')
         .gte('created_at', startDate)
         .lte('created_at', endDate);
         
@@ -177,7 +181,8 @@ export default function UsageDashboard() {
       const { error } = await supabase
         .from('user_usage_logs')
         .delete()
-        .neq('role', 'super_admin'); // Só apaga os logs de usuários normais
+        .neq('role', 'super_admin')
+        .neq('role', 'administrador'); // Só apaga os logs de usuários normais
         
       if (error) throw error;
       
@@ -213,6 +218,8 @@ export default function UsageDashboard() {
   const getActionLabel = (action_type: string) => {
     const map: Record<string, string> = {
       login: 'Login',
+      logout: 'Saiu',
+      orb_chat: 'Conversou com o Orb',
       nova_analise: 'Nova Análise',
       download_pdf: 'Download PDF',
       novo_concorrente: 'Criou Concorrente',
