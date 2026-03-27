@@ -24,9 +24,11 @@ import { cn } from "@/lib/utils";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import logoImage from "@/assets/logo-prime-control.png";
+import logoImage from "@/assets/logo-prime-vision.svg";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfileAvatar, getInitials, getRoleLabel } from "@/hooks/useProfile";
+import { FeedbackDialog } from "@/components/feedback/FeedbackDialog";
+import { MessageSquarePlus } from "lucide-react";
 
 const competitorItems = [
   { title: "Lista de concorrentes", url: "/competitors" },
@@ -68,8 +70,8 @@ export function AppSidebar() {
         <div className="flex items-center gap-3">
           <img 
             src={logoImage} 
-            alt="Prime Control" 
-            className="h-10 w-auto"
+            alt="Prime Vision" 
+            className="h-9 w-auto" 
           />
           {!collapsed && (
             <span className="text-xs font-semibold text-sidebar-foreground/60 bg-sidebar-accent px-2 py-0.5 rounded-md ml-auto">
@@ -145,9 +147,33 @@ export function AppSidebar() {
 
 
 
+
+
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
+        {/* Space in the middle + Feedback at the bottom */}
+        <div className="mt-auto pb-4">
+          <SidebarGroup className="p-0">
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuItem className="px-3 border-none bg-transparent">
+                  <FeedbackDialog>
+                    <button className={cn(
+                      "flex items-center gap-2 px-1 py-1 w-fit rounded-md transition-all duration-200",
+                      "text-sidebar-foreground/30 hover:text-sidebar-foreground hover:bg-sidebar-accent/30 outline-none",
+                      collapsed ? "mx-auto justify-center" : "justify-start"
+                    )}>
+                      <MessageSquarePlus className={cn("h-3.5 w-3.5", !collapsed && "mr-1")} />
+                      {!collapsed && <span className="text-[10px] font-medium uppercase tracking-wider">Feedback / Ajuda</span>}
+                    </button>
+                  </FeedbackDialog>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </div>
       </SidebarContent>
 
       {profile && (

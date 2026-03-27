@@ -25,6 +25,7 @@ interface EntityRankingTableProps {
   competitors: EntityData[];
   prospects: EntityData[];
   clients: EntityData[];
+  context?: 'all' | 'competitor' | 'prospect' | 'client';
 }
 
 type SortKey = 'name' | 'linkedin' | 'instagram' | 'youtube' | 'glassdoor';
@@ -38,11 +39,11 @@ const getTypeBadge = (type: string) => {
 
 type FilterType = 'all' | 'competitor' | 'prospect' | 'client';
 
-export function EntityRankingTable({ primaryCompany, competitors, prospects, clients }: EntityRankingTableProps) {
+export function EntityRankingTable({ primaryCompany, competitors, prospects, clients, context = 'all' }: EntityRankingTableProps) {
   const navigate = useNavigate();
   const [sortKey, setSortKey] = useState<SortKey>('linkedin');
   const [sortAsc, setSortAsc] = useState(false);
-  const [filterType, setFilterType] = useState<FilterType>('all');
+  const [filterType, setFilterType] = useState<FilterType>(context);
 
   const allEntities: EntityData[] = [
     ...(primaryCompany ? [primaryCompany] : []),
@@ -116,40 +117,42 @@ export function EntityRankingTable({ primaryCompany, competitors, prospects, cli
     <Card>
       <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <CardTitle className="text-lg font-semibold">Ranking Geral</CardTitle>
-        <div className="flex flex-wrap gap-1 sm:gap-2">
-          <Button 
-            variant={filterType === 'all' ? 'default' : 'outline'} 
-            size="sm"
-            onClick={() => setFilterType('all')}
-            className="text-xs h-7 px-2 sm:px-3"
-          >
-            Todos
-          </Button>
-          <Button 
-            variant={filterType === 'competitor' ? 'default' : 'outline'} 
-            size="sm"
-            onClick={() => setFilterType('competitor')}
-            className="text-xs h-7 px-2 sm:px-3"
-          >
-            Concorrentes
-          </Button>
-          <Button 
-            variant={filterType === 'prospect' ? 'default' : 'outline'} 
-            size="sm"
-            onClick={() => setFilterType('prospect')}
-            className="text-xs h-7 px-2 sm:px-3"
-          >
-            Prospects
-          </Button>
-          <Button 
-            variant={filterType === 'client' ? 'default' : 'outline'} 
-            size="sm"
-            onClick={() => setFilterType('client')}
-            className="text-xs h-7 px-2 sm:px-3"
-          >
-            Clientes
-          </Button>
-        </div>
+        {context === 'all' && (
+          <div className="flex flex-wrap gap-1 sm:gap-2">
+            <Button 
+              variant={filterType === 'all' ? 'default' : 'outline'} 
+              size="sm"
+              onClick={() => setFilterType('all')}
+              className="text-xs h-7 px-2 sm:px-3"
+            >
+              Todos
+            </Button>
+            <Button 
+              variant={filterType === 'competitor' ? 'default' : 'outline'} 
+              size="sm"
+              onClick={() => setFilterType('competitor')}
+              className="text-xs h-7 px-2 sm:px-3"
+            >
+              Concorrentes
+            </Button>
+            <Button 
+              variant={filterType === 'prospect' ? 'default' : 'outline'} 
+              size="sm"
+              onClick={() => setFilterType('prospect')}
+              className="text-xs h-7 px-2 sm:px-3"
+            >
+              Prospects
+            </Button>
+            <Button 
+              variant={filterType === 'client' ? 'default' : 'outline'} 
+              size="sm"
+              onClick={() => setFilterType('client')}
+              className="text-xs h-7 px-2 sm:px-3"
+            >
+              Clientes
+            </Button>
+          </div>
+        )}
       </CardHeader>
       <CardContent className="p-0 sm:p-6">
         

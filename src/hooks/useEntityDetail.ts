@@ -54,17 +54,34 @@ export function useEntityDetail(entityType: EntityType, id: string | undefined) 
 
       const entityId = entityData.id;
 
+      // Determine table names based on entity type (following the webhook Edge Function schema)
+      const isProspect = entityType === 'prospect';
+      const isClient = entityType === 'client';
+      // 'primary' and 'competitor' use the exact same tables
+      
+      const newsTable = isProspect ? 'prospect_market_news' : isClient ? 'client_market_news' : 'market_news';
+      const researchTable = isProspect ? 'prospect_market_research' : isClient ? 'client_market_research' : 'market_research';
+      const glassdoorTable = isProspect ? 'prospect_glassdoor_summary' : isClient ? 'client_glassdoor_summary' : 'glassdoor_summary';
+      const similarTable = isProspect ? 'prospect_similar_companies' : isClient ? 'client_similar_companies' : 'similar_companies';
+      const leadershipTable = isProspect ? 'prospect_leadership' : isClient ? 'client_leadership' : 'company_leadership';
+      const linkedinTable = isProspect ? 'prospect_linkedin_posts' : isClient ? 'client_linkedin_posts' : 'linkedin_posts';
+      const instagramTable = isProspect ? 'prospect_instagram_posts' : isClient ? 'client_instagram_posts' : 'instagram_posts';
+      const youtubeTable = isProspect ? 'prospect_youtube_videos' : isClient ? 'client_youtube_videos' : 'youtube_videos';
+      const blogTable = "company_blog_posts";
+      
+      const idColumn = isProspect ? 'prospect_id' : isClient ? 'client_id' : 'company_id';
+
       // Fetch related data based on configured table names
       const results = await Promise.all([
-        supabase.from("glassdoor_summary").select("*").eq("company_id", entityId).order("created_at", { ascending: false }).limit(1).maybeSingle(),
-        supabase.from("market_research").select("*").eq("company_id", entityId).maybeSingle(),
-        supabase.from("similar_companies").select("*").eq("company_id", entityId),
-        supabase.from("market_news").select("*").eq("company_id", entityId).order("date", { ascending: false }),
-        supabase.from("company_leadership").select("*").eq("company_id", entityId).order("relevance_score", { ascending: false }),
-        supabase.from("linkedin_posts").select("*").eq("company_id", entityId).order("posted_at", { ascending: false }).limit(50),
-        supabase.from("instagram_posts").select("*").eq("company_id", entityId).order("timestamp", { ascending: false }).limit(50),
-        supabase.from("youtube_videos").select("*").eq("company_id", entityId).order("published_at", { ascending: false }).limit(50),
-        supabase.from("company_blog_posts").select("*").eq("company_id", entityId).order("published_at", { ascending: false }).limit(50),
+        supabase.from(glassdoorTable as any).select("*").eq(idColumn, entityId).order("created_at", { ascending: false }).limit(1).maybeSingle(),
+        supabase.from(researchTable as any).select("*").eq(idColumn, entityId).maybeSingle(),
+        supabase.from(similarTable as any).select("*").eq(idColumn, entityId),
+        supabase.from(newsTable as any).select("*").eq(idColumn, entityId).order("data", { ascending: false }),
+        supabase.from(leadershipTable as any).select("*").eq(idColumn, entityId).order("relevance_score", { ascending: false }),
+        supabase.from(linkedinTable as any).select("*").eq(idColumn, entityId).order("posted_at", { ascending: false }).limit(50),
+        supabase.from(instagramTable as any).select("*").eq(idColumn, entityId).order("timestamp", { ascending: false }).limit(50),
+        supabase.from(youtubeTable as any).select("*").eq(idColumn, entityId).order("published_at", { ascending: false }).limit(50),
+        supabase.from(blogTable).select("*").eq("company_id", entityId).order("published_at", { ascending: false }).limit(50),
       ]);
 
       setData({

@@ -16,6 +16,7 @@ interface GlassdoorComparisonProps {
   competitors: EntityData[];
   prospects: EntityData[];
   clients: EntityData[];
+  context?: 'all' | 'competitor' | 'prospect' | 'client';
 }
 
 function GlassdoorChart({ 
@@ -112,7 +113,8 @@ export function GlassdoorComparison({
   primaryCompany, 
   competitors, 
   prospects, 
-  clients 
+  clients,
+  context = 'all'
 }: GlassdoorComparisonProps) {
   const buildData = (entities: EntityData[]) => {
     const data = [
@@ -141,7 +143,9 @@ export function GlassdoorComparison({
   const allEntities = [...competitors, ...prospects, ...clients];
   const allData = buildData(allEntities);
 
-  const hasAnyData = allData.length > 0;
+  // If context is specific, only consider the specific array to check if has data
+  const specificData = context === 'competitor' ? competitorData : context === 'prospect' ? prospectData : context === 'client' ? clientData : allData;
+  const hasAnyData = specificData.length > 0;
 
   if (!hasAnyData) {
     return (
@@ -161,6 +165,15 @@ export function GlassdoorComparison({
     );
   }
 
+  const renderContent = (dataArray: any[], label: string) => (
+    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <StatsPanel data={dataArray} primaryCompany={primaryCompany} label={label} />
+      <div className="lg:col-span-3 min-w-0">
+        <GlassdoorChart data={dataArray} primaryId={primaryCompany?.id || null} />
+      </div>
+    </div>
+  );
+
   return (
     <Card>
       <CardHeader>
@@ -170,75 +183,70 @@ export function GlassdoorComparison({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <Tabs defaultValue="competitors" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 mb-4 h-auto gap-1">
-            <TabsTrigger value="competitors" className="whitespace-normal h-auto min-h-10 text-[11px] sm:text-sm">
-              Concorrentes {competitors.filter(c => c.glassdoor_rating).length > 0 && `(${competitors.filter(c => c.glassdoor_rating).length})`}
-            </TabsTrigger>
-            <TabsTrigger value="prospects" className="whitespace-normal h-auto min-h-10 text-[11px] sm:text-sm">
-              Prospects {prospects.filter(p => p.glassdoor_rating).length > 0 && `(${prospects.filter(p => p.glassdoor_rating).length})`}
-            </TabsTrigger>
-            <TabsTrigger value="clients" className="whitespace-normal h-auto min-h-10 text-[11px] sm:text-sm">
-              Clientes {clients.filter(c => c.glassdoor_rating).length > 0 && `(${clients.filter(c => c.glassdoor_rating).length})`}
-            </TabsTrigger>
-            <TabsTrigger value="all" className="whitespace-normal h-auto min-h-10 text-[11px] sm:text-sm">Geral</TabsTrigger>
-          </TabsList>
+        {context === 'all' ? (
+          <Tabs defaultValue="competitors" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 mb-4 h-auto gap-1">
+              <TabsTrigger value="competitors" className="whitespace-normal h-auto min-h-10 text-[11px] sm:text-sm">
+                Concorrentes {competitors.filter(c => c.glassdoor_rating).length > 0 && `(${competitors.filter(c => c.glassdoor_rating).length})`}
+              </TabsTrigger>
+              <TabsTrigger value="prospects" className="whitespace-normal h-auto min-h-10 text-[11px] sm:text-sm">
+                Prospects {prospects.filter(p => p.glassdoor_rating).length > 0 && `(${prospects.filter(p => p.glassdoor_rating).length})`}
+              </TabsTrigger>
+              <TabsTrigger value="clients" className="whitespace-normal h-auto min-h-10 text-[11px] sm:text-sm">
+                Clientes {clients.filter(c => c.glassdoor_rating).length > 0 && `(${clients.filter(c => c.glassdoor_rating).length})`}
+              </TabsTrigger>
+              <TabsTrigger value="all" className="whitespace-normal h-auto min-h-10 text-[11px] sm:text-sm">Geral</TabsTrigger>
+            </TabsList>
 
-          <TabsContent value="competitors">
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-              <StatsPanel data={competitorData} primaryCompany={primaryCompany} label="concorrentes" />
-              <div className="lg:col-span-3 min-w-0">
-                <GlassdoorChart data={competitorData} primaryId={primaryCompany?.id || null} />
-              </div>
-            </div>
-          </TabsContent>
+            <TabsContent value="competitors">
+              {renderContent(competitorData, "concorrentes")}
+            </TabsContent>
 
-          <TabsContent value="prospects">
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-              <StatsPanel data={prospectData} primaryCompany={primaryCompany} label="prospects" />
-              <div className="lg:col-span-3 min-w-0">
-                <GlassdoorChart data={prospectData} primaryId={primaryCompany?.id || null} />
-              </div>
-            </div>
-          </TabsContent>
+            <TabsContent value="prospects">
+              {renderContent(prospectData, "prospects")}
+            </TabsContent>
 
-          <TabsContent value="clients">
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-              <StatsPanel data={clientData} primaryCompany={primaryCompany} label="clientes" />
-              <div className="lg:col-span-3 min-w-0">
-                <GlassdoorChart data={clientData} primaryId={primaryCompany?.id || null} />
-              </div>
-            </div>
-          </TabsContent>
+            <TabsContent value="clients">
+              {renderContent(clientData, "clientes")}
+            </TabsContent>
 
-          <TabsContent value="all">
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-              <StatsPanel data={allData} primaryCompany={primaryCompany} label="geral" />
-              <div className="lg:col-span-3 min-w-0">
-                <GlassdoorChart data={allData} primaryId={primaryCompany?.id || null} />
-              </div>
-            </div>
-          </TabsContent>
-        </Tabs>
+            <TabsContent value="all">
+              {renderContent(allData, "geral")}
+            </TabsContent>
+          </Tabs>
+        ) : (
+          renderContent(
+            context === 'competitor' ? competitorData : context === 'prospect' ? prospectData : clientData,
+            context === 'competitor' ? "concorrentes" : context === 'prospect' ? "prospects" : "clientes"
+          )
+        )}
 
         {/* Legend */}
         <div className="flex flex-wrap gap-4 mt-6 pt-4 border-t border-border">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-primary" />
-            <span className="text-xs text-muted-foreground">Sua empresa</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: ENTITY_COLORS.competitor }} />
-            <span className="text-xs text-muted-foreground">Concorrentes</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: ENTITY_COLORS.prospect }} />
-            <span className="text-xs text-muted-foreground">Prospects</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: ENTITY_COLORS.client }} />
-            <span className="text-xs text-muted-foreground">Clientes</span>
-          </div>
+          {(context === 'all' || context === 'competitor') && (
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-primary" />
+              <span className="text-xs text-muted-foreground">Sua empresa</span>
+            </div>
+          )}
+          {(context === 'all' || context === 'competitor') && (
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: ENTITY_COLORS.competitor }} />
+              <span className="text-xs text-muted-foreground">Concorrentes</span>
+            </div>
+          )}
+          {(context === 'all' || context === 'prospect') && (
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: ENTITY_COLORS.prospect }} />
+              <span className="text-xs text-muted-foreground">Prospects</span>
+            </div>
+          )}
+          {(context === 'all' || context === 'client') && (
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: ENTITY_COLORS.client }} />
+              <span className="text-xs text-muted-foreground">Clientes</span>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>

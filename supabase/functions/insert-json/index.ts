@@ -17,6 +17,29 @@ const formatDateForSupabase = (dateStr: string | null | undefined): string | nul
   return parsed.toISOString();
 };
 
+const parseSocialMetric = (val: any): number | null => {
+  if (val === null || val === undefined) return null;
+  if (typeof val === 'number') return val;
+  
+  const str = String(val).toLowerCase().trim().replace(',', '.');
+  const numberPart = parseFloat(str.replace(/[^\d.]/g, ''));
+  
+  if (isNaN(numberPart)) return null;
+  
+  if (str.includes('k')) return Math.floor(numberPart * 1000);
+  if (str.includes('m')) return Math.floor(numberPart * 1000000);
+  if (str.includes('b')) return Math.floor(numberPart * 1000000000);
+  
+  return Math.floor(numberPart);
+};
+
+const getValueCaseInsensitive = (obj: any, key: string) => {
+  if (!obj || typeof obj !== 'object') return null;
+  const targetKey = key.toLowerCase();
+  const actualKey = Object.keys(obj).find(k => k.toLowerCase() === targetKey);
+  return actualKey ? obj[actualKey] : null;
+};
+
 // Entity type configuration
 const ENTITY_CONFIGS = {
   companies: {
@@ -275,22 +298,34 @@ serve(async (req: Request) => {
         partners: mercadoCompany?.parceiros || overview.parceiros || null,
         clients: mercadoCompany?.clientes_citados || overview.clientes_citados || null,
         website: (function() {
-          const url = companyData.website || liInfo.website || overview.website || overview.site_institucional || companyData.site || presencaDigital?.site_institucional || null;
+          const url = companyData.website || liInfo.website || overview.website || overview.site_institucional || companyData.site || getValueCaseInsensitive(presencaDigital, 'site_institucional') || getValueCaseInsensitive(presencaDigital, 'site') || null;
           if (!url) return null;
           return url.startsWith('http') ? url : `https://${url}`;
         })(),
-        headquarters: companyData.headquarters || liInfo.headquarters || redes_sociais?.linkedin?.headquarters || overview.endereco || null,
+        headquarters: (function() {
+          const val = companyData.headquarters || liInfo.headquarters || redes_sociais?.linkedin?.headquarters || 
+                      getValueCaseInsensitive(presencaDigital, 'headquarters') || getValueCaseInsensitive(presencaDigital, 'localizacao') || 
+                      overview.headquarters || overview.endereco || overview.location || mercadoCompany?.headquarters || null;
+          return val;
+        })(),
         year_founded: (function() {
           const val = companyData.founded || companyData.founded_year || companyData.ano_fundacao || liInfo.founded || 
-                      mercadoCompany.founded || mercadoCompany.founded_year || mercadoCompany.ano_fundacao || null;
+                      mercadoCompany.founded || mercadoCompany.founded_year || mercadoCompany.ano_fundacao || 
+                      getValueCaseInsensitive(presencaDigital, 'ano_fundacao') || getValueCaseInsensitive(mercadoCompany, 'ano_fundacao') || null;
           if (!val) return null;
           const parsed = parseInt(String(val).replace(/[^\d]/g, ''));
           return isNaN(parsed) ? null : parsed;
         })(),
         size: companyData.company_size || liInfo.company_size || redes_sociais?.linkedin?.company_size || null,
-        employee_count: companyData.employee_count || liInfo.employee_count || redes_sociais?.linkedin?.employee_count || null,
+        employee_count: (function() {
+          const val = companyData.employee_count || liInfo.employee_count || redes_sociais?.linkedin?.employee_count || 
+                      companyData.num_funcionarios || companyData.employees || 
+                      getValueCaseInsensitive(presencaDigital, 'num_funcionarios') || getValueCaseInsensitive(mercadoCompany, 'employee_count') || null;
+          return parseSocialMetric(val);
+        })(),
         linkedin_url: (function() {
-          const url = companyData.linkedin_url || liInfo.url || redes_sociais?.linkedin?.url || presencaDigital?.linkedin || companyData.linkedin || 
+          const url = companyData.linkedin_url || liInfo.url || redes_sociais?.linkedin?.url || 
+                      getValueCaseInsensitive(presencaDigital, 'linkedin') || companyData.linkedin || 
                       mercadoCompany.linkedin_url || mercadoCompany.linkedin || null;
           if (!url) return null;
           return url.startsWith('http') ? url : `https://${url}`;
@@ -298,34 +333,53 @@ serve(async (req: Request) => {
         linkedin_followers: (function() {
            const val = companyData.followers || liInfo.followers || redes_sociais?.linkedin?.followers || companyData.followers_count || 
                        mercadoCompany.followers || mercadoCompany.followers_count || webhookData.followers || null;
-           return val ? parseInt(String(val)) : null;
+           return parseSocialMetric(val);
         })(),
         linkedin_specialties: companyData.specialties || liInfo.specialties || redes_sociais?.linkedin?.specialties || null,
         linkedin_tagline: companyData.tagline || liInfo.tagline || redes_sociais?.linkedin?.tagline || null,
         instagram_url: (function() {
-          const url = webhookData?.instagram_info?.profileUrl || redes_sociais?.instagram?.profileUrl || presencaDigital?.instagram || 
+          const url = webhookData?.instagram_info?.profileUrl || redes_sociais?.instagram?.profileUrl || 
+                      getValueCaseInsensitive(presencaDigital, 'instagram') || 
                       webhookData?.instagram_info?.url || redes_sociais?.instagram?.url || null;
           if (!url) return null;
           return url.startsWith('http') ? url : `https://${url}`;
         })(),
-        instagram_username: webhookData?.instagram_info?.username || redes_sociais?.instagram?.username || null,
+        instagram_username: webhookData?.instagram_info?.username || redes_sociais?.instagram?.username || getValueCaseInsensitive(presencaDigital, 'instagram_username') || null,
         instagram_followers: (function() {
            const val = webhookData?.instagram_info?.profile?.followersCount || redes_sociais?.instagram?.profile?.followersCount || 
-                       webhookData?.instagram_info?.followersCount || redes_sociais?.instagram?.followersCount || null;
-           return val ? parseInt(String(val)) : null;
+                       webhookData?.instagram_info?.followersCount || redes_sociais?.instagram?.followersCount || 
+                       webhookData?.instagram_info?.followers || null;
+           return parseSocialMetric(val);
         })(),
-        instagram_follows: webhookData?.instagram_info?.profile?.followsCount || redes_sociais?.instagram?.profile?.followsCount || null,
-        instagram_posts_count: webhookData?.instagram_info?.profile?.postsCount || redes_sociais?.instagram?.profile?.postsCount || null,
+        instagram_follows: (function() {
+          const val = webhookData?.instagram_info?.profile?.followsCount || redes_sociais?.instagram?.profile?.followsCount || null;
+          return parseSocialMetric(val);
+        })(),
+        instagram_posts_count: (function() {
+          const val = webhookData?.instagram_info?.profile?.postsCount || redes_sociais?.instagram?.profile?.postsCount || null;
+          return parseSocialMetric(val);
+        })(),
         youtube_url: (function() {
-          const url = webhookData?.youtube_info?.channel?.url || redes_sociais?.youtube?.channel?.url || presencaDigital?.youtube || null;
+          const url = webhookData?.youtube_info?.channel?.url || redes_sociais?.youtube?.channel?.url || 
+                      getValueCaseInsensitive(presencaDigital, 'youtube') || null;
           if (!url) return null;
           if (typeof url === 'string' && url.includes('linkedin.com')) return null;
           return url.startsWith('http') ? url : `https://${url}`;
         })(),
         youtube_channel_name: webhookData?.youtube_info?.channel?.name || redes_sociais?.youtube?.channel?.name || null,
-        youtube_subscribers: webhookData?.youtube_info?.channel?.subscribers || redes_sociais?.youtube?.channel?.subscribers || null,
-        youtube_total_videos: webhookData?.youtube_info?.channel?.totalVideos || redes_sociais?.youtube?.channel?.totalVideos || null,
-        youtube_total_views: webhookData?.youtube_info?.channel?.totalViews || redes_sociais?.youtube?.channel?.totalViews || null,
+        youtube_subscribers: (function() {
+          const val = webhookData?.youtube_info?.channel?.subscribers || redes_sociais?.youtube?.channel?.subscribers || 
+                      webhookData?.youtube_info?.subscribers || null;
+          return parseSocialMetric(val);
+        })(),
+        youtube_total_videos: (function() {
+          const val = webhookData?.youtube_info?.channel?.totalVideos || redes_sociais?.youtube?.channel?.totalVideos || null;
+          return parseSocialMetric(val);
+        })(),
+        youtube_total_views: (function() {
+          const val = webhookData?.youtube_info?.channel?.totalViews || redes_sociais?.youtube?.channel?.totalViews || null;
+          return parseSocialMetric(val);
+        })(),
         blog_url: companyData.blog_url || null,
         analyzed_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
@@ -470,19 +524,22 @@ serve(async (req: Request) => {
         };
         await supabase.from(cfg.marketResearchTable).insert(researchRecord);
 
-        // Market News
-        const newsData = mercado?.news_and_market_actions || mercado?.news_and_actions || [];
+        // Market News - Padrão Único (market_research_raw.news_and_market_actions)
+        const newsData = webhookData?.market_research_raw?.news_and_market_actions || [];
+
         if (newsData.length > 0) {
           await supabase.from(cfg.marketNewsTable).delete().eq(fk, entityId);
           const news = newsData.map((n: any) => ({
             [fk]: entityId,
-            title: n.titulo || null,
+            titulo: n.titulo || n.title || null,
             url: n.url || null,
-            date: formatDateForSupabase(n.data),
-            summary: n.resumo || null,
-            classification: n.tipo || null,
+            data: formatDateForSupabase(n.data || n.date),
+            resumo: n.resumo || n.summary || null,
+            tipo: n.tipo || n.classification || null,
+            fonte: n.fonte || n.source || null,
           }));
           await supabase.from(cfg.marketNewsTable).insert(news);
+          console.log(`Saved ${news.length} market news to ${cfg.marketNewsTable}`);
         }
 
         // Similar Companies

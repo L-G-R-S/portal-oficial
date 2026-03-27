@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
-import logoImage from '@/assets/logo-prime-control.png';
+import logoImage from '@/assets/logo-prime-vision.svg';
 
 export default function Register() {
   const [fullName, setFullName] = useState('');
@@ -48,7 +48,7 @@ export default function Register() {
     const isAllowedDomain = emailDomain === ALLOWED_DOMAIN;
 
     if (!isAllowedException && !isAllowedDomain) {
-      toast.error(`Por favor, utilize seu e-mail corporativo da Prime Control (@${ALLOWED_DOMAIN})`);
+      toast.error(`Por favor, utilize seu e-mail corporativo da Prime Vision (@${ALLOWED_DOMAIN})`);
       return;
     }
 
@@ -83,8 +83,11 @@ export default function Register() {
           <img 
             src={logoImage} 
             alt="Logo" 
-            className="h-24 w-auto mx-auto mb-8"
+            className="h-24 w-auto mx-auto mb-4"
           />
+          <p className="text-primary/80 text-sm font-light italic tracking-wide">
+            Seu radar estratégico de mercado.
+          </p>
         </div>
       </div>
 
@@ -125,7 +128,7 @@ export default function Register() {
               </div>
 
               <div>
-                <Label htmlFor="role" className="text-foreground">Função</Label>
+                <Label htmlFor="role" className="text-foreground">Área</Label>
                 <Select value={role} onValueChange={(value: any) => setRole(value)}>
                   <SelectTrigger className="h-10 text-sm">
                     <SelectValue />
@@ -137,7 +140,7 @@ export default function Register() {
                     <SelectItem value="delivery">Delivery</SelectItem>
                     <SelectItem value="coe_sap">COE SAP</SelectItem>
                     <SelectItem value="coe_qa">COE QA</SelectItem>
-                    <SelectItem value="people">People</SelectItem>
+                    <SelectItem value="people">RH</SelectItem>
                     <SelectItem value="financeiro">Financeiro</SelectItem>
                     <SelectItem value="inovacao">Inovação</SelectItem>
                   </SelectContent>

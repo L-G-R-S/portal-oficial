@@ -22,7 +22,7 @@ export function Layout({ children }: LayoutProps) {
             
             {/* No mobile o logo ou nome aparece aqui ao invés do hambúrguer. */}
             <div className="md:hidden font-bold text-lg text-primary">
-              PriMKT
+              Prime Vision
             </div>
 
             <div className="flex items-center gap-3">

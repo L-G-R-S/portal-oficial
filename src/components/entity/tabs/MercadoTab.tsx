@@ -336,16 +336,16 @@ export function MercadoTab({
               <div className="space-y-3">
                 {publicActions.slice(0, 5).map((action: any, idx: number) => (
                   <div key={`action-${idx}`} className="p-3 border rounded-lg hover:bg-accent transition-colors bg-primary/5">
-                    <h5 className="font-medium text-sm">{action.titulo || action.title}</h5>
-                    {(action.resumo || action.summary) && (
+                    <h5 className="font-medium text-sm">{action.titulo}</h5>
+                    {action.resumo && (
                       <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
-                        {action.resumo || action.summary}
+                        {action.resumo}
                       </p>
                     )}
                     <div className="flex items-center gap-3 mt-2">
-                      {(action.data || action.date) && (
+                      {action.data && (
                         <span className="text-xs text-muted-foreground">
-                          {new Date(action.data || action.date).toLocaleDateString('pt-BR')}
+                          {new Date(action.data).toLocaleDateString('pt-BR')}
                         </span>
                       )}
                       {action.tipo && (
@@ -394,16 +394,16 @@ export function MercadoTab({
                   <div className="space-y-3">
                     {filteredNews.slice(0, 10).map((news: any, idx: number) => (
                       <div key={`news-${idx}`} className="p-3 border rounded-lg hover:bg-accent transition-colors">
-                        <h5 className="font-medium text-sm">{news.title}</h5>
-                        {news.summary && (
-                          <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{news.summary}</p>
+                        <h5 className="font-medium text-sm">{news.titulo}</h5>
+                        {news.resumo && (
+                          <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{news.resumo}</p>
                         )}
                         <div className="flex items-center gap-3 mt-2">
-                          {news.date && (
-                            <span className="text-xs text-muted-foreground">{new Date(news.date).toLocaleDateString('pt-BR')}</span>
+                          {news.data && (
+                            <span className="text-xs text-muted-foreground">{new Date(news.data).toLocaleDateString('pt-BR')}</span>
                           )}
-                          {news.classification && (
-                            <Badge variant="outline" className="text-xs">{news.classification}</Badge>
+                          {news.tipo && (
+                            <Badge variant="outline" className="text-xs">{news.tipo}</Badge>
                           )}
                           {isValidUrl(news.url) && (
                             <a href={news.url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline">

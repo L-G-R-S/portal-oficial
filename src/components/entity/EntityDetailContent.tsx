@@ -113,10 +113,10 @@ export function EntityDetailContent({
       <Card className="overflow-hidden">
         <CardContent className="pt-6">
           <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
-            {entity.logo_url && (
+            {(entity.logo_url || entity.linkedin_logo) && (
               <div className="flex-shrink-0 mx-auto sm:mx-0">
                 <img 
-                  src={entity.logo_url} 
+                  src={entity.logo_url || entity.linkedin_logo} 
                   alt={entity.name}
                   className="w-20 h-20 sm:w-24 sm:h-24 object-contain rounded-xl border-4 border-background bg-background shadow-lg"
                 />
@@ -155,10 +155,10 @@ export function EntityDetailContent({
                     {entity.industry?.split(',')[0]?.trim()}
                   </Badge>
                 )}
-                {(entity.headquarters || entity.address) && (
+                {(entity.headquarters || entity.address || entity.hq_location || entity.location) && (
                   <Badge variant="secondary" className="flex items-center gap-1">
                     <MapPin className="h-3 w-3" />
-                    {entity.headquarters || entity.address}
+                    {entity.headquarters || entity.address || entity.hq_location || entity.location}
                   </Badge>
                 )}
                 {entity.phone && (
@@ -167,10 +167,12 @@ export function EntityDetailContent({
                     {entity.phone}
                   </Badge>
                 )}
-                {entity.size && (
+                {(entity.employee_count || entity.size || entity.employees) && (
                   <Badge variant="secondary" className="flex items-center gap-1">
                     <Users className="h-3 w-3" />
-                    {entity.size}
+                    {typeof (entity.employee_count || entity.size || entity.employees) === 'number' 
+                      ? `${(entity.employee_count || entity.size || entity.employees).toLocaleString('pt-BR')} funcionários`
+                      : (entity.employee_count || entity.size || entity.employees)}
                   </Badge>
                 )}
                 {(entity.year_founded || entity.founded_year) && (

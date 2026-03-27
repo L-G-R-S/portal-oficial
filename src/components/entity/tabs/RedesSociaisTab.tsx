@@ -18,15 +18,23 @@ export function RedesSociaisTab({ entity, socialPosts }: RedesSociaisTabProps) {
     <>
       {/* Social Media Stats */}
       <SocialMetricsCards 
-        linkedin={{ followers: entity.linkedin_followers }}
+        linkedin={{ 
+          followers: entity.linkedin_followers,
+          url: entity.linkedin_url,
+          hasPosts: socialPosts.linkedin.length > 0
+        }}
         instagram={{ 
           followers: entity.instagram_followers, 
-          posts_count: entity.instagram_posts_count 
+          posts_count: entity.instagram_posts_count,
+          url: entity.instagram_url,
+          hasPosts: socialPosts.instagram.length > 0
         }}
         youtube={{ 
           subscribers: entity.youtube_subscribers, 
           total_videos: entity.youtube_total_videos,
-          total_views: entity.youtube_total_views
+          total_views: entity.youtube_total_views,
+          url: entity.youtube_url,
+          hasPosts: socialPosts.youtube.length > 0
         }}
       />
 

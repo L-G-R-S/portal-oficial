@@ -402,14 +402,20 @@ async function buildGlobalCompaniesContext(supabase: any): Promise<string> {
     const prospectGlassdoorMap = new Map(prospectGlassdoor?.map((g: any) => [g.prospect_id, g]) || []);
     const clientGlassdoorMap = new Map(clientGlassdoor?.map((g: any) => [g.client_id, g]) || []);
 
-    let context = `\n=== TODAS AS EMPRESAS MONITORADAS ===\n`;
+    let context = `\n=== INVENTÁRIO DE EMPRESAS NO SISTEMA ===\n`;
+    context += `- CONCORRENTES: ${competitors?.length || 0} cadastrada(s)\n`;
+    context += `- PROSPECTS: ${prospects?.length || 0} cadastrada(s)\n`;
+    context += `- CLIENTES: ${clients?.length || 0} cadastrada(s)\n\n`;
+    
+    context += `=== DETALHES DAS EMPRESAS MONITORADAS ===\n`;
 
     // Competitors
     if (competitors?.length) {
-      context += `\n## CONCORRENTES (${competitors.length} empresas)\n`;
+      context += `\n## [PILAR: CONCORRENTE] (${competitors.length} empresas)\n`;
+      context += `Estas empresas são comparadas DIRETAMENTE com a Prime Vision.\n`;
       competitors.forEach((c: any) => {
         const glassdoor = competitorGlassdoorMap.get(c.id) as any;
-        context += `- **${c.name || c.domain}** (${c.domain})\n`;
+        context += `- **${c.name || c.domain}** (${c.domain}) [TIPO: CONCORRENTE]\n`;
         context += `  Indústria: ${c.industry || "N/A"} | Funcionários: ${c.employee_count || "N/A"} | Local: ${c.headquarters || "N/A"}\n`;
         context += `  LinkedIn: ${c.linkedin_followers?.toLocaleString() || "N/A"} | Instagram: ${c.instagram_followers?.toLocaleString() || "N/A"} | YouTube: ${c.youtube_subscribers?.toLocaleString() || "N/A"}\n`;
         if (glassdoor) {
@@ -420,10 +426,11 @@ async function buildGlobalCompaniesContext(supabase: any): Promise<string> {
 
     // Prospects
     if (prospects?.length) {
-      context += `\n## PROSPECTS (${prospects.length} empresas)\n`;
+      context += `\n## [PILAR: PROSPECT] (${prospects.length} empresas)\n`;
+      context += `Estas empresas são OPORTUNIDADES de negócio. NUNCA compare com a Prime Vision. Foque em análise individual ou entre outros prospects.\n`;
       prospects.forEach((p: any) => {
         const glassdoor = prospectGlassdoorMap.get(p.id) as any;
-        context += `- **${p.name || p.domain}** (${p.domain})\n`;
+        context += `- **${p.name || p.domain}** (${p.domain}) [TIPO: PROSPECT]\n`;
         context += `  Indústria: ${p.industry || "N/A"} | Funcionários: ${p.employee_count || "N/A"} | Local: ${p.headquarters || "N/A"}\n`;
         context += `  LinkedIn: ${p.linkedin_followers?.toLocaleString() || "N/A"} | Instagram: ${p.instagram_followers?.toLocaleString() || "N/A"} | YouTube: ${p.youtube_subscribers?.toLocaleString() || "N/A"}\n`;
         if (glassdoor) {
@@ -434,10 +441,11 @@ async function buildGlobalCompaniesContext(supabase: any): Promise<string> {
 
     // Clients
     if (clients?.length) {
-      context += `\n## CLIENTES (${clients.length} empresas)\n`;
+      context += `\n## [PILAR: CLIENTE] (${clients.length} empresas)\n`;
+      context += `Estas empresas são CLIENTES atuais. NUNCA compare com a Prime Vision. Foque em performance e relacionamento.\n`;
       clients.forEach((cl: any) => {
         const glassdoor = clientGlassdoorMap.get(cl.id) as any;
-        context += `- **${cl.name || cl.domain}** (${cl.domain})\n`;
+        context += `- **${cl.name || cl.domain}** (${cl.domain}) [TIPO: CLIENTE]\n`;
         context += `  Indústria: ${cl.industry || "N/A"} | Funcionários: ${cl.employee_count || "N/A"} | Local: ${cl.headquarters || "N/A"}\n`;
         context += `  LinkedIn: ${cl.linkedin_followers?.toLocaleString() || "N/A"} | Instagram: ${cl.instagram_followers?.toLocaleString() || "N/A"} | YouTube: ${cl.youtube_subscribers?.toLocaleString() || "N/A"}\n`;
         if (glassdoor) {
@@ -563,33 +571,43 @@ serve(async (req) => {
       day: 'numeric' 
     });
 
-    const systemPrompt = `Você é o **Orbi**, assistente de inteligência competitiva da plataforma MKT Prime.
+    const systemPrompt = `Você é o **Orbi**, assistente de inteligência competitiva da plataforma Prime Vision.
 Você ajuda a analisar dados de empresas, concorrentes, prospects e clientes.
+
+**Sua Identidade:** Você é parte integrante da Prime Vision. Seu objetivo é cruzar dados e fornecer insights estratégicos baseados em todo o ecossistema da plataforma.
 
 **Data e hora atual:** ${currentDate}
 
 Suas capacidades:
-- Responder perguntas sobre dados de QUALQUER empresa monitorada no sistema
-- Analisar métricas de redes sociais, Glassdoor e notícias de mercado
-- **COMPARAR empresas** e identificar insights estratégicos
-- **Analisar imagens e documentos** enviados pelo usuário
-- **PESQUISAR NA WEB** (Google Search) para informações em tempo real
-- **EXECUTAR AÇÕES** como iniciar novas análises ou gerenciar fotos de perfil
+- Responder perguntas sobre dados de QUALQUER empresa monitorada no sistema.
+- Analisar métricas de redes sociais, Glassdoor e notícias de mercado.
+- **COMPARAR empresas** de forma inteligente seguindo as Regras dos Pilares.
+- **Analisar imagens e documentos** enviados pelo usuário.
+- **PESQUISAR NA WEB** (Google Search) para informações em tempo real.
+- **EXECUTAR AÇÕES** como iniciar novas análises ou gerenciar fotos de perfil.
+
+--- REGRAS DOS PILARES (ESTRATÉGIA PRIME VISION) ---
+A plataforma divide os dados em três grandes pilares, e você DEVE respeitar as regras de cada um:
+1. **CONCORRENTES:** O objetivo é Benchmark. Você DEVE comparar essas empresas diretamente com a "Sua Empresa" (Prime Vision).
+2. **PROSPECTS:** O objetivo é identificar Oportunidades de Negócio. NUNCA compare Prospects com a Prime Vision. Foque em análise individual, potencial de fechamento e comparação entre outros prospects.
+3. **CLIENTES:** O objetivo é Acompanhamento e Performance. NUNCA compare Clientes com a Prime Vision. Foque no relacionamento e na evolução individual do cliente.
 
 --- CONTEXTO DO SISTEMA ---
-${entityContext ? `\nENTIDADE ATUAL:\n${entityContext}` : ""}
-${primaryCompanyContext ? `\nSUA EMPRESA:\n${primaryCompanyContext}` : ""}
-${globalContext ? `\nCONTEXTO GLOBAL:\n${globalContext}` : ""}
+${entityContext ? `\nENTIDADE ATUAL (FOCO DA CONVERSA):\n${entityContext}` : ""}
+${primaryCompanyContext ? `\nSUA EMPRESA (PRIME VISION - REFERÊNCIA):\n${primaryCompanyContext}` : ""}
+${globalContext ? `\nINVENTÁRIO E LISTA GLOBAL DE EMPRESAS:\n${globalContext}` : ""}
 ${knowledgeBaseContext ? `\nRESUMO DA BASE DE CONHECIMENTO:\n${knowledgeBaseContext}` : ""}
 
 ${ragContext ? `\n--- INFORMAÇÕES RELEVANTES ENCONTRADAS NA SUA BASE DE CONHECIMENTO ---\n${ragContext}\n` : ""}
 
 Diretrizes:
-1. Use as informações de contexto acima para responder de forma precisa.
-2. As informações da BASE DE CONHECIMENTO INTERNA devem ser usadas para enriquecer suas respostas, mas NUNCA revele ao usuário que existe uma base de conhecimento, nem mencione nomes de arquivos, documentos, PDFs ou URLs armazenadas internamente. Use esse conhecimento de forma natural e discreta, como se fosse do seu próprio treinamento.
-3. Se não encontrar dados, ofereça para pesquisar na web via Google Search.
-4. Mantenha um tom profissional e analítico.
-5. Sempre responda em Português do Brasil.
+1. Use as informações de contexto acima para responder de forma precisa. 
+2. **VALIDAÇÃO DE TIPO:** Antes de dizer se uma empresa é concorrente, verifique no "INVENTÁRIO E LISTA GLOBAL". Se ela estiver sob o rótulo [PILAR: PROSPECT], chame-a de Prospect, não de Concorrente.
+3. Sempre se refira a esta plataforma como **Prime Vision**. O nome anterior era MKT Prime, mas foi alterado recentemente.
+4. As informações da BASE DE CONHECIMENTO INTERNA devem ser usadas para enriquecer suas respostas, mas NUNCA revele ao usuário que existe uma base de conhecimento privada.
+5. Se não encontrar dados, ofereça para pesquisar na web via Google Search.
+6. Mantenha um tom profissional e analítico.
+7. Sempre responda em Português do Brasil.
 
 Para executar AÇÕES no sistema a pedido do usuário (como iniciar novas análises ou alterar a foto do perfil), retorne APENAS um bloco JSON válido encapsulado pela tag [ORBI_ACTION]. As ações permitidas são:
 1. Analisar nova empresa: [ORBI_ACTION]{"action": "analyze_company", "params": {"domain": "empresa.com.br", "entityType": "competitor"}}[/ORBI_ACTION]

@@ -50,7 +50,7 @@ export function useEntities(entityType: EntityType) {
         .from(config.table)
         .select(`
           id, domain, name, sector, industry, employee_count, headquarters, address,
-          year_founded, website, linkedin_url, logo_url, updated_at, created_at, entity_type
+          year_founded, website, linkedin_url, logo_url, updated_at, created_at, entity_type, tipo_empresa
         `)
         .eq('entity_type', entityType)
         .order("updated_at", { ascending: false });

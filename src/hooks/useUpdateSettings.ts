@@ -2,6 +2,57 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import { formatDateForSupabase } from '@/utils/helpers';
+
+const WEBHOOK_FULL = 'https://webhooks-659c9b8b-af7b-4ad0-b287-a844749a2bef.primecontrol.com.br/webhook/oficial';
+const WEBHOOK_CONTENT = 'https://webhooks-659c9b8b-af7b-4ad0-b287-a844749a2bef.primecontrol.com.br/webhook/oficialautomatico';
+const WEBHOOK_NEWS = 'https://webhooks-659c9b8b-af7b-4ad0-b287-a844749a2bef.primecontrol.com.br/webhook/newsupdater';
+
+// Entity table configurations
+const entityConfig = {
+  competitor: {
+    table: 'companies',
+    glassdoorTable: 'glassdoor_summary',
+    glassdoorFk: 'company_id',
+    leadershipTable: 'company_leadership',
+    linkedinTable: 'linkedin_posts',
+    instagramTable: 'instagram_posts',
+    youtubeTable: 'youtube_videos',
+    marketResearchTable: 'market_research',
+    marketNewsTable: 'market_news',
+    similarCompaniesTable: 'similar_companies',
+    blogTable: 'company_blog_posts',
+    fkColumn: 'company_id'
+  },
+  prospect: {
+    table: 'prospects',
+    glassdoorTable: 'prospect_glassdoor_summary',
+    glassdoorFk: 'prospect_id',
+    leadershipTable: 'prospect_leadership',
+    linkedinTable: 'prospect_linkedin_posts',
+    instagramTable: 'prospect_instagram_posts',
+    youtubeTable: 'prospect_youtube_videos',
+    marketResearchTable: 'prospect_market_research',
+    marketNewsTable: 'prospect_market_news',
+    similarCompaniesTable: 'prospect_similar_companies',
+    blogTable: 'prospect_blog_posts',
+    fkColumn: 'prospect_id'
+  },
+  client: {
+    table: 'clients',
+    glassdoorTable: 'client_glassdoor_summary',
+    glassdoorFk: 'client_id',
+    leadershipTable: 'client_leadership',
+    linkedinTable: 'client_linkedin_posts',
+    instagramTable: 'client_instagram_posts',
+    youtubeTable: 'client_youtube_videos',
+    marketResearchTable: 'client_market_research',
+    marketNewsTable: 'client_market_news',
+    similarCompaniesTable: 'client_similar_companies',
+    blogTable: 'client_blog_posts',
+    fkColumn: 'client_id'
+  }
+};
 
 interface UpdateSettings {
   id: string;
@@ -244,10 +295,64 @@ export function useUpdateSettings() {
     }
   };
 
+  // Logic to save data locally (replacing Edge Function logic)
+  const saveEntityDataLocally = async (entityId: string, webhookData: any, entityType: string) => {
+    const config = entityConfig[entityType as keyof typeof entityConfig];
+    if (!config) return;
+
+    let wData = Array.isArray(webhookData) ? webhookData[0] : (webhookData || {});
+    if (wData.json) wData = wData.json;
+    
+    const overview = wData.company || wData.linkedin_info || wData.overview || {};
+    const redes_sociais = wData.redes_sociais || {
+      linkedin: { posts: wData.linkedin_posts },
+      instagram: { posts: wData.instagram_posts },
+      youtube: wData.youtube_info 
+    };
+    const mercado = wData.mercado || wData.market_research_raw || {};
+    const glassdoor = wData.glassdoor_info || (redes_sociais?.glassdoor || wData.glassdoor);
+
+    // Update main record
+    const entityRecord: any = {
+      name: overview?.nome || null,
+      description: overview?.descricao_institucional || null,
+      industry: overview?.setor || null,
+      logo_url: wData.linkedin_logo || overview?.logo_url || wData.linkedin_info?.profile_pic_url || null,
+      website: overview?.website || overview?.site_institucional || null,
+      updated_at: new Date().toISOString()
+    };
+
+    // Add social metrics if available
+    if (redes_sociais?.linkedin?.followers) entityRecord.linkedin_followers = redes_sociais.linkedin.followers;
+    if (redes_sociais?.instagram?.profile?.followersCount) entityRecord.instagram_followers = redes_sociais.instagram.profile.followersCount;
+    if (redes_sociais?.youtube?.channel?.subscribers) entityRecord.youtube_subscribers = redes_sociais.youtube.channel.subscribers;
+
+    await supabase.from(config.table).update(entityRecord).eq('id', entityId);
+
+    // Save News (additive)
+    const newsData = mercado?.news_and_actions || mercado?.news_and_updates || wData.noticias || [];
+    if (newsData.length > 0) {
+      const newsToInsert = newsData.map((n: any) => ({
+        [config.fkColumn]: entityId,
+        title: n.titulo || n.title || null,
+        url: n.url || null,
+        date: formatDateForSupabase(n.data || n.date),
+        summary: n.resumo || n.summary || null,
+        classification: n.tipo || n.classification || null,
+      })).filter((n: any) => n.title && n.url);
+
+      if (newsToInsert.length > 0) {
+        await supabase.from(config.marketNewsTable).upsert(newsToInsert, { 
+          onConflict: `${config.fkColumn},url`,
+          ignoreDuplicates: false 
+        });
+      }
+    }
+  };
+
   const triggerManualUpdate = async () => {
     if (!user?.id || !settings) return;
 
-    // Check if there's already an active update
     if (isUpdating) {
       toast({
         title: 'Atualização em andamento',
@@ -259,40 +364,18 @@ export function useUpdateSettings() {
 
     try {
       setIsUpdating(true);
-
-      // Build entity types array
       const entityTypes: string[] = [];
       if (settings.update_competitors) entityTypes.push('competitor');
       if (settings.update_prospects) entityTypes.push('prospect');
       if (settings.update_clients) entityTypes.push('client');
 
       if (entityTypes.length === 0) {
-        toast({
-          title: 'Nenhuma entidade selecionada',
-          description: 'Selecione pelo menos um tipo de entidade para atualizar.',
-          variant: 'destructive'
-        });
+        toast({ title: 'Nenhuma entidade selecionada', variant: 'destructive' });
         setIsUpdating(false);
         return;
       }
 
-      // Check if there are any entities to update for selected types
-      const entityCounts = await checkEntityCounts(entityTypes);
-      if (entityCounts.total === 0) {
-        const emptyTypes = entityCounts.details
-          .filter(d => d.count === 0)
-          .map(d => d.label)
-          .join(', ');
-        toast({
-          title: 'Nenhuma entidade cadastrada',
-          description: `Não há ${emptyTypes} cadastrados para atualizar. Adicione entidades primeiro.`,
-          variant: 'destructive'
-        });
-        setIsUpdating(false);
-        return;
-      }
-
-      // Create log entry with update_type
+      // Step 1: Initialize Log
       const { data: logData, error: logError } = await supabase
         .from('update_logs')
         .insert({
@@ -305,37 +388,80 @@ export function useUpdateSettings() {
         .single();
 
       if (logError) throw logError;
-
       setCurrentLog(logData as UpdateLog);
 
-      // Call SYNCHRONOUS edge function (waits for N8N response like manual flow)
-      const { data, error } = await supabase.functions.invoke('batch-update-sync', {
-        body: {
-          user_id: user.id,
-          entity_types: entityTypes,
-          log_id: logData.id,
-          update_type: settings.update_type || 'full',
-          trigger_type: 'manual'
+      // Step 2: Fetch Entities
+      const allEntities: any[] = [];
+      for (const type of entityTypes) {
+        const table = entityConfig[type as keyof typeof entityConfig].table;
+        const { data } = await supabase
+          .from(table)
+          .select('id, domain, name')
+          .eq('entity_type', type);
+        
+        if (data) {
+          data.forEach(item => allEntities.push({ ...item, entityType: type }));
         }
-      });
+      }
 
-      if (error) throw error;
-      
-      // Edge function completed - update finished
-      console.log('Batch update completed:', data);
+      if (allEntities.length === 0) {
+        await supabase.from('update_logs').update({ status: 'completed', total_entities: 0 }).eq('id', logData.id);
+        setIsUpdating(false);
+        return;
+      }
+
+      // Update total count
+      await supabase.from('update_logs').update({ total_entities: allEntities.length, status: 'running' }).eq('id', logData.id);
+
+      // Step 3: Sequential processing in frontend
+      let updatedCount = 0;
+      const isNewsOnly = settings.update_type === 'news_only';
+      const webhookUrl = isNewsOnly ? WEBHOOK_NEWS : (settings.update_type === 'content_news' ? WEBHOOK_CONTENT : WEBHOOK_FULL);
+
+      for (const entity of allEntities) {
+        try {
+          // Update log current progress
+          await supabase.from('update_logs').update({ 
+            current_entity_name: entity.name, 
+            current_entity_domain: entity.domain,
+            entities_updated: updatedCount
+          }).eq('id', logData.id);
+
+          // Call Webhook
+          const response = await fetch(webhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ domain: entity.domain, entity_id: entity.id, entity_type: entity.entityType, user_id: user.id })
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            // Save data locally
+            await saveEntityDataLocally(entity.id, data, entity.entityType);
+            updatedCount++;
+          }
+        } catch (err) {
+          console.error(`Error updating ${entity.domain}:`, err);
+        }
+      }
+
+      // Step 4: Finalize
+      await supabase.from('update_logs').update({ 
+        status: 'completed', 
+        entities_updated: updatedCount,
+        completed_at: new Date().toISOString()
+      }).eq('id', logData.id);
+
       setIsUpdating(false);
       setCurrentLog(null);
       loadSettings();
+      toast({ title: 'Atualização concluída', description: `${updatedCount} de ${allEntities.length} processados.` });
 
     } catch (error) {
       console.error('Error triggering manual update:', error);
       setIsUpdating(false);
       setCurrentLog(null);
-      toast({
-        title: 'Erro ao iniciar',
-        description: 'Não foi possível iniciar a atualização.',
-        variant: 'destructive'
-      });
+      toast({ title: 'Erro crítico', description: 'Falha durante o processamento do lote.', variant: 'destructive' });
     }
   };
 

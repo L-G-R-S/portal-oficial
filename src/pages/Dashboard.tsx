@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useDashboardData } from '@/hooks/useDashboardData';
 import { DashboardHeader } from '@/components/dashboard/DashboardHeader';
 import { CompanyHero } from '@/components/dashboard/CompanyHero';
@@ -6,9 +7,9 @@ import { SocialComparisonChart } from '@/components/dashboard/SocialComparisonCh
 import { GlassdoorComparison } from '@/components/dashboard/GlassdoorComparison';
 import { EntityRankingTable } from '@/components/dashboard/EntityRankingTable';
 import { NewsFeed } from '@/components/dashboard/NewsFeed';
-import { QuickInsights } from '@/components/dashboard/QuickInsights';
 import { ActivityFeed } from '@/components/dashboard/ActivityFeed';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 function DashboardSkeleton() {
   return (
@@ -23,7 +24,10 @@ function DashboardSkeleton() {
   );
 }
 
+type DashboardPillar = 'all' | 'competitor' | 'prospect' | 'client';
+
 export default function Dashboard() {
+  const [activePillar, setActivePillar] = useState<DashboardPillar>('all');
   const {
     primaryCompany,
     competitors,
@@ -73,37 +77,43 @@ export default function Dashboard() {
       {/* Market Summary Cards */}
       <MarketSummary stats={stats} />
 
-      {/* Quick Insights */}
-      <QuickInsights 
-        primaryCompany={primaryCompany}
-        competitors={competitors}
-        prospects={prospects}
-        clients={clients}
-        recentNews={recentNews}
-      />
+      {/* Filtro de Pilares */}
+      <div className="pt-2 pb-2">
+        <Tabs value={activePillar} onValueChange={(v) => setActivePillar(v as DashboardPillar)} className="w-full">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:w-[600px] gap-1">
+            <TabsTrigger value="all">Visão Geral</TabsTrigger>
+            <TabsTrigger value="competitor">Concorrentes</TabsTrigger>
+            <TabsTrigger value="prospect">Prospects</TabsTrigger>
+            <TabsTrigger value="client">Clientes</TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
 
       {/* Social Comparison Charts */}
       <SocialComparisonChart 
-        primaryCompany={primaryCompany}
+        primaryCompany={(activePillar === 'prospect' || activePillar === 'client') ? null : primaryCompany}
         competitors={competitors}
         prospects={prospects}
         clients={clients}
+        context={activePillar}
       />
 
       {/* Glassdoor Comparison */}
       <GlassdoorComparison 
-        primaryCompany={primaryCompany}
+        primaryCompany={(activePillar === 'prospect' || activePillar === 'client') ? null : primaryCompany}
         competitors={competitors}
         prospects={prospects}
         clients={clients}
+        context={activePillar}
       />
 
       {/* Entity Ranking Table */}
       <EntityRankingTable 
-        primaryCompany={primaryCompany}
+        primaryCompany={(activePillar === 'prospect' || activePillar === 'client') ? null : primaryCompany}
         competitors={competitors}
         prospects={prospects}
         clients={clients}
+        context={activePillar}
       />
 
       {/* News and Activity Row */}

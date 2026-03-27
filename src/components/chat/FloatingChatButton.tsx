@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Bot, X, Trash2, Maximize2, Shrink } from "lucide-react";
+import { X, Trash2, Maximize2, Shrink } from "lucide-react";
 import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
 import { useAIChat } from "@/hooks/useAIChat";
@@ -38,15 +38,15 @@ export function FloatingChatButton() {
     <>
       {/* Floating Button */}
       <Button
-        size="lg"
         onClick={() => setIsOpen(!isOpen)}
+        variant="ghost"
         className={cn(
-          "fixed z-50 h-[56px] w-[56px] rounded-full shadow-lg hover:scale-105 transition-all duration-200",
+          "fixed z-50 h-[70px] w-[70px] rounded-full hover:scale-110 transition-all duration-200 p-0 bg-transparent hover:bg-transparent border-none shadow-none",
           "bottom-6 left-1/2 -translate-x-1/2 md:bottom-8 md:left-auto md:right-8 md:translate-x-0",
           isOpen && "scale-0 opacity-0 pointer-events-none"
         )}
       >
-        <Bot className="h-6 w-6" />
+        <img src="/orbi-logo.png" alt="Orbi" className="w-full h-full object-contain filter drop-shadow-md" />
       </Button>
 
       {/* Chat Panel */}
@@ -66,8 +66,8 @@ export function FloatingChatButton() {
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 bg-primary text-primary-foreground flex-shrink-0">
             <div className="flex items-center gap-3">
-              <div className="h-9 w-9 rounded-full bg-primary-foreground/20 flex items-center justify-center">
-                <Bot className="h-5 w-5" />
+              <div className="h-9 w-9 rounded-full overflow-hidden bg-transparent flex items-center justify-center">
+                <img src="/orbi-logo.png" alt="Orbi" className="w-full h-full scale-125 object-contain" />
               </div>
               <div>
                 <h3 className="font-semibold text-sm">Orbi</h3>
@@ -111,8 +111,8 @@ export function FloatingChatButton() {
             <div className="flex-1 flex flex-col overflow-hidden min-h-0">
               {messages.length === 0 ? (
                 <div className="flex-1 flex flex-col items-center justify-center p-4 text-center">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
-                    <Bot className="h-6 w-6 text-primary" />
+                  <div className="w-24 h-24 rounded-full overflow-hidden bg-transparent flex items-center justify-center mb-3">
+                    <img src="/orbi-logo.png" alt="Orbi" className="w-full h-full object-contain" />
                   </div>
                   <h3 className="font-medium mb-1 text-sm">Olá! Sou o Orbi</h3>
                   <p className="text-xs text-muted-foreground mb-3 max-w-[240px]">

@@ -31,5 +31,8 @@ GUIDE.md
 .lovable
 
 .env
+# Permite migrações do Supabase mas ignora outros dumps SQL
+!supabase/migrations/*.sql
 *.sql
-documentation/
+# documentation/ removido dos ignorados para incluir no repo
+unused_exports.txt

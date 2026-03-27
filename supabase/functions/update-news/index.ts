@@ -59,7 +59,12 @@ serve(async (req) => {
     const webhookResponse = await fetch(WEBHOOK_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ domain }),
+      body: JSON.stringify({ 
+        domain, 
+        entityId, 
+        entityType,
+        user_id 
+      }),
     });
 
     if (!webhookResponse.ok) {

@@ -65,7 +65,7 @@ function generateEmailTemplate(newsHtml: string, newsCount: number): string {
     <tr>
       <td>
         <div style="background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); overflow: hidden;">
-          <!-- Header with Prime Control branding -->
+          <!-- Header with Prime Vision branding -->
           <div style="background: linear-gradient(135deg, ${PRIME_COLOR} 0%, ${PRIME_COLOR_DARK} 100%); padding: 30px; text-align: center;">
             <img src="${LOGO_URL}" alt="Orbi - Notícias" style="height: 40px; margin-bottom: 16px;" onerror="this.style.display='none'">
             <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 600;">Resumo Semanal</h1>
@@ -107,7 +107,7 @@ function generateNewsItemHtml(news: any): string {
   };
   
   const style = entityStyles[news.entity_type] || { label: 'Notícia', bgColor: '#f3f4f6', textColor: '#374151' };
-  const summary = news.summary ? (news.summary.length > 200 ? news.summary.substring(0, 200) + '...' : news.summary) : 'Sem resumo disponível.';
+  const summary = news.resumo ? (news.resumo.length > 200 ? news.resumo.substring(0, 200) + '...' : news.resumo) : 'Sem resumo disponível.';
 
   return `
     <div style="margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid #e5e7eb;">
@@ -115,7 +115,7 @@ function generateNewsItemHtml(news: any): string {
         ${style.label}
       </div>
       <h3 style="color: #0f172a; margin: 8px 0; font-size: 16px; line-height: 1.5; font-weight: 600;">
-        ${news.title}
+        ${news.titulo}
       </h3>
       <p style="color: #64748b; margin: 0 0 14px 0; font-size: 14px; line-height: 1.6;">
         ${summary}
@@ -207,21 +207,21 @@ Deno.serve(async (req) => {
     const [competitorNews, prospectNews, clientNews] = await Promise.all([
       supabase
         .from('market_news')
-        .select('id, title, summary, url, date, company_id')
-        .gte('date', weekAgo.toISOString())
-        .order('date', { ascending: false })
+        .select('id, titulo, resumo, url, data, company_id')
+        .gte('data', weekAgo.toISOString())
+        .order('data', { ascending: false })
         .limit(20),
       supabase
         .from('prospect_market_news')
-        .select('id, title, summary, url, date, prospect_id')
-        .gte('date', weekAgo.toISOString())
-        .order('date', { ascending: false })
+        .select('id, titulo, resumo, url, data, prospect_id')
+        .gte('data', weekAgo.toISOString())
+        .order('data', { ascending: false })
         .limit(20),
       supabase
         .from('client_market_news')
-        .select('id, title, summary, url, date, client_id')
-        .gte('date', weekAgo.toISOString())
-        .order('date', { ascending: false })
+        .select('id, titulo, resumo, url, data, client_id')
+        .gte('data', weekAgo.toISOString())
+        .order('data', { ascending: false })
         .limit(20),
     ]);
 
@@ -255,7 +255,7 @@ Deno.serve(async (req) => {
     } else {
       // Filter by high impact if enabled
       if (onlyHighImpact) {
-        allNews = allNews.filter(n => isHighImpactNews(n.title, n.summary));
+        allNews = allNews.filter(n => isHighImpactNews(n.titulo, n.resumo));
       }
 
       if (allNews.length === 0) {
@@ -267,7 +267,7 @@ Deno.serve(async (req) => {
       }
 
       // Sort by date
-      allNews.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      allNews.sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime());
 
       // Take top 10 news
       topNews = allNews.slice(0, 10);

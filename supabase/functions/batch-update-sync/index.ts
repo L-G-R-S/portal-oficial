@@ -493,6 +493,7 @@ Deno.serve(async (req) => {
       const { data: competitors, error } = await supabase
         .from('companies')
         .select('id, domain, name')
+        .eq('entity_type', 'competitor') // <-- CORREÇÃO: Filtrar apenas concorrentes
       
       if (!error && competitors) {
         competitors.forEach((c: any) => {
@@ -551,19 +552,34 @@ Deno.serve(async (req) => {
         .eq('id', log_id)
     }
 
-    // Process ALL entities in PARALLEL using Promise.all
+    // Process ALL entities SEQUENTIALLY to avoid N8N timeouts and resource exhaustion
     let entitiesUpdated = 0
     let failedEntities: string[] = []
 
-    console.log(`[batch-update-sync] Dispatching ${allEntities.length} entities in PARALLEL...`)
+    console.log(`[batch-update-sync] Processing ${allEntities.length} entities SEQUENTIALLY...`)
 
-    // Create all webhook promises at once
-    const webhookPromises = allEntities.map(async (entity, index) => {
+    for (let i = 0; i < allEntities.length; i++) {
+      const entity = allEntities[i]
+      const index = i
       const entityStartTime = new Date()
+      
       console.log(`[batch-update-sync] Processing ${entity.domain} (${index + 1}/${allEntities.length})`)
-      console.log(`[batch-update-sync] Calling ${isNewsOnly ? 'news' : (isContentNews ? 'content' : 'full')} webhook for ${entity.domain}...`)
+      
+      // Update log with current entity
+      if (log_id) {
+        await supabase
+          .from('update_logs')
+          .update({ 
+            current_entity_name: entity.name,
+            current_entity_domain: entity.domain,
+            entities_updated: entitiesUpdated
+          })
+          .eq('id', log_id)
+      }
 
+      let result: any = null
       try {
+        console.log(`[batch-update-sync] Calling ${updateTypeLabel} webhook for ${entity.domain}...`)
         const webhookResponse = await fetch(webhookUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -581,7 +597,7 @@ Deno.serve(async (req) => {
         const duration = Math.round((Date.now() - entityStartTime.getTime()) / 1000)
         console.log(`[batch-update-sync] Received response for ${entity.domain} in ${duration}s`)
 
-        return { 
+        result = { 
           entity, 
           webhookData, 
           success: true, 
@@ -591,7 +607,7 @@ Deno.serve(async (req) => {
         }
       } catch (error) {
         console.error(`[batch-update-sync] Error fetching ${entity.domain}:`, error)
-        return { 
+        result = { 
           entity, 
           webhookData: null, 
           success: false, 
@@ -600,14 +616,9 @@ Deno.serve(async (req) => {
           error: error instanceof Error ? error.message : 'Unknown error' 
         }
       }
-    })
 
-    // Wait for ALL webhook responses
-    const results = await Promise.all(webhookPromises)
-
-    // Process all results and save data
-    for (const result of results) {
-      const { entity, webhookData, success, duration, startTime, error } = result
+      // Process the result immediately
+      const { webhookData, success, duration, startTime, error } = result
 
       if (!success || !webhookData) {
         failedEntities.push(entity.domain)
@@ -679,14 +690,25 @@ Deno.serve(async (req) => {
             console.log(`[batch-update-sync] ${newNews.length} new news items to insert for ${entity.domain}`)
 
             if (newNews.length > 0) {
-              const newsToInsert = newNews.map((item: any) => ({
-                [config.fkColumn]: entity.id,
-                title: item.title || item.titulo || null,
-                url: item.url || item.link || null,
-                date: item.date || item.data || null,
-                summary: item.summary || item.resumo || item.description || null,
-                classification: item.classification || item.classificacao || item.type || item.tipo || null,
-              }))
+              const newsToInsert = newNews.map((item: any) => {
+                const rawDate = item.date || item.data || null;
+                let formattedDate = null;
+                if (rawDate) {
+                  const d = new Date(rawDate);
+                  if (!isNaN(d.getTime())) {
+                    formattedDate = d.toISOString();
+                  }
+                }
+
+                return {
+                  [config.fkColumn]: entity.id,
+                  title: item.title || item.titulo || null,
+                  url: item.url || item.link || null,
+                  date: formattedDate,
+                  summary: item.summary || item.resumo || item.description || null,
+                  classification: item.classification || item.classificacao || item.type || item.tipo || null,
+                };
+              })
 
               console.log(`[batch-update-sync] Inserting ${newsToInsert.length} news items into ${config.marketNewsTable}...`)
               console.log(`[batch-update-sync] Sample news item:`, JSON.stringify(newsToInsert[0], null, 2))

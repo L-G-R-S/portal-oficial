@@ -11,6 +11,7 @@ import { AnalysisProgressBanner } from "@/components/competitor/AnalysisProgress
 import { ROUTES } from "@/lib/constants";
 
 type EntityType = "competitor" | "prospect" | "client";
+type TipoEmpresaFiltro = "todos" | "QA" | "SAP";
 
 interface EntityListPageProps {
   entityType: EntityType;
@@ -51,17 +52,26 @@ export default function EntityListPage({ entityType }: EntityListPageProps) {
   const { entities, isLoading, deleteEntity } = useEntities(entityType);
   const { startAnalysis, isAnalyzing } = useAnalysisContext();
   const [searchTerm, setSearchTerm] = useState("");
+  const [filtroTipo, setFiltroTipo] = useState<TipoEmpresaFiltro>("todos");
 
   const config = entityConfig[entityType];
 
   const filteredEntities = entities.filter((entity) => {
     const searchLower = searchTerm.toLowerCase();
-    return (
+    const matchesSearch =
       entity.name?.toLowerCase().includes(searchLower) ||
       entity.domain.toLowerCase().includes(searchLower) ||
-      entity.sector?.toLowerCase().includes(searchLower)
-    );
+      entity.sector?.toLowerCase().includes(searchLower);
+    const matchesTipo =
+      filtroTipo === "todos" || (entity as any).tipo_empresa === filtroTipo;
+    return matchesSearch && matchesTipo;
   });
+
+  const filterButtons: { label: string; value: TipoEmpresaFiltro }[] = [
+    { label: "Todos", value: "todos" },
+    { label: "QA", value: "QA" },
+    { label: "SAP", value: "SAP" },
+  ];
 
   return (
     <div className="space-y-6">
@@ -86,7 +96,7 @@ export default function EntityListPage({ entityType }: EntityListPageProps) {
       </div>
 
       <Card>
-        <CardContent className="p-4">
+        <CardContent className="p-4 space-y-3">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -95,6 +105,22 @@ export default function EntityListPage({ entityType }: EntityListPageProps) {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
+          </div>
+          <div className="flex gap-2">
+            {filterButtons.map(({ label, value }) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() => setFiltroTipo(value)}
+                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all border ${
+                  filtroTipo === value
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "bg-background text-foreground border-border hover:border-primary/50"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
           </div>
         </CardContent>
       </Card>
@@ -110,11 +136,11 @@ export default function EntityListPage({ entityType }: EntityListPageProps) {
         <Card>
           <CardContent className="p-12 text-center">
             <p className="text-muted-foreground mb-4">
-              {searchTerm
+              {searchTerm || filtroTipo !== "todos"
                 ? "Nenhum resultado encontrado com esse critério de busca."
                 : config.emptyText}
             </p>
-            {!searchTerm && (
+            {!searchTerm && filtroTipo === "todos" && (
               <Button onClick={() => navigate(config.newAnalysisRoute)}>
                 Fazer primeira análise
               </Button>

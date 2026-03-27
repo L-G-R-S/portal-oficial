@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useAnalysisContext } from "@/contexts/AnalysisContext";
 import { AnalysisProgressBanner } from "@/components/competitor/AnalysisProgressBanner";
@@ -39,6 +40,7 @@ export function SharedAnalysisPage({
   insightText
 }: SharedAnalysisPageProps) {
   const [companyInput, setCompanyInput] = useState("");
+  const [tipoEmpresa, setTipoEmpresa] = useState<'QA' | 'SAP' | ''>("");
   const [validationError, setValidationError] = useState<string | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
@@ -87,12 +89,21 @@ export function SharedAnalysisPage({
     });
     unsubRef.current = unsub;
 
-    startAnalysis(domain, entityType);
+    startAnalysis(domain, entityType, tipoEmpresa as 'QA' | 'SAP' | undefined);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setValidationError(null);
+
+    if (!tipoEmpresa) {
+      toast({
+        title: "Tipo obrigatório",
+        description: "Por favor, selecione QA ou SAP antes de analisar.",
+        variant: "destructive",
+      });
+      return;
+    }
     
     const cleanedDomain = cleanDomain(companyInput);
     
@@ -149,6 +160,35 @@ export function SharedAnalysisPage({
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
+              <Label className="text-sm font-medium">
+                Tipo de Empresa <span className="text-destructive">*</span>
+              </Label>
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setTipoEmpresa('QA')}
+                  className={`flex-1 py-2 px-4 rounded-md border-2 font-semibold text-sm transition-all ${
+                    tipoEmpresa === 'QA'
+                      ? 'border-primary bg-primary text-primary-foreground'
+                      : 'border-border bg-background text-foreground hover:border-primary/50'
+                  }`}
+                >
+                  QA
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTipoEmpresa('SAP')}
+                  className={`flex-1 py-2 px-4 rounded-md border-2 font-semibold text-sm transition-all ${
+                    tipoEmpresa === 'SAP'
+                      ? 'border-primary bg-primary text-primary-foreground'
+                      : 'border-border bg-background text-foreground hover:border-primary/50'
+                  }`}
+                >
+                  SAP
+                </button>
+              </div>
+            </div>
+            <div className="space-y-2">
               <Label htmlFor="company" className="text-sm font-medium">
                 Domínio da Empresa
               </Label>
@@ -171,7 +211,7 @@ export function SharedAnalysisPage({
             <Button 
               type="submit" 
               className="w-full"
-              disabled={!companyInput.trim()}
+              disabled={!companyInput.trim() || !tipoEmpresa}
             >
               Analisar
             </Button>

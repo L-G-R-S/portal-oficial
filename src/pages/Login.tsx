@@ -8,7 +8,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserAction } from '@/hooks/useUserAction';
 import { toast } from 'sonner';
-import logoImage from '@/assets/logo-prime-control.png';
+import logoImage from '@/assets/logo-prime-vision.svg';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -64,9 +64,10 @@ export default function Login() {
       {/* Left side - Brand */}
       <div className="hidden lg:flex lg:w-1/2 bg-secondary items-center justify-center p-12">
         <div className="max-w-md text-center">
-          <img src={logoImage} alt="Logo" className="h-24 w-auto mx-auto mb-8" />
-          
-          
+          <img src={logoImage} alt="Logo" className="h-24 w-auto mx-auto mb-4" />
+          <p className="text-primary/80 text-sm font-light italic tracking-wide">
+            Seu radar estratégico de mercado.
+          </p>
         </div>
       </div>
 
@@ -74,7 +75,7 @@ export default function Login() {
       <div className="flex-1 flex items-center justify-center p-8 bg-background">
         <div className="w-full max-w-md space-y-8">
           <div className="text-center">
-            <h2 className="text-2xl font-semibold text-foreground">PRIMARKETEROS</h2>
+            <h2 className="text-2xl font-semibold text-foreground uppercase tracking-tight">Bem-vindo</h2>
             <p className="mt-2 text-muted-foreground text-sm">Acesse sua conta</p>
           </div>
 

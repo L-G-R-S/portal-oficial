@@ -23,6 +23,7 @@ import { EmailAlertsCard } from "@/components/settings/EmailAlertsCard";
 import { LogsCard } from "@/components/settings/LogsCard";
 import { ApiSettingsCard } from "@/components/settings/ApiSettingsCard";
 import { UsageDashboardCard } from "@/components/settings/UsageDashboardCard";
+import { FeedbacksCard } from "@/components/settings/FeedbacksCard";
 import { SuperAdminOnly } from "@/components/SuperAdminOnly";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
@@ -308,8 +309,6 @@ export default function Settings() {
             <div className="mt-6" />
             <UserManagementCard />
           </SuperAdminOnly>
-
-          {/* Configuração de API (IA / Gemini) - Apenas Super Admin */}
           <SuperAdminOnly>
             <ApiSettingsCard />
           </SuperAdminOnly>
@@ -390,6 +389,11 @@ export default function Settings() {
           {/* Logs de Atividade - Apenas Super Admin */}
           <SuperAdminOnly>
             <LogsCard />
+          </SuperAdminOnly>
+
+          {/* Feedbacks - Apenas Super Admin */}
+          <SuperAdminOnly>
+            <FeedbacksCard />
           </SuperAdminOnly>
         </div>
       </div>

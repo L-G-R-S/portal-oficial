@@ -9,14 +9,15 @@ import { getEntityLabel, ENTITY_COLORS } from '@/lib/colors';
 
 interface NewsItem {
   id: string;
-  title: string | null;
+  titulo: string | null;
   url: string | null;
-  date: string | null;
-  summary: string | null;
-  classification: string | null;
+  data: string | null;
+  resumo: string | null;
+  tipo: string | null;
+  fonte: string | null;
   entity_name: string | null;
   entity_logo: string | null;
-  entity_type: 'competitor' | 'prospect' | 'client';
+  entity_type: 'competitor' | 'prospect' | 'client' | 'primary';
 }
 
 interface NewsFeedProps {
@@ -36,14 +37,14 @@ const getTypeBadgeColor = (type: string) => {
   }
 };
 
-const getClassificationEmoji = (classification: string | null) => {
-  if (!classification) return '📰';
-  const lower = classification.toLowerCase();
+const getClassificationEmoji = (tipo: string | null) => {
+  if (!tipo) return '📰';
+  const lower = tipo.toLowerCase();
   if (lower.includes('evento')) return '🎉';
   if (lower.includes('parceria')) return '🤝';
   if (lower.includes('lançamento') || lower.includes('produto')) return '🚀';
   if (lower.includes('prêmio') || lower.includes('reconhecimento')) return '🏆';
-  if (lower.includes('expansão') || lower.includes('crescimento')) return '📈';
+  if (lower.includes('expansão') || lower.includes('crescimento') || lower.includes('aquisição')) return '📈';
   return '📝';
 };
 
@@ -77,12 +78,12 @@ function NewsItemCard({ item }: { item: NewsItem }) {
             </div>
             
             <p className="text-sm text-foreground line-clamp-2">
-              {getClassificationEmoji(item.classification)} {item.title || 'Sem título'}
+              {getClassificationEmoji(item.tipo)} {item.titulo || 'Sem título'}
             </p>
             
-            {item.date && (
+            {item.data && (
               <p className="text-xs text-muted-foreground mt-1">
-                {formatDistanceToNow(new Date(item.date), { addSuffix: true, locale: ptBR })}
+                {formatDistanceToNow(new Date(item.data), { addSuffix: true, locale: ptBR })}
               </p>
             )}
           </div>
@@ -95,7 +96,7 @@ function NewsItemCard({ item }: { item: NewsItem }) {
               rel="noopener noreferrer"
               className="flex-shrink-0 p-2 rounded-lg hover:bg-background transition-colors"
               onClick={(e) => e.stopPropagation()}
-              aria-label={`Abrir notícia: ${item.title}`}
+              aria-label={`Abrir notícia: ${item.titulo}`}
             >
               <ExternalLink className="h-4 w-4 text-muted-foreground" />
             </a>

@@ -36,6 +36,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import ConfirmEmail from "./pages/ConfirmEmail";
 import UsageDashboard from "./pages/UsageDashboard";
+import Feedbacks from "./pages/Feedbacks";
 
 const App = () => (
   <AuthProvider>
@@ -74,6 +75,7 @@ const App = () => (
               <Route path="/user-management" element={<PrivateRoute><Layout><UserManagement /></Layout></PrivateRoute>} />
               <Route path="/email-alerts" element={<PrivateRoute><Layout><EmailAlerts /></Layout></PrivateRoute>} />
               <Route path="/auto-updates" element={<PrivateRoute><Layout><AutoUpdates /></Layout></PrivateRoute>} />
+              <Route path="/feedbacks" element={<PrivateRoute><Layout><Feedbacks /></Layout></PrivateRoute>} />
               
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

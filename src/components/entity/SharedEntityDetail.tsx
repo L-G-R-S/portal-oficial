@@ -7,7 +7,7 @@ import { useEntityDetail } from "@/hooks/useEntityDetail";
 import { EntityDetailContent } from "@/components/entity/EntityDetailContent";
 import { generateCompetitorReport } from "@/utils/pdfReportGenerator";
 import { useToast } from "@/hooks/use-toast";
-import { InlineChat } from "@/components/chat";
+import { InlineChat } from "@/components/chat/InlineChat";
 
 interface SharedEntityDetailProps {
   id: string | undefined;

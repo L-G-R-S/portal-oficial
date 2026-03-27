@@ -44,15 +44,15 @@ export function DashboardHeader({ lastAnalysis }: DashboardHeaderProps) {
       </div>
 
       {/* Portfolio banner */}
-      <a
-        href="https://ofertas.primecontrol.com.br"
-        target="_blank"
+      <a 
+        href="https://ofertas.primecontrol.com.br" 
+        target="_blank" 
         rel="noopener noreferrer"
         className="flex items-center justify-between w-full px-4 py-2.5 rounded-lg border border-primary/30 bg-primary/5 hover:bg-primary/10 transition-colors group"
       >
         <div className="flex items-center gap-2">
           <span className="text-xs font-semibold uppercase tracking-wide text-primary">Conheça</span>
-          <span className="text-sm font-medium text-foreground">nosso portfólio de ofertas da Prime Control</span>
+          <span className="text-sm font-medium text-foreground">nosso portfólio de ofertas da Prime Vision</span>
         </div>
         <ExternalLink className="h-4 w-4 text-primary group-hover:translate-x-0.5 transition-transform" />
       </a>

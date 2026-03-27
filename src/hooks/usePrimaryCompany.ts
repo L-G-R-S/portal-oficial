@@ -139,12 +139,20 @@ export function usePrimaryCompany() {
     if (!primaryCompany) return false;
 
     try {
+      // 1. Remove global configuration
       const { error } = await supabase
         .from("primary_company")
         .delete()
-        .eq("id", primaryCompany.id);
+        .eq("domain", primaryCompany.domain);
 
       if (error) throw error;
+
+      // 2. Remove the actual company data to clean up the dashboard
+      await supabase
+        .from("companies")
+        .delete()
+        .eq("domain", primaryCompany.domain)
+        .eq("entity_type", "primary");
 
       setPrimaryCompany(null);
       toast({

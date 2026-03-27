@@ -217,6 +217,7 @@ export type Database = {
           size: string | null
           tagline: string | null
           tiktok_url: string | null
+          tipo_empresa: string | null
           type: string | null
           updated_at: string | null
           user_id: string | null
@@ -267,6 +268,7 @@ export type Database = {
           size?: string | null
           tagline?: string | null
           tiktok_url?: string | null
+          tipo_empresa?: string | null
           type?: string | null
           updated_at?: string | null
           user_id?: string | null

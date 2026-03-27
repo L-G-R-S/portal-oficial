@@ -1,6 +1,4 @@
 export const WEBHOOK_URL = "https://webhooks-659c9b8b-af7b-4ad0-b287-a844749a2bef.primecontrol.com.br/webhook/oficial";
-export const WEBHOOK_NEWS_UPDATE_URL = "https://n8n.srv1043934.hstgr.cloud/webhook-test/atualizar";
-
 export const ROUTES = {
   KNOWLEDGE_BASE: '/knowledge-base',
   // Auth
@@ -16,6 +14,7 @@ export const ROUTES = {
   USER_MANAGEMENT: "/user-management",
   EMAIL_ALERTS: "/email-alerts",
   AUTO_UPDATES: "/auto-updates",
+  FEEDBACKS: "/feedbacks",
   
   // Competitors
   COMPETITORS: "/competitors",

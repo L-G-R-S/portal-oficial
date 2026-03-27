@@ -16,15 +16,20 @@ interface EntityData extends SocialMetrics {
   industry: string | null;
   glassdoor_rating?: number | null;
   type: 'primary' | 'competitor' | 'prospect' | 'client';
+  employee_count?: number | null;
+  headquarters?: string | null;
+  year_founded?: number | null;
+  sector?: string | null;
 }
 
 interface NewsItem {
   id: string;
-  title: string | null;
+  titulo: string | null;
   url: string | null;
-  date: string | null;
-  summary: string | null;
-  classification: string | null;
+  data: string | null;
+  resumo: string | null;
+  tipo: string | null;
+  fonte: string | null;
   entity_name: string | null;
   entity_logo: string | null;
   entity_type: 'competitor' | 'prospect' | 'client' | 'primary';
@@ -91,9 +96,13 @@ export function useDashboardData(): DashboardData {
         domain: c.domain,
         logo_url: c.logo_url,
         industry: c.industry,
+        sector: c.sector,
         linkedin_followers: c.linkedin_followers,
         instagram_followers: c.instagram_followers,
         youtube_subscribers: c.youtube_subscribers,
+        employee_count: c.employee_count,
+        headquarters: c.headquarters,
+        year_founded: c.year_founded,
         type: c.entity_type as any
       }));
 
@@ -117,29 +126,48 @@ export function useDashboardData(): DashboardData {
       setProspects(allCompaniesList.filter(c => c.type === 'prospect'));
       setClients(allCompaniesList.filter(c => c.type === 'client'));
 
-      // Fetch recent news from single table
-      const { data: newsData } = await supabase
-        .from('market_news')
-        .select('id, title, url, date, summary, classification, company_id')
-        .order('date', { ascending: false, nullsFirst: false })
-        .limit(60);
+      // Fetch recent news from ALL tables in parallel
+      const [
+        { data: compNews },
+        { data: prosNews },
+        { data: clientNewsData },
+        { data: primaryNews }
+      ] = await Promise.all([
+        supabase.from('market_news').select('*').order('data', { ascending: false }).limit(20),
+        supabase.from('prospect_market_news' as any).select('*').order('data', { ascending: false }).limit(20),
+        supabase.from('client_market_news' as any).select('*').order('data', { ascending: false }).limit(20),
+        supabase.from('primary_company_market_news' as any).select('*').order('data', { ascending: false }).limit(20)
+      ]);
 
-      const allNews: NewsItem[] = (newsData || []).map(n => {
-        const entity = allCompaniesList.find(c => c.id === n.company_id);
-        return {
-          id: n.id,
-          title: n.title,
-          url: n.url,
-          date: n.date,
-          summary: n.summary,
-          classification: n.classification,
-          entity_name: entity?.name ?? null,
-          entity_logo: entity?.logo_url ?? null,
-          entity_type: entity?.type as any
-        };
-      }).filter(n => n.entity_type && n.entity_type !== 'primary');
+      const mapNews = (items: any[], type: EntityData['type'], idField: string) => 
+        (items || []).map(n => {
+          const entity = allCompaniesList.find(c => c.id === n[idField] || (type === 'primary' && c.type === 'primary'));
+          return {
+            id: n.id,
+            titulo: n.titulo,
+            url: n.url,
+            data: n.data,
+            resumo: n.resumo,
+            tipo: n.tipo,
+            fonte: n.fonte,
+            entity_name: entity?.name ?? (type === 'primary' ? primaryCompany?.name : null),
+            entity_logo: entity?.logo_url ?? (type === 'primary' ? primaryCompany?.logo_url : null),
+            entity_type: type
+          };
+        });
 
-      setRecentNews(allNews.slice(0, 20));
+      const combinedNews: NewsItem[] = [
+        ...mapNews(compNews || [], 'competitor', 'company_id'),
+        ...mapNews(prosNews || [], 'prospect', 'prospect_id'),
+        ...mapNews(clientNewsData || [], 'client', 'client_id'),
+        ...mapNews(primaryNews || [], 'primary', 'primary_company_id')
+      ].sort((a, b) => {
+        if (!a.data || !b.data) return 0;
+        return new Date(b.data).getTime() - new Date(a.data).getTime();
+      });
+
+      setRecentNews(combinedNews.slice(0, 20));
+      const totalNewsCount = combinedNews.length;
 
       // Fetch recent activity
       const { data: activityData } = await supabase
@@ -193,7 +221,7 @@ export function useDashboardData(): DashboardData {
     totalCompetitors: competitors.length,
     totalProspects: prospects.length,
     totalClients: clients.length,
-    totalNews: recentNews.length
+    totalNews: recentNews.length // Mantido recentNews por enquanto para consistência UI
   };
 
   return {

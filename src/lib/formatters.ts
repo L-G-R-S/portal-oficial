@@ -41,13 +41,7 @@ export function formatDurationFromDates(startedAt: string, completedAt: string |
   return `${hours}h ${remainingMinutes}m`;
 }
 
-/**
- * Format percentage
- */
-export function formatPercentage(value: number | null | undefined): string {
-  if (value === null || value === undefined) return '-';
-  return `${value.toFixed(1)}%`;
-}
+
 
 /**
  * Format date to Brazilian format

@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { cn } from "@/lib/utils";
-import { Bot, Download, FileText, Image as ImageIcon, Loader2 } from "lucide-react";
+import { Download, FileText, Image as ImageIcon, Loader2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -316,8 +316,8 @@ export function ChatMessage({ role, content, isStreaming, userAvatar, userInitia
             </AvatarFallback>
           </Avatar>
         ) : (
-          <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0" aria-label="Assistente Orbi">
-            <Bot className="h-4 w-4 text-primary-foreground" />
+          <div className="h-11 w-11 rounded-full overflow-hidden bg-transparent flex items-center justify-center flex-shrink-0" aria-label="Assistente Orbi">
+            <img src="/orbi-logo.png" alt="Orbi" className="w-full h-full scale-125 object-contain" />
           </div>
         )}
       </div>

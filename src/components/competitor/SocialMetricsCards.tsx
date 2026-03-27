@@ -4,22 +4,28 @@ import { Linkedin, Instagram, Youtube, Users, Video, Eye } from "lucide-react";
 interface SocialMetricsCardsProps {
   linkedin?: {
     followers?: number | null;
+    url?: string | null;
+    hasPosts?: boolean;
   };
   instagram?: {
     followers?: number | null;
     posts_count?: number | null;
+    url?: string | null;
+    hasPosts?: boolean;
   };
   youtube?: {
     subscribers?: number | null;
     total_videos?: number | null;
     total_views?: number | null;
+    url?: string | null;
+    hasPosts?: boolean;
   };
 }
 
 export function SocialMetricsCards({ linkedin, instagram, youtube }: SocialMetricsCardsProps) {
-  const hasLinkedin = linkedin?.followers;
-  const hasInstagram = instagram?.followers;
-  const hasYoutube = youtube?.subscribers;
+  const hasLinkedin = linkedin && (linkedin.followers || linkedin.hasPosts || linkedin.url);
+  const hasInstagram = instagram && (instagram.followers || instagram.hasPosts || instagram.url);
+  const hasYoutube = youtube && (youtube.subscribers || youtube.hasPosts || youtube.url);
 
   if (!hasLinkedin && !hasInstagram && !hasYoutube) return null;
 

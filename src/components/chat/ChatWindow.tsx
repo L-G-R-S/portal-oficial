@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Bot, Trash2, AlertCircle, Loader2 } from "lucide-react";
+import { Trash2, AlertCircle, Loader2 } from "lucide-react";
 import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
 import { useAIChat } from "@/hooks/useAIChat";
@@ -70,8 +70,8 @@ export function ChatWindow({ entityId, entityType, entityName, className, title,
       {!compact && (
         <CardHeader className="flex flex-row items-center justify-between space-y-0 py-3 px-4 border-b">
           <div className="flex items-center gap-3">
-            <div className="h-9 w-9 rounded-full bg-primary flex items-center justify-center">
-              <Bot className="h-5 w-5 text-primary-foreground" />
+            <div className="h-10 w-10 rounded-full overflow-hidden bg-transparent flex items-center justify-center">
+              <img src="/orbi-logo.png" alt="Orbi" className="w-full h-full scale-110 object-contain" />
             </div>
             <div>
               <h3 className="font-semibold text-sm">Orbi</h3>
@@ -101,8 +101,8 @@ export function ChatWindow({ entityId, entityType, entityName, className, title,
           </div>
         ) : messages.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center p-4 text-center">
-            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
-              <Bot className="h-6 w-6 text-primary" />
+            <div className="w-24 h-24 rounded-full overflow-hidden bg-transparent flex items-center justify-center mb-3">
+              <img src="/orbi-logo.png" alt="Orbi" className="w-full h-full object-contain" />
             </div>
             <h3 className="font-medium mb-1 text-sm">Olá! Sou o Orbi</h3>
             <p className="text-xs text-muted-foreground mb-3 max-w-[260px]">

@@ -119,7 +119,7 @@ Deno.serve(async (req) => {
     <tr>
       <td>
         <div style="background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); overflow: hidden;">
-          <!-- Header with Prime Control branding -->
+          <!-- Header with Prime Vision branding -->
           <div style="background: linear-gradient(135deg, ${PRIME_COLOR} 0%, ${PRIME_COLOR_DARK} 100%); padding: 30px; text-align: center;">
             <img src="${LOGO_URL}" alt="Orbi - Notícias" style="height: 40px; margin-bottom: 16px;" onerror="this.style.display='none'">
             <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 600;">🔔 Alerta de Notícia</h1>

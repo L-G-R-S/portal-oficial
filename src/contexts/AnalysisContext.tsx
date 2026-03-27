@@ -23,7 +23,7 @@ interface AnalysisContextType {
   isAnalyzing: (domain: string) => boolean;
   hasActiveAnalyses: boolean;
   activeAnalysesCount: number;
-  startAnalysis: (domain: string, entityType?: EntityType) => Promise<void>;
+  startAnalysis: (domain: string, entityType?: EntityType, tipoEmpresa?: 'QA' | 'SAP') => Promise<void>;
   cancelAnalysis: (domain: string) => void;
   cancelAllAnalyses: () => void;
   onAnalysisComplete: (domain: string, cb: (entityId: string | null, route: string) => void) => () => void;
@@ -99,7 +99,7 @@ export function AnalysisProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
-  const startAnalysis = useCallback(async (domain: string, entityType: EntityType = 'competitor') => {
+  const startAnalysis = useCallback(async (domain: string, entityType: EntityType = 'competitor', tipoEmpresa?: 'QA' | 'SAP') => {
     // Check if already analyzing this domain
     if (isAnalyzing(domain)) {
       toast({
@@ -154,7 +154,7 @@ export function AnalysisProvider({ children }: { children: React.ReactNode }) {
           "Content-Type": "application/json",
           "Accept": "application/json, text/plain, */*",
         },
-        body: JSON.stringify({ domain, entityType }),
+        body: JSON.stringify({ domain, entityType, tipoEmpresa }),
         signal: abortController.signal,
       });
 
@@ -222,6 +222,14 @@ export function AnalysisProvider({ children }: { children: React.ReactNode }) {
         .eq('domain', domain)
         .maybeSingle();
       entityId = entityRecord?.id || null;
+
+      // Save tipoEmpresa if provided
+      if (entityId && tipoEmpresa) {
+        await supabase
+          .from('companies')
+          .update({ tipo_empresa: tipoEmpresa } as any)
+          .eq('id', entityId);
+      }
 
       // Log the activity to analysis_activity_log
       if (entityId) {

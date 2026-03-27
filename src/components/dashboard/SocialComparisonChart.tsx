@@ -19,6 +19,7 @@ interface SocialComparisonChartProps {
   competitors: EntityData[];
   prospects: EntityData[];
   clients: EntityData[];
+  context?: 'all' | 'competitor' | 'prospect' | 'client';
 }
 
 function SocialChart({ 
@@ -115,7 +116,8 @@ export function SocialComparisonChart({
   primaryCompany, 
   competitors, 
   prospects, 
-  clients 
+  clients,
+  context = 'all'
 }: SocialComparisonChartProps) {
   const buildChartData = (entities: EntityData[]) => {
     const allEntities = [
@@ -146,49 +148,64 @@ export function SocialComparisonChart({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <Tabs defaultValue="competitors" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 mb-4 h-auto gap-1">
-            <TabsTrigger value="competitors" className="whitespace-normal h-auto min-h-10 text-[11px] sm:text-sm">Concorrentes ({competitors.length})</TabsTrigger>
-            <TabsTrigger value="prospects" className="whitespace-normal h-auto min-h-10 text-[11px] sm:text-sm">Prospects ({prospects.length})</TabsTrigger>
-            <TabsTrigger value="clients" className="whitespace-normal h-auto min-h-10 text-[11px] sm:text-sm">Clientes ({clients.length})</TabsTrigger>
-            <TabsTrigger value="all" className="whitespace-normal h-auto min-h-10 text-[11px] sm:text-sm">Todos</TabsTrigger>
-          </TabsList>
+        {context === 'all' ? (
+          <Tabs defaultValue="competitors" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 mb-4 h-auto gap-1">
+              <TabsTrigger value="competitors" className="whitespace-normal h-auto min-h-10 text-[11px] sm:text-sm">Concorrentes ({competitors.length})</TabsTrigger>
+              <TabsTrigger value="prospects" className="whitespace-normal h-auto min-h-10 text-[11px] sm:text-sm">Prospects ({prospects.length})</TabsTrigger>
+              <TabsTrigger value="clients" className="whitespace-normal h-auto min-h-10 text-[11px] sm:text-sm">Clientes ({clients.length})</TabsTrigger>
+              <TabsTrigger value="all" className="whitespace-normal h-auto min-h-10 text-[11px] sm:text-sm">Todos</TabsTrigger>
+            </TabsList>
 
-          <TabsContent value="competitors">
-            <SocialChartsGrid data={competitorData} primaryId={primaryCompany?.id || null} />
-          </TabsContent>
+            <TabsContent value="competitors">
+              <SocialChartsGrid data={competitorData} primaryId={primaryCompany?.id || null} />
+            </TabsContent>
 
-          <TabsContent value="prospects">
-            <SocialChartsGrid data={prospectData} primaryId={primaryCompany?.id || null} />
-          </TabsContent>
+            <TabsContent value="prospects">
+              <SocialChartsGrid data={prospectData} primaryId={primaryCompany?.id || null} />
+            </TabsContent>
 
-          <TabsContent value="clients">
-            <SocialChartsGrid data={clientData} primaryId={primaryCompany?.id || null} />
-          </TabsContent>
+            <TabsContent value="clients">
+              <SocialChartsGrid data={clientData} primaryId={primaryCompany?.id || null} />
+            </TabsContent>
 
-          <TabsContent value="all">
-            <SocialChartsGrid data={allData} primaryId={primaryCompany?.id || null} />
-          </TabsContent>
-        </Tabs>
+            <TabsContent value="all">
+              <SocialChartsGrid data={allData} primaryId={primaryCompany?.id || null} />
+            </TabsContent>
+          </Tabs>
+        ) : (
+          <SocialChartsGrid 
+            data={context === 'competitor' ? competitorData : context === 'prospect' ? prospectData : clientData} 
+            primaryId={primaryCompany?.id || null} 
+          />
+        )}
 
         {/* Legend */}
         <div className="flex flex-wrap gap-4 mt-6 pt-4 border-t border-border">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: ENTITY_COLORS.primary }} />
-            <span className="text-xs text-muted-foreground">Sua empresa</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: ENTITY_COLORS.competitor }} />
-            <span className="text-xs text-muted-foreground">Concorrentes</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: ENTITY_COLORS.prospect }} />
-            <span className="text-xs text-muted-foreground">Prospects</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: ENTITY_COLORS.client }} />
-            <span className="text-xs text-muted-foreground">Clientes</span>
-          </div>
+          {(context === 'all' || context === 'competitor') && (
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: ENTITY_COLORS.primary }} />
+              <span className="text-xs text-muted-foreground">Sua empresa</span>
+            </div>
+          )}
+          {(context === 'all' || context === 'competitor') && (
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: ENTITY_COLORS.competitor }} />
+              <span className="text-xs text-muted-foreground">Concorrentes</span>
+            </div>
+          )}
+          {(context === 'all' || context === 'prospect') && (
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: ENTITY_COLORS.prospect }} />
+              <span className="text-xs text-muted-foreground">Prospects</span>
+            </div>
+          )}
+          {(context === 'all' || context === 'client') && (
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: ENTITY_COLORS.client }} />
+              <span className="text-xs text-muted-foreground">Clientes</span>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
