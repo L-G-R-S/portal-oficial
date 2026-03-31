@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import logoImage from '@/assets/logo-prime-control.png';
+import logoImage from '@/assets/logo-prime-vision.svg';
 
 export default function ResetPassword() {
   const [password, setPassword] = useState('');
@@ -79,7 +79,10 @@ export default function ResetPassword() {
       {/* Left side - Brand */}
       <div className="hidden lg:flex lg:w-1/2 bg-secondary items-center justify-center p-12">
         <div className="max-w-md text-center">
-          <img src={logoImage} alt="Logo" className="h-24 w-auto mx-auto mb-8" />
+          <img src={logoImage} alt="Logo" className="h-24 w-auto mx-auto mb-4" />
+          <p className="text-primary/80 text-sm font-light italic tracking-wide">
+            Seu radar estratégico de mercado.
+          </p>
         </div>
       </div>
 

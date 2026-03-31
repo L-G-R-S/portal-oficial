@@ -1,7 +1,8 @@
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { MailCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import logoImage from '@/assets/logo-prime-control.png';
+import logoImage from '@/assets/logo-prime-vision.svg';
 
 export default function ConfirmEmail() {
   return (
@@ -12,8 +13,11 @@ export default function ConfirmEmail() {
           <img 
             src={logoImage} 
             alt="Logo" 
-            className="h-24 w-auto mx-auto mb-8"
+            className="h-24 w-auto mx-auto mb-4"
           />
+          <p className="text-primary/80 text-sm font-light italic tracking-wide">
+            Seu radar estratégico de mercado.
+          </p>
         </div>
       </div>
 
