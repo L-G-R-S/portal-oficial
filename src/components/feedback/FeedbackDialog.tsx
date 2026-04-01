@@ -19,7 +19,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { useProfileAvatar, getInitials, getRoleLabel } from "@/hooks/useProfile";
 
-type FeedbackTopico = "Solicitação" | "Informação" | "Reclamação" | "Elogio";
+type FeedbackTopico = "Elogio" | "Solicitação" | "Informação" | "Reclamação";
 
 interface FeedbackDialogProps {
   children?: React.ReactNode;
@@ -169,10 +169,10 @@ export function FeedbackDialog({ children }: FeedbackDialogProps) {
                     <SelectValue placeholder="Selecione um tópico..." />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="Elogio">Elogio</SelectItem>
                     <SelectItem value="Solicitação">Solicitação</SelectItem>
                     <SelectItem value="Informação">Informação</SelectItem>
                     <SelectItem value="Reclamação">Reclamação</SelectItem>
-                    <SelectItem value="Elogio">Elogio</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
