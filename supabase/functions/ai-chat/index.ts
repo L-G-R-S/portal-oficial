@@ -681,16 +681,19 @@ NÃO utilize blocos de código Markdown (\`\`\`json) para as tags ORBI_ACTION.`;
           top_k: 40,
           max_output_tokens: 8192,
         },
-        tools: [{ google_search: {} }],
       }),
     });
 
     if (!apiResponse.ok) {
       const errorText = await apiResponse.text();
       console.error(`Gemini API error: ${apiResponse.status}`, errorText);
+      let errorMessage = "Erro ao processar sua mensagem via Gemini AI.";
+      if (apiResponse.status === 429) {
+        errorMessage = "Cota de uso da Inteligência Artificial excedida! Verifique os limites e os créditos da sua chave API do Google Gemini.";
+      }
       return new Response(
-        JSON.stringify({ error: "Erro ao processar sua mensagem via Gemini AI." }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        JSON.stringify({ error: errorMessage }),
+        { status: apiResponse.status, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
